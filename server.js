@@ -1,8 +1,31 @@
-var http = require("http");
+var express = require('express');
+var http = require('http');
+var app = express();
+var server = http.createServer(app);
+var io = require('socket.io').listen(server, {
+	transports: ['websocket']
+});
+app.configure(function(){
+	app.use(express.methodOverride());
+	app.use(express.bodyParser());
+	app.use(express.static(__dirname + '/resources'));
+	app.use(express.errorHandler({
+		dumpExceptions: true, 
+		showStack: true
+	}));
+	app.use(app.router);
+});
 
-http.createServer(function(request, response){
-  response.writeHead(200, {"Content-Type": "text/plain"});
-  response.write("Hello World\n");
-  response.end();
-}).listen(8888, '127.0.0.1');
-console.log('Server running at http://127.0.0.1:8888/');
+// start server
+server.listen(8888);
+
+// HTTP request for base page using express
+app.get('/', function (req, res) {
+	res.sendfile(__dirname + '/index.html');
+});
+
+io.sockets.on('connection', function (socket) {
+	socket.emit('init', { msg: ('Hi from node.js version '+process.versions.v8) });
+});
+
+//TODO test Joose

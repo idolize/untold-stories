@@ -1,0 +1,33 @@
+body {
+	font-family: sans-serif;
+	color: #333;
+	background-color: #ddd;
+	margin: 0;
+	padding: 0;
+}
+
+div.wrapper {
+	width: 500px;
+	height: 500px;
+	background-color: #fff;
+	padding: 10px;
+	margin: auto;
+}
+
+.wrapper h1, p {
+	text-align: center;
+}
+
+.wrapper .canvaswrap {
+	/* Needed to center the canvas */
+	width: 400px;
+	height: 300px;
+	margin: auto;
+}
+
+canvas#gamecanvas {
+	border: 1px solid gray;
+	margin: auto;
+	width: 400px;
+	height: 300px;
+}

@@ -1,0 +1,4 @@
+#### Files to ignore from source control
+
+# This folder is automatically created by npm
+node_modules/

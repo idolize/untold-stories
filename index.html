@@ -1,0 +1,24 @@
+<!DOCTYPE html> <!-- Yay, HTML 5! -->
+
+<html>
+<head>
+	<title>Tabula Rasa</title> 
+	<link rel="stylesheet" type="text/css" href="styles/style.css" />
+</head>
+<body>
+	<!-- Scripts -->
+	<script type="text/javascript" src="/socket.io/socket.io.js"></script><!-- loaded dynamically by Node -->
+	<script type="text/javascript" src="/jsan/Task/Joose/Core.js"></script><!-- loaded dynamically by Node -->
+	<script type="text/javascript" src="http://code.createjs.com/createjs-2013.02.12.min.js"></script>
+	<script type="text/javascript" src="js/client.js"></script>
+
+	<!-- DOM -->
+	<div class="wrapper">
+	<h1>Hello, World!</h1>
+	<div class="canvaswrap">
+		<canvas id="gamecanvas" width="400" height="300"></canvas>
+	</div>
+	<p id="servermsg"></p>
+	</div>
+</body>
+</html>
