@@ -11,15 +11,15 @@ var Board = new Class({
 	 * @constructor
 	 * @param  {integer} numWide Number of tiles wide.
 	 * @param  {integer} numHigh Number of tiles high.
-	 * @param  {integer[][]} [tileIds] A 2D array with the tile ids to use.
+	 * @param {TileType[][]} tiles A pre-initialized 2D tile array.
 	 */
-	initialize : function (numWide, numHigh, tileSize, tileIds) {
+	initialize : function (numWide, numHigh, tileSize, tiles) {
 		this.numWide = numWide;
 		this.numHigh = numHigh;
 		this.tileSize = tileSize;
 		this.container = new createjs.Container();
-		if (tileIds) {
-			this.setAllTilesByIds(tiles);
+		if (tiles) {
+			this.setAllTiles(tiles);
 		} else {
 			// initialize tiles as empty array with the specified numWide and numHigh
 			this.tiles = new Array(numHigh);
