@@ -1,3 +1,4 @@
+require('mootools');
 var express = require('express');
 var http = require('http');
 var app = express();
@@ -27,5 +28,3 @@ app.get('/', function (req, res) {
 io.sockets.on('connection', function (socket) {
 	socket.emit('init', { msg: ('Hi from node.js version '+process.versions.v8) });
 });
-
-//TODO test Joose
