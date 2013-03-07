@@ -1,8 +1,5 @@
-/**
- * [TileType description]
- * @type {Class}
- */
-var TileType = new Class({
+
+var ObjectType = new Class({
 	id : null,
 	image : null,
 	isPassable : null,
