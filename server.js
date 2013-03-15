@@ -24,6 +24,9 @@ server.listen(8888);
 app.get('/', function (req, res) {
 	res.sendfile(__dirname + '/index.html');
 });
+app.get('/tileeditor.html', function (req, res) {
+    res.sendfile(__dirname + '/tileeditor.html');
+});
 
 io.sockets.on('connection', function (socket) {
 	socket.emit('init', { msg: ('Hi from node.js version '+process.versions.v8) });
