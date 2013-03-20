@@ -39,5 +39,7 @@ Try to avoid using the global namespace as much as possible. Instead, use [MooTo
 ### Events
 Use the [event (aka observer) pattern](http://en.wikipedia.org/wiki/Observer_pattern) to avoid having to pass around a bunch of objects or break encapsulation. MooTools provides [a simple API to fire and listen for events](http://mootools.net/docs/core/Class/Class.Extras#Events) on the client side; for the server-side it is recommended to use the [native Node.js EventEmitter API](http://nodejs.org/api/events.html) instead. Note: server-side MooTools provides a way to implement the EventEmitter API in your server-side classes - [see the "Usage" section of the npm page](https://npmjs.org/package/mootools).
 
+Remember: it is almost always the event listener's responsibility (not the event generator's) to remove any listeners it registers.
+
 ### Comments
 Classes and functions can/should be documented using the [JSDoc syntax](http://en.wikipedia.org/wiki/JSDoc). If you are using Sublime Text 2 then install the [DockBlockr plugin](https://tutsplus.com/lesson/docblockr/) to automatically generate these comments for you.
