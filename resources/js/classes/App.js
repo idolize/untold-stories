@@ -34,16 +34,21 @@ var App = new Class({
 			//TODO pass a username for this person?
 			name: (this.isCreator ? 'creator' : 'player')
 		});
-		this.socket.once('joinFailed', function(cause) {
-			// if failure
-			this.socket.removeAllListeners('ready'); // no longer listen for ready events
-			this.fireEvent('joinFailed', cause); // update DOM elsewhere
-		}.bind(this)); // Note: bind is needed to ensure the function is called with the right 'this' scoping
-		this.socket.once('ready', function() {
-			// if success: start the game
-			this.socket.removeAllListeners('joinFailed'); // no longer listen for joinFailed events
+		var onReady = function() {
+			// no longer need to listen for 'joinFailed' messages
+			this.socket.removeListener('joinFailed', onFail);
+			// start the game and notify any listeners
 			this.game.start();
 			this.fireEvent('gameStarted', this.game);
-		}.bind(this));
+		};
+		var onFail = function(cause) {
+			// no longer listen for any messages until the app is recreated
+			this.socket.removeAllListeners();
+			// update DOM elsewhere
+			this.fireEvent('joinFailed', cause);
+		};
+		// Note: bind is needed to ensure the function is called with the right 'this' scoping
+		this.socket.once('joinFailed', onFail.bind(this));
+		this.socket.once('ready', onReady.bind(this));
 	}
 });
