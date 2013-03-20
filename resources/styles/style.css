@@ -12,7 +12,6 @@ div.wrapper {
 	background-color: #fff;
 	padding: 10px;
 	margin: auto;
-	position: relative;
 }
 
 .wrapper h1, p {
@@ -35,5 +34,5 @@ canvas#gamecanvas {
 
 .wrapper .initial {
 	text-align: center;
-	margin: 0px auto;
+	margin: 10px auto;
 }

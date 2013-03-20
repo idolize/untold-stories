@@ -45,7 +45,7 @@ function loaded() {
 			creatorBtn.dispose();
 			// TODO remove loading animation
 			// now do something interesting
-			alert('Game started');
+			alert('Game started. You are the ' + (game.isCreator ? 'creator' : 'player') + '.');
 		});
 
 		// ok to attempt to join the server
