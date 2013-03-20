@@ -36,7 +36,7 @@ Style Guidelines
 ### OOP
 Try to avoid using the global namespace as much as possible. Instead, use [MooTools classes](http://mootools.net/docs/core/Class/Class) to encapsulate your objects like you would in a language like Java or C++. [Server-side class definitions](https://npmjs.org/package/mootools) are also available.
 
-## Events
+### Events
 Use the [event (aka observer) pattern](http://en.wikipedia.org/wiki/Observer_pattern) to avoid having to pass around a bunch of objects or break encapsulation. MooTools provides [a simple API to fire and listen for events](http://mootools.net/docs/core/Class/Class.Extras#Events) on the client side; for the server-side it is recommended to use the [native Node.js EventEmitter API](http://nodejs.org/api/events.html) instead. Note: server-side MooTools provides a way to implement the EventEmitter API in your server-side classes - [see the "Usage" section of the npm page](https://npmjs.org/package/mootools).
 
 ### Comments
