@@ -1,5 +1,5 @@
 /**
- * [TileType description]
+ * Represents a tile type. Only one instance should exist for each image.
  * @type {Class}
  */
 var TileType = new Class({
@@ -8,11 +8,11 @@ var TileType = new Class({
 	isPassable : null,
 
 	/**
-	 * [initialize description]
-	 * @param  {[type]}  id         [description]
-	 * @param  {[type]}  image      [description]
-	 * @param  {Boolean} isPassable [description]
-	 * @return {[type]}             [description]
+	 * Constructor method.
+	 * 
+	 * @constructor
+	 * @param  {integer} id Unique number 
+	 * @param  {Image} image Image to use for this tile (see DOM docs on Image).
 	 */
 	initialize : function (id, image, isPassable) {
 		this.id = id;

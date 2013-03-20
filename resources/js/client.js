@@ -1,56 +1,55 @@
+/**
+ * Perform all DOM manipulation in this top level function (by listening to events from app or app.game).
+ * @see  <a href="http://mootools.net/docs/core/Element/Element">MooTools Element class</a> for DOM tools.
+ */
 function loaded() {
-	/*
-	 * test Socket.io
-	 */
+	var canvas = document.id('gamecanvas');
+	var playerBtn = document.id('playerBtn');
+	var creatorBtn = document.id('creatorBtn');
+	playerBtn.disabled = false;
+	creatorBtn.disabled = false;
 
-	var msgLocation = document.getElementById('servermsg');
-	var socket = io.connect('http://localhost:8888');
-	// callback from server
-	socket.on('init', function (data) {
-		console.log(data);
-		// set p tag to message
-		msgLocation.innerHTML = data.msg;
-		// disconnect socket
-		socket.disconnect();
-		console.log('Socket.io test done');
+	playerBtn.addEvent('click', function(){
+		begin(false);
+	});
+	creatorBtn.addEvent('click', function(){
+		begin(true);
 	});
 
-	/*
-	 * test EaselJS
-	 */
+	function begin(isCreator) {
+		// disable the buttons first
+		playerBtn.disabled = true;
+		creatorBtn.disabled = true;
+		// TODO show a loading animation
 
-	// create a stage by getting a reference to the canvas
-	stage = new createjs.Stage('gamecanvas');
-	// load images from server`
-	var image1 = new Image();
-	image1.src = 'http://localhost:8888/images/1.png';
-	var image2 = new Image();
-	image2.src = 'http://localhost:8888/images/2.png';
-	// create the tile types for these images
-	var type1 = new TileType(1, image1);
-	var type2 = new TileType(2, image2);
-	// create the board and display it
-	var board = new Board(20, 15, 20);
-	stage.addChild(board.container);
+		// start the app
+		var app = new App(canvas, isCreator);
+		app.connect();
 
-	// update some of the tiles on the board
-	board.setTile(0,0, type1);
-	board.setTile(1,0, type1);
-	board.setTile(2,0, type1);
-	board.setTile(0,1, type1);
-	board.setTile(1,1, type2); // inner box
-	board.setTile(2,1, type1);
-	board.setTile(0,2, type1);
-	board.setTile(1,2, type1);
-	board.setTile(2,2, type1);
+		// setup callbacks for our custom events
+		app.addEvent('joinFailed', function(cause) {
+			// remove any event listeners already attached to the app
+			app.removeEvents();
+			// re-enable the buttons
+			playerBtn.disabled = false;
+			creatorBtn.disabled = false;
+			// TODO stop loading animation
+			// display the failure message
+			alert(cause.msg);
+		});
+		app.addEvent('gameStarted', function(game) {
+			// no longer need to listen for joinFailed events
+			app.removeEvents('joinFailed');
+			// completely remove the buttons
+			playerBtn.dispose();
+			creatorBtn.dispose();
+			// TODO remove loading animation
+			// now do something interesting
+			alert('Game started');
+		});
 
-	var boardTile = new BoardTile(type2);
-	board.setTileWithExisting(5,5, boardTile);
-
-	// render loop to keep updating with any changes to the display list
-	createjs.Ticker.addEventListener('tick', handleTick);
-	function handleTick(event) {
-		stage.update();
+		// ok to attempt to join the server
+		app.join();
 	}
 }
 window.addEvent('domready', loaded); // call when everything has loaded

@@ -11,9 +11,12 @@
 	<script type="text/javascript" src="http://code.createjs.com/createjs-2013.02.12.min.js"></script>
 	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/mootools/1.4.5/mootools-yui-compressed.js"></script>
 	<script type="text/javascript" src="js/client.js"></script>
+	<script type="text/javascript" src="js/classes/App.js"></script>
+	<script type="text/javascript" src="js/classes/Game.js"></script>
 	<script type="text/javascript" src="js/classes/Board.js"></script>
 	<script type="text/javascript" src="js/classes/TileType.js"></script>
 	<script type="text/javascript" src="js/classes/BoardTile.js"></script>
+
 
 	<!-- DOM -->
 	<div id="main" class="wrapper">
@@ -21,7 +24,10 @@
 		<div class="canvaswrap">
 			<canvas id="gamecanvas" width="400" height="300"></canvas>
 		</div>
-		<p id="servermsg"></p>
+		<div class="initial">
+			<button id="playerBtn">Player</button>
+			<button id="creatorBtn">Creator</button>
+		</div>
 	</div>
 </body>
 </html>
