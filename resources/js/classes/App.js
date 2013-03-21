@@ -40,15 +40,14 @@ var App = new Class({
 			// start the game and notify any listeners
 			this.game.start();
 			this.fireEvent('gameStarted', this.game);
-		};
+		}.bind(this); // Note: bind is needed to ensure the function is called with the right 'this' scoping
 		var onFail = function(cause) {
 			// no longer listen for any messages until the app is recreated
 			this.socket.removeAllListeners();
 			// update DOM elsewhere
 			this.fireEvent('joinFailed', cause);
-		};
-		// Note: bind is needed to ensure the function is called with the right 'this' scoping
-		this.socket.once('joinFailed', onFail.bind(this));
-		this.socket.once('ready', onReady.bind(this));
+		}.bind(this);
+		this.socket.once('joinFailed', onFail);
+		this.socket.once('ready', onReady);
 	}
 });
