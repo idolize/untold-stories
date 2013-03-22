@@ -17,11 +17,15 @@ var App = new Class({
 
 	/**
 	 * Connects the client to the server.
+	 * @param {Boolean} [isReconnect] If this is not the first time the socket has been connected then this must be true. Defaults to false.
 	 * @param  {String} [serverUrl] The URL of the server to connect to. The default value is 'http://localhost:8888'.
 	 */
-	connect: function(serverUrl) {
+	connect: function(isReconnect, serverUrl) {
 		serverUrl = serverUrl || 'http://localhost:8888';
 		this.socket = io.connect(serverUrl);
+		if (isReconnect) {
+			this.socket.socket.reconnect(); // see http://stackoverflow.com/questions/9598900/how-to-reconnect-after-you-called-disconnect
+		}
 	},
 
 	/**
@@ -49,5 +53,17 @@ var App = new Class({
 		}.bind(this);
 		this.socket.once('joinFailed', onFail);
 		this.socket.once('ready', onReady);
+	},
+
+	/**
+	 * Immediately destroys the app.
+	 */
+	destroy: function() {
+		// remove all event listeners registered to this app
+		this.removeEvents();
+		// disconnect the socket
+		this.socket.removeAllListeners();
+		this.socket.disconnect();
+		// TODO end the game as well if it is running
 	}
 });

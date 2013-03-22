@@ -6,6 +6,7 @@ function loaded() {
 	var canvas = document.id('gamecanvas');
 	var playerBtn = document.id('playerBtn');
 	var creatorBtn = document.id('creatorBtn');
+	var isReconnect = false;
 	playerBtn.disabled = false;
 	creatorBtn.disabled = false;
 
@@ -24,13 +25,13 @@ function loaded() {
 
 		// start the app
 		var app = new App(canvas, isCreator);
-		app.connect();
+		app.connect(isReconnect);
 
 		// setup callbacks for our custom events
 		// NOTE it is the event listener's responsibility (not the event generator's) to remove any listeners it registers
 		var onJoinFailed = function(cause) {
-			// remove all event listeners since we are going to discard app instance anyway
-			app.removeEvents();
+			// discard app instance
+			app.destroy();
 			app = null;
 			// re-enable the buttons
 			playerBtn.disabled = false;
@@ -53,6 +54,7 @@ function loaded() {
 
 		// ok to attempt to join the server
 		app.join();
+		isReconnect = true;
 	}
 }
 window.addEvent('domready', loaded); // call when everything has loaded
