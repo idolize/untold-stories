@@ -68,8 +68,17 @@ var GameServer = new Class({
 		} else {
 			return false;
 		}
+	},
+	removePlayer: function(player) {
+		delete player['isCreator'];
+		// player slot is now free
+		this.player = null;
+	},
+	removeCreator: function(creator) {
+		delete creator['isCreator'];
+		// creator slot is now free
+		this.creator = null;
 	}
-
 });
 
 
@@ -99,16 +108,13 @@ io.sockets.on('connection', function (socket) {
 	// some client disconnected
 	socket.on('disconnect', function() {
 		if (socket['isCreator'] === true) {
-			delete socket['isCreator'];
-			// creator slot is now free
-			gameServer.creator = null;
-			// TODO end the game or show error message?
+			gameServer.removeCreator(socket);
+			// TODO if game was in progress send an error to the other player
 		} else if (socket['isCreator'] === false) {
-			delete socket['isCreator'];
-			// player slot is now free
-			gameServer.player = null;
-			// TODO end the game or show error message?
+			gameServer.removePlayer(socket);
+			// TODO if game was in progress send an error to the other player
 		}
+		// otherwise this was a disconnect from a client who was never actually in the game
 	});
 
 });

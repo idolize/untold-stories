@@ -4,6 +4,8 @@
  */
 function loaded() {
 	var canvas = document.id('gamecanvas');
+	var topRight = { y: 'top', x: 'right'};
+	var isReconnect = false;
 	// create waiting popup and animation
 	var waitingTextArea = new Element('div');
 	new Element('p', {html: 'Waiting for other player...'}).inject(waitingTextArea);
@@ -36,8 +38,6 @@ function loaded() {
 		],
 		attach: 'play' // attach this dialog to the play button's onClick handler
 	});
-	// create notification objects
-	var top_right = { y: 'top', x: 'right'};
 
 
 	function begin(isCreator) {
@@ -47,13 +47,13 @@ function loaded() {
 
 		// start the app
 		var app = new App(canvas, isCreator);
-		app.connect();
+		app.connect(isReconnect);
 
 		// setup callbacks for our custom events
 		// NOTE it is the event listener's responsibility (not the event generator's) to remove any listeners it registers
 		var onJoinFailed = function(cause) {
-			// remove all event listeners since we are going to discard app instance anyway
-			app.removeEvents();
+			// discard app instance
+			app.destroy();
 			app = null;
 			// stop waiting animation
 			waitingAnim.stop();
@@ -77,12 +77,13 @@ function loaded() {
 
 		// ok to attempt to join the server
 		app.join();
+		isReconnect = true;
 	}
 
 	function showNotice(type, msg) {
 		new mBox.Notice({
 			type: type,
-			position: top_right,
+			position: topRight,
 			content: msg
 		});
 	}
