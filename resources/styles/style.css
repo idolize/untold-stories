@@ -10,12 +10,21 @@ div.wrapper {
 	width: 500px;
 	height: 500px;
 	background-color: #fff;
-	padding: 10px;
-	margin: auto;
+	box-shadow: 0 5px 8px rgba(0,0,0,0.3) !important;
+	padding: 10px 0;
+	margin: 0 auto;
+	position: relative;
 }
 
-.wrapper h1, p {
-	text-align: center;
+.wrapper h1#logo {
+	background-image: url('../images/logo.png');
+	width: 397px;
+	height: 68px;
+	margin: 10px auto;
+	/* Hide the text. */
+	text-indent: 100%;
+	white-space: nowrap;
+	overflow: hidden;
 }
 
 .wrapper .canvaswrap {
@@ -27,7 +36,14 @@ div.wrapper {
 
 canvas#gamecanvas {
 	border: 1px solid gray;
-	margin: auto;
+	margin: 20px auto 0 auto;
 	width: 400px;
 	height: 300px;
+}
+
+.wrapper #initial {
+	position: absolute;
+	top: 240px;
+	width: 100%;
+	text-align: center;
 }

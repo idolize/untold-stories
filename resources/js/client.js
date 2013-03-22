@@ -1,56 +1,91 @@
+/**
+ * Perform all DOM manipulation in this top level function (by listening to events from app or app.game).
+ * @see  <a href="http://mootools.net/docs/core/Element/Element">MooTools Element class</a> for DOM tools.
+ */
 function loaded() {
-	/*
-	 * test Socket.io
-	 */
-
-	var msgLocation = document.getElementById('servermsg');
-	var socket = io.connect('http://localhost:8888');
-	// callback from server
-	socket.on('init', function (data) {
-		console.log(data);
-		// set p tag to message
-		msgLocation.innerHTML = data.msg;
-		// disconnect socket
-		socket.disconnect();
-		console.log('Socket.io test done');
+	var canvas = document.id('gamecanvas');
+	var topRight = { y: 'top', x: 'right'};
+	var isReconnect = false;
+	// create waiting popup and animation
+	var waitingTextArea = new Element('div');
+	new Element('p', {html: 'Waiting for other player...'}).inject(waitingTextArea);
+	var waitingAnim = new MUX.Loader.Bar();
+	waitingAnim.elem.inject(waitingTextArea);
+	var waitingPopup = new mBox({
+		content: waitingTextArea,
+		overlay: true,
+		closeOnEsc: false,
+		closeOnBodyClick: false,
+		closeOnMouseleave: false
+	});
+	// create join game dialog
+	var joinModal = new mBox.Modal({
+		title: 'Join a game',
+		content: 'Select what you wish to play as...',
+		buttons: [
+			{ title: 'Player',
+				event: function() {
+					this.close();
+					begin(false);
+				}
+			},
+			{ title: 'Creator',
+				event: function() {
+					this.close();
+					begin(true);
+				}
+			}
+		],
+		attach: 'play' // attach this dialog to the play button's onClick handler
 	});
 
-	/*
-	 * test EaselJS
-	 */
 
-	// create a stage by getting a reference to the canvas
-	stage = new createjs.Stage('gamecanvas');
-	// load images from server`
-	var image1 = new Image();
-	image1.src = 'http://localhost:8888/images/1.png';
-	var image2 = new Image();
-	image2.src = 'http://localhost:8888/images/2.png';
-	// create the tile types for these images
-	var type1 = new TileType(1, image1);
-	var type2 = new TileType(2, image2);
-	// create the board and display it
-	var board = new Board(20, 15, 20);
-	stage.addChild(board.container);
+	function begin(isCreator) {
+		// show waiting animation
+		waitingPopup.open();
+		waitingAnim.start();
 
-	// update some of the tiles on the board
-	board.setTile(0,0, type1);
-	board.setTile(1,0, type1);
-	board.setTile(2,0, type1);
-	board.setTile(0,1, type1);
-	board.setTile(1,1, type2); // inner box
-	board.setTile(2,1, type1);
-	board.setTile(0,2, type1);
-	board.setTile(1,2, type1);
-	board.setTile(2,2, type1);
+		// start the app
+		var app = new App(canvas, isCreator);
+		app.connect(isReconnect);
 
-	var boardTile = new BoardTile(type2);
-	board.setTileWithExisting(5,5, boardTile);
+		// setup callbacks for our custom events
+		// NOTE it is the event listener's responsibility (not the event generator's) to remove any listeners it registers
+		var onJoinFailed = function(cause) {
+			// discard app instance
+			app.destroy();
+			app = null;
+			// stop waiting animation
+			waitingAnim.stop();
+			waitingPopup.close();
+			// display the failure message
+			showNotice('notice', cause.msg);
+		};
+		var onGameStarted = function(game) {
+			// remove our event listener for joinFailed
+			app.removeEvent('joinFailed', onJoinFailed);
+			// stop and remove waiting animation
+			waitingAnim.stop();
+			waitingAnim.elem.dispose();
+			waitingPopup.close();
+			// remove the play button
+			document.id('play').dispose();
+			showNotice('info', ('Game started. You are the ' + (game.isCreator ? 'creator' : 'player') + '.'));
+		};
+		app.addEvent('joinFailed', onJoinFailed);
+		app.addEvent('gameStarted', onGameStarted);
 
-	// render loop to keep updating with any changes to the display list
-	createjs.Ticker.addEventListener('tick', handleTick);
-	function handleTick(event) {
-		stage.update();
+		// ok to attempt to join the server
+		app.join();
+		isReconnect = true;
+	}
+
+	function showNotice(type, msg) {
+		new mBox.Notice({
+			type: type,
+			position: topRight,
+			content: msg
+		});
 	}
 }
 window.addEvent('domready', loaded); // call when everything has loaded
