@@ -4,23 +4,46 @@
  */
 function loaded() {
 	var canvas = document.id('gamecanvas');
-	var playerBtn = document.id('playerBtn');
-	var creatorBtn = document.id('creatorBtn');
-	playerBtn.disabled = false;
-	creatorBtn.disabled = false;
+	// create waiting popup and animation
+	var waitingTextArea = new Element('div');
+	new Element('p', {html: 'Waiting for other player...'}).inject(waitingTextArea);
+	var waitingAnim = new MUX.Loader.Bar();
+	waitingAnim.elem.inject(waitingTextArea);
+	var waitingPopup = new mBox({
+		content: waitingTextArea,
+		overlay: true,
+		closeOnEsc: false,
+		closeOnBodyClick: false,
+		closeOnMouseleave: false
+	});
+	// create join game dialog
+	var joinModal = new mBox.Modal({
+		title: 'Join a game',
+		content: 'Select what you wish to play as...',
+		buttons: [
+			{ title: 'Player',
+				event: function() {
+					this.close();
+					begin(false);
+				}
+			},
+			{ title: 'Creator',
+				event: function() {
+					this.close();
+					begin(true);
+				}
+			}
+		],
+		attach: 'play' // attach this dialog to the play button's onClick handler
+	});
+	// create notification objects
+	var top_right = { y: 'top', x: 'right'};
 
-	playerBtn.addEvent('click', function(){
-		begin(false);
-	});
-	creatorBtn.addEvent('click', function(){
-		begin(true);
-	});
 
 	function begin(isCreator) {
-		// disable the buttons first
-		playerBtn.disabled = true;
-		creatorBtn.disabled = true;
-		// TODO show a waiting animation
+		// show waiting animation
+		waitingPopup.open();
+		waitingAnim.start();
 
 		// start the app
 		var app = new App(canvas, isCreator);
@@ -32,27 +55,36 @@ function loaded() {
 			// remove all event listeners since we are going to discard app instance anyway
 			app.removeEvents();
 			app = null;
-			// re-enable the buttons
-			playerBtn.disabled = false;
-			creatorBtn.disabled = false;
-			// TODO stop waiting animation
+			// stop waiting animation
+			waitingAnim.stop();
+			waitingPopup.close();
 			// display the failure message
-			alert(cause.msg);
+			showNotice('notice', cause.msg);
 		};
 		var onGameStarted = function(game) {
 			// remove our event listener for joinFailed
 			app.removeEvent('joinFailed', onJoinFailed);
-			// completely remove the buttons
-			playerBtn.dispose();
-			creatorBtn.dispose();
-			// TODO stop and remove waiting animation
-			alert('Game started. You are the ' + (game.isCreator ? 'creator' : 'player') + '.');
+			// stop and remove waiting animation
+			waitingAnim.stop();
+			waitingAnim.elem.dispose();
+			waitingPopup.close();
+			// remove the play button
+			document.id('play').dispose();
+			showNotice('info', ('Game started. You are the ' + (game.isCreator ? 'creator' : 'player') + '.'));
 		};
 		app.addEvent('joinFailed', onJoinFailed);
 		app.addEvent('gameStarted', onGameStarted);
 
 		// ok to attempt to join the server
 		app.join();
+	}
+
+	function showNotice(type, msg) {
+		new mBox.Notice({
+			type: type,
+			position: top_right,
+			content: msg
+		});
 	}
 }
 window.addEvent('domready', loaded); // call when everything has loaded

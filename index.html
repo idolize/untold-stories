@@ -4,12 +4,20 @@
 <head>
 	<title>Tabula Rasa</title> 
 	<link rel="stylesheet" type="text/css" href="styles/style.css" />
+	<link rel="stylesheet" type="text/css" href="styles/buttons.css" />
+	<link rel="stylesheet" type="text/css" href="styles/external/mBoxCore.css" />
+	<link rel="stylesheet" type="text/css" href="styles/external/mBoxModal.css" />
+	<link rel="stylesheet" type="text/css" href="styles/external/mBoxNotice.css" />
+	<link rel="stylesheet" type="text/css" href="styles/external/mForm.css" />
 </head>
 <body>
 	<!-- Scripts -->
 	<script type="text/javascript" src="/socket.io/socket.io.js"></script><!-- loaded dynamically by Node -->
 	<script type="text/javascript" src="http://code.createjs.com/createjs-2013.02.12.min.js"></script>
 	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/mootools/1.4.5/mootools-yui-compressed.js"></script>
+	<script type="text/javascript" src="js/external/mootools-more-1.4.0.1.js"></script>
+	<script type="text/javascript" src="js/external/mBox.All.min.js"></script>
+	<script type="text/javascript" src="js/external/MUX.Loaders.min.js"></script>
 	<script type="text/javascript" src="js/client.js"></script>
 	<script type="text/javascript" src="js/classes/App.js"></script>
 	<script type="text/javascript" src="js/classes/Game.js"></script>
@@ -20,13 +28,12 @@
 
 	<!-- DOM -->
 	<div id="main" class="wrapper">
-		<h1>Tile Map Testing</h1>
+		<h1 id="logo">Tabula Rasa</h1>
 		<div class="canvaswrap">
 			<canvas id="gamecanvas" width="400" height="300"></canvas>
 		</div>
-		<div class="initial">
-			<button id="playerBtn">Player</button>
-			<button id="creatorBtn">Creator</button>
+		<div id="initial">
+			<button id="play" class="btn large">Play</button>
 		</div>
 	</div>
 </body>

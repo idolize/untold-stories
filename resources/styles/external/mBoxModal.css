@@ -1,0 +1,124 @@
+/* Modal-Theme: default */
+
+.mBox.Modal {
+	font-size: 12px;
+	line-height: normal;
+}
+
+.mBox.Modal .mBoxContainer {
+	background: #fff;
+	border: 6px solid #fff;
+	box-shadow: 0 0 10px rgba(0, 0, 0, 0.35);
+	border-radius: 5px;
+}
+
+.mBox.Modal .mBoxContent {
+	background: #fff;
+	padding: 15px;
+	border: 1px solid #b0b0b0;
+	border-radius: 2px;
+}
+
+.mBox.Modal.hasTitle .mBoxContent {
+	border-top-left-radius: 0;
+	border-top-right-radius: 0;
+	box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.2);
+}
+
+.mBox.Modal.hasFooter .mBoxContent {
+	border-bottom-left-radius: 0;
+	border-bottom-right-radius: 0;
+}
+
+.mBox.Modal .mBoxTitle {
+	position: relative;
+	color: #707070;
+	font-size: 14px;
+	text-shadow: 0 1px 0 #fff;
+	padding: 7px 15px;
+	border: 1px solid #b0b0b0;
+	border-bottom: 0;
+	background-color: #f8f8f8;
+	background-image: -webkit-linear-gradient(top,#fdfdfd,#f4f4f4);
+	background-image: -moz-linear-gradient(top,#fdfdfd,#f4f4f4);
+	background-image: -ms-linear-gradient(top,#fdfdfd,#f4f4f4);
+	background-image: -o-linear-gradient(top,#fdfdfd,#f4f4f4);
+	background-image: linear-gradient(top,#fdfdfd,#f4f4f4);
+	filter: progid:DXImageTransform.Microsoft.Gradient(GradientType=0,StartColorStr=#fdfdfd,EndColorStr=#f4f4f4);
+	box-shadow: inset 0 -1px 1px rgba(255, 255, 255, 0.8);
+	border-radius: 2px 2px 0 0;
+}
+
+.mBox.Modal .mBoxTitleContainer.mBoxDraggable {
+	cursor: move;
+}
+
+.mBox.Modal .mBoxClose {
+	display: block;
+	cursor: pointer;
+	width: 13px;
+	height: 13px;
+	position: absolute;
+	top: 15px;
+	right: 22px;
+	background-color: #fff;
+	border: 1px solid #ccc;
+	border-radius: 10px;
+	box-shadow: inset 0 1px 1px rgba(0,0,0, 0.1), 0 1px 1px #fff;
+}
+
+.mBox.Modal .mBoxClose > div {
+	opacity: 0.6;
+	width: 7px; 
+	height: 7px;
+	position: absolute;
+	top: 3px;
+	left: 3px;
+	background: 0 0 no-repeat url(data:image/gif;base64,R0lGODlhBwAHAJEDAMjIyLCwsLy8vP///yH5BAEAAAMALAAAAAAHAAcAAAIPDIZgNnoqGIoCtRAfc/IWADs=);
+}
+
+.mBox.Modal .mBoxClose:hover {
+	border-color: #bbb;
+}
+
+.mBox.Modal .mBoxClose:hover > div {
+	opacity: 1;
+}
+
+.mBox.Modal .mBoxFooterContainer {
+	background-color: #f6f6f6;
+	border: 1px solid #b0b0b0;
+	border-top: 0;
+	padding: 7px 15px;
+	border-radius: 0 0 2px 2px;
+	box-shadow:inset 0 1px 1px rgba(255, 255, 255, 0.8);
+}
+
+.mBox.Modal .mBoxFooter {
+	
+}
+
+.mBox.Modal .mBoxButtonContainer {
+	text-align: right;
+}
+
+.mBox.Modal .mBoxButton {
+	margin-right: 10px;
+}
+
+.mBox.Modal .mBoxButtonLast {
+	margin-right: 0px;
+}
+
+/* Modal.Confirm */
+
+.mBox.Modal.Confirm .mBoxContent {
+	color: #555555;
+	font-size: 16px;
+	padding: 30px 30px 30px 75px;
+	background: #fff 20px 20px no-repeat url(data:image/png;base64,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);
+}
+
+.mBox.Modal.Confirm .mBoxButtonContainer {
+	text-align: center;
+}

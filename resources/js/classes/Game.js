@@ -30,9 +30,9 @@ var Game = new Class({
 		 */
 		// load images from server
 		var image1 = new Image();
-		image1.src = 'http://localhost:8888/images/1.png';
+		image1.src = 'http://localhost:8888/images/tiles/1.png';
 		var image2 = new Image();
-		image2.src = 'http://localhost:8888/images/2.png';
+		image2.src = 'http://localhost:8888/images/tiles/2.png';
 		// create the tile types for these images
 		var type1 = new TileType(1, image1);
 		var type2 = new TileType(2, image2);
