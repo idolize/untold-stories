@@ -19,6 +19,7 @@ var Game = new Class({
 	heroReady : false,
 	heroImage : null,
 
+	//major issues with keyDown
 	keyDown : {},
 
 	/**
@@ -98,10 +99,10 @@ var Game = new Class({
 		this.stage.addChild(hero_bitmap);
 
 		// add keyboard listeners
-		this.stage.addEventListener("keydown", function (e) {
+		addEventListener("keydown", function (e) {
 			this.keyDown[e.keyCode] = true;
 		}, false);
-		this.stage.addEventListener("keyup", function (e) {
+		addEventListener("keyup", function (e) {
 			delete this.keyDown[e.keyCode];
 		}, false);
 		// NOTE: you should probably have a way to remove these listeners later (like when the game is over/stopped/restarted)
@@ -132,18 +133,18 @@ var Game = new Class({
 	_updateMove: function(delta) {
         var modifier = delta/1000;
         
-		if (38 in this.keyDown) { // Player holding up
+		/*if (38 in keyDown) { // Player holding up
 			this.hero.y -= this.hero.speed * modifier;
 		}
-		if (40 in this.keyDown) { // Player holding down
+		if (40 in keyDown) { // Player holding down
 			this.hero.y += this.hero.speed * modifier;
 		}
-		if (37 in this.keyDown) { // Player holding left
+		if (37 in keyDown) { // Player holding left
 			this.hero.x -= this.hero.speed * modifier;
 		}
-		if (39 in this.keyDown) { // Player holding right
+		if (39 in keyDown) { // Player holding right
 			this.hero.x += this.hero.speed * modifier;
-		}
+		}*/
 	},
 
 	_heroRender: function(){
