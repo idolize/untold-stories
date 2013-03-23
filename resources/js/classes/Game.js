@@ -54,6 +54,63 @@ var Game = new Class({
 		var boardTile = new BoardTile(type2);
 		board.setTileWithExisting(5,5, boardTile);
 
+		/**
+		 * hero test
+		 */
+		var hero_image = new Image();
+		hero_image.src = 'http://localhost:8888/images/hero/gohan.GIF';
+		// create the hero for this image
+		var hero = new Hero(3, hero_image);
+		// create the hero board and display it
+		var hero_board = new HeroBoard(20, 15);
+		this.stage.addChild(hero_board.container);
+
+		//update the hero to the board
+		hero_board.setHero(5,6, hero);
+
+		// hero render
+
+		/**
+		 *  handle keyboard input
+		 */
+		var keyDown = {};
+
+		addEventListener("keydown", function (e) {
+			keyDown[e.keyCode] = true;
+		}, false);
+
+		addEventListener("keyup", function (e) {
+			delete keyDown[e.keyCode];
+		}, false);
+
+		// movement
+		var updateMove = function (modifier) {
+			if (38 in keyDown) { // Player holding up
+				hero.y -= hero.speed * modifier;
+			}
+			if (40 in keyDown) { // Player holding down
+				hero.y += hero.speed * modifier;
+			}
+			if (37 in keyDown) { // Player holding left
+				hero.x -= hero.speed * modifier;
+			}
+			if (39 in keyDown) { // Player holding right
+				hero.x += hero.speed * modifier;
+			}
+		};
+
+		// movement loop
+		var moveLoop = function () {
+			var now = Date.now();
+			var delta = now - then;
+
+			updateMove(delta / 1000);
+			//heroRender();
+
+			then = now;
+		};
+
+
 		// loop to keep updating at each tick of the clock
 		createjs.Ticker.addEventListener('tick', this.gameLoop.bind(this)); // Note: bind is needed to ensure the function is called with the right 'this' scoping
 	},
@@ -64,6 +121,7 @@ var Game = new Class({
 	 * @see  <a href="http://www.createjs.com/Docs/EaselJS/classes/Ticker.html#event_tick">Event payload</a>
 	 */
 	gameLoop: function(event) {
+		moveLoop();
 		this.stage.update();
 	}
 });
