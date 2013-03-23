@@ -5,10 +5,21 @@
  * @type {Class}
  */
 var Game = new Class({
-	Implements: Events,
+    Implements: Events,
 
-	isCreator : null,
+    isCreator : null,
 	stage : null,
+	// should probably make a Hero class to hold these
+	hero : {
+			speed: 256,
+			x: 200,
+			y: 200
+		},
+	// these too...
+	heroReady : false,
+	heroImage : null,
+
+	keyDown : {},
 
 	/**
 	 * @constructor
@@ -54,10 +65,10 @@ var Game = new Class({
 		var boardTile = new BoardTile(type2);
 		board.setTileWithExisting(5,5, boardTile);
 
-		/**
+		/*
 		 * hero test
 		 */
-		var hero_image = new Image();
+		/*var hero_image = new Image();
 		hero_image.src = 'http://localhost:8888/images/hero/gohan.GIF';
 		// create the hero for this image
 		var hero = new Hero(3, hero_image);
@@ -66,50 +77,35 @@ var Game = new Class({
 		this.stage.addChild(hero_board.container);
 
 		//update the hero to the board
-		hero_board.setHero(5,6, hero);
+		hero_board.setHero(5,6, hero);*/
 
-		// hero render
-
-		/**
-		 *  handle keyboard input
-		 */
-		var keyDown = {};
-
-		addEventListener("keydown", function (e) {
-			keyDown[e.keyCode] = true;
-		}, false);
-
-		addEventListener("keyup", function (e) {
-			delete keyDown[e.keyCode];
-		}, false);
-
-		// movement
-		var updateMove = function (modifier) {
-			if (38 in keyDown) { // Player holding up
-				hero.y -= hero.speed * modifier;
-			}
-			if (40 in keyDown) { // Player holding down
-				hero.y += hero.speed * modifier;
-			}
-			if (37 in keyDown) { // Player holding left
-				hero.x -= hero.speed * modifier;
-			}
-			if (39 in keyDown) { // Player holding right
-				hero.x += hero.speed * modifier;
-			}
+		this.heroImage = new Image();
+		this.heroImage.onload = function(){
+			this.heroReady = true;
 		};
 
-		// movement loop
-		var moveLoop = function () {
-			var now = Date.now();
-			var delta = now - then;
+		this.heroImage.src = 'http://localhost:8888/images/hero/gohan.GIF';
 
-			updateMove(delta / 1000);
-			//heroRender();
+		// re-init the hero position
+		this.hero.x = 200;
+		this.hero.y = 200;
 
-			then = now;
-		};
+		var hero_bitmap = new createjs.Bitmap(this.heroImage);
+		//set position
+		hero_bitmap.x = this.hero.x;
+		hero_bitmap.y = this.hero.y;
 
+		this.stage.addChild(hero_bitmap);
+
+		// add keyboard listeners
+		this.stage.addEventListener("keydown", function (e) {
+			this.keyDown[e.keyCode] = true;
+		}, false);
+		this.stage.addEventListener("keyup", function (e) {
+			delete this.keyDown[e.keyCode];
+		}, false);
+		// NOTE: you should probably have a way to remove these listeners later (like when the game is over/stopped/restarted)
+		
 
 		// loop to keep updating at each tick of the clock
 		createjs.Ticker.addEventListener('tick', this.gameLoop.bind(this)); // Note: bind is needed to ensure the function is called with the right 'this' scoping
@@ -121,7 +117,40 @@ var Game = new Class({
 	 * @see  <a href="http://www.createjs.com/Docs/EaselJS/classes/Ticker.html#event_tick">Event payload</a>
 	 */
 	gameLoop: function(event) {
-		moveLoop();
+        
+       // event.delta == the time elapsed in ms since the last tick.
+        
+        
+		// update the game logic
+		this._updateMove(event.delta);
+
+		// render
+		this._heroRender();
 		this.stage.update();
+	},
+
+	_updateMove: function(delta) {
+        var modifier = delta/1000;
+        
+		if (38 in this.keyDown) { // Player holding up
+			this.hero.y -= this.hero.speed * modifier;
+		}
+		if (40 in this.keyDown) { // Player holding down
+			this.hero.y += this.hero.speed * modifier;
+		}
+		if (37 in this.keyDown) { // Player holding left
+			this.hero.x -= this.hero.speed * modifier;
+		}
+		if (39 in this.keyDown) { // Player holding right
+			this.hero.x += this.hero.speed * modifier;
+		}
+	},
+
+	_heroRender: function(){
+		if(this.heroReady){
+			//set position
+			hero_bitmap.x = this.hero.x;
+			hero_bitmap.y = this.hero.y;
+		}
 	}
 });
