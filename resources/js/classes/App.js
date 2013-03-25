@@ -6,9 +6,9 @@
 var App = new Class({
 	Implements: Events,
 
-	socket : null,
-	isCreator : null,
-	game : null,
+	socket: null,
+	isCreator: null,
+	game: null,
 
 	initialize: function(canvas, isCreator) {
 		this.isCreator = isCreator;

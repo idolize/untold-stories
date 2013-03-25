@@ -3,11 +3,12 @@
  * @type {Class}
  */
 var Hero = new Class({
-	bitmap : null,
-	speed : null,
-	x : null,
-	y : null,
-	keyDown : {},
+	bitmap: null,
+	speed: null,
+	x: null,
+	y: null,
+	keyDown: {},
+	keyUp: {},
 
 	/**
 	 * Constructor Method
@@ -16,23 +17,30 @@ var Hero = new Class({
 	 * @param  {Integer} x Sets x coordinates (actually a float, but we are taking the floor)
 	 * @param  {Integer} y Sets y coordinates (actually a float, but we are taking the floor)]
 	 */
-	initialize : function (image, speed, x, y) {
+	initialize: function(image, speed, x, y) {
 		this.bitmap = new createjs.Bitmap(image);
 		this.speed = speed;
 		this.x = this.bitmap.x = x;
 		this.y = this.bitmap.y = y;
 	},
 
-	
+	keyDown: function(key) {
+		this.keyDown[key] = true;
+	},
+
+	keyUp: function(key) {
+		delete this.keyDown[key];
+	},
+
 	/**
 	 * Function to update the bitmap location
 	 * @param  {Integer} delta Create.js takes the time difference between 'then' and 'now'
 	 */
 	updateMove: function(delta) {
-        var modifier = delta/1000;
-        var oldX = this.x;
-        var oldY = this.y;
-       
+		var modifier = delta / 1000;
+		var oldX = this.x;
+		var oldY = this.y;
+
 		if (38 in this.keyDown) { // Player holding up
 			this.y -= Math.floor(this.speed * modifier);
 		}
@@ -47,15 +55,14 @@ var Hero = new Class({
 		}
 	},
 
-
 	/**
 	 * Function to re-render the hero's bitmap location
 	 */
-	render: function(){
+	render: function() {
 		//set position
 		this.bitmap.x = this.x;
 		this.bitmap.y = this.y;
 		// TODO - for debug use
-		console.log("hero bitmap x,y updated to ("+this.bitmap.x+","+this.bitmap.y+")");
+		console.log("hero bitmap x,y updated to (" + this.bitmap.x + "," + this.bitmap.y + ")");
 	}
 });
