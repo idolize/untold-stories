@@ -9,18 +9,8 @@ var Game = new Class({
 
     isCreator : null,
 	stage : null,
-	// should probably make a Hero class to hold these
-	hero : {
-			speed: 256,
-			x: 200,
-			y: 200
-		},
-	// these too...
-	heroReady : false,
-	heroImage : null,
-
-	//major issues with keyDown
-	keyDown : {},
+	hero : null,
+	//keyDown : {},
 
 	/**
 	 * @constructor
@@ -69,44 +59,29 @@ var Game = new Class({
 		/*
 		 * hero test
 		 */
-		/*var hero_image = new Image();
-		hero_image.src = 'http://localhost:8888/images/hero/gohan.GIF';
-		// create the hero for this image
-		var hero = new Hero(3, hero_image);
-		// create the hero board and display it
-		var hero_board = new HeroBoard(20, 15);
-		this.stage.addChild(hero_board.container);
+		
+		this.hero = new Hero('http://localhost:8888/images/hero/gohan.GIF', 256, 150, 150);
 
-		//update the hero to the board
-		hero_board.setHero(5,6, hero);*/
-
-		this.heroImage = new Image();
-		this.heroImage.onload = function(){
-			this.heroReady = true;
-		};
-
-		this.heroImage.src = 'http://localhost:8888/images/hero/gohan.GIF';
-
-		// re-init the hero position
+	/*	// re-init the hero position
 		this.hero.x = 200;
-		this.hero.y = 200;
-
-		var hero_bitmap = new createjs.Bitmap(this.heroImage);
+		this.hero.y = 200;*/
+/*
+		this.hero_bitmap = new createjs.Bitmap('http://localhost:8888/images/hero/gohan.GIF');
 		//set position
-		hero_bitmap.x = this.hero.x;
-		hero_bitmap.y = this.hero.y;
+		this.hero_bitmap.x = this.hero.x;
+		this.hero_bitmap.y = this.hero.y;*/
 
-		this.stage.addChild(hero_bitmap);
+		this.stage.addChild(this.hero.bitmap);
 
 		// add keyboard listeners
-		addEventListener("keydown", function (e) {
-			this.keyDown[e.keyCode] = true;
-		}, false);
-		addEventListener("keyup", function (e) {
-			delete this.keyDown[e.keyCode];
-		}, false);
+		window.addEventListener("keydown", function (e) {
+			this.hero.keyDown[e.keyCode] = true;
+		}.bind(this), false);
+		window.addEventListener("keyup", function (e) {
+			delete this.hero.keyDown[e.keyCode];
+		}.bind(this), false);
 		// NOTE: you should probably have a way to remove these listeners later (like when the game is over/stopped/restarted)
-		
+	
 
 		// loop to keep updating at each tick of the clock
 		createjs.Ticker.addEventListener('tick', this.gameLoop.bind(this)); // Note: bind is needed to ensure the function is called with the right 'this' scoping
@@ -123,35 +98,37 @@ var Game = new Class({
         
         
 		// update the game logic
-		this._updateMove(event.delta);
+		this.hero.updateMove(event.delta);
 
 		// render
-		this._heroRender();
+		this.hero.render();
 		this.stage.update();
 	},
 
-	_updateMove: function(delta) {
+	/*_updateMove: function(delta) {
         var modifier = delta/1000;
+        var oldX = this.hero.x;
+        var oldY = this.hero.y;
         
-		/*if (38 in keyDown) { // Player holding up
-			this.hero.y -= this.hero.speed * modifier;
+		if (38 in this.keyDown) { // Player holding up
+			this.hero.y -= Math.floor(this.hero.speed * modifier);
 		}
-		if (40 in keyDown) { // Player holding down
-			this.hero.y += this.hero.speed * modifier;
+		if (40 in this.keyDown) { // Player holding down
+			this.hero.y += Math.floor(this.hero.speed * modifier);
 		}
-		if (37 in keyDown) { // Player holding left
-			this.hero.x -= this.hero.speed * modifier;
+		if (37 in this.keyDown) { // Player holding left
+			this.hero.x -= Math.floor(this.hero.speed * modifier);
 		}
-		if (39 in keyDown) { // Player holding right
-			this.hero.x += this.hero.speed * modifier;
-		}*/
-	},
+		if (39 in this.keyDown) { // Player holding right
+			this.hero.x += Math.floor(this.hero.speed * modifier);
+		}
+	},*/
 
-	_heroRender: function(){
-		if(this.heroReady){
-			//set position
-			hero_bitmap.x = this.hero.x;
-			hero_bitmap.y = this.hero.y;
-		}
-	}
+	/*_heroRender: function(){
+		//set position
+		this.hero_bitmap.x = this.hero.x;
+		this.hero_bitmap.y = this.hero.y;
+
+		console.log("hero bitmap x,y updated to ("+this.hero_bitmap.x+","+this.hero_bitmap.y+")");
+	}*/
 });
