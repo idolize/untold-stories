@@ -1,5 +1,5 @@
 /**
- * Represents the hero. Only one instance should exist
+ * Represents the hero. Only one instance should exist.
  * @type {Class}
  */
 var Hero = new Class({
@@ -7,13 +7,16 @@ var Hero = new Class({
 	speed: null,
 	x: null,
 	y: null,
+	//TODO are width and height needed?
 
 	/**
-	 * Constructor Method
-	 * @param  {Bitmap} image Bitmap takes sprite image and creates a new bitmap
-	 * @param  {Integer} speed Sets the speed for the hero
-	 * @param  {Integer} x Sets x coordinates
-	 * @param  {Integer} y Sets y coordinates
+	 * Constructor Method.
+	 *
+	 * @consttructor
+	 * @param  {Image|String} image Image or URL string of image to use for the hero.
+	 * @param  {Integer} speed The speed for the hero.
+	 * @param  {Integer} x The x location of the hero on the stage.
+	 * @param  {Integer} y The y location of the hero on the stage.
 	 */
 	initialize: function(image, speed, x, y) {
 		this.bitmap = new createjs.Bitmap(image);
@@ -22,23 +25,25 @@ var Hero = new Class({
 		this.y = this.bitmap.y = y;
 	},
 	/**
-	 * Function to set the key when it is pressed down
-	 * @param  {String} key String 'up', 'down', 'left', 'right'
+	 * Sets the key when it is pressed down. Can be called asynchronously outside of normal
+	 * game loop/update method.
+	 * @param  {String} key String 'up', 'down', 'left', 'right'.
 	 */
 	keyDown: function(key) {
 		this.keyDown[key] = true;
 	},
 
 	/**
-	 * Function to delete the state of the key being "down"
-	 * @param  {String} key String 'up', 'down', 'left', 'right'
+	 * Deletes the state of the key being "down". Can be called asynchronously outside of normal
+	 * game loop/update method.
+	 * @param  {String} key String 'up', 'down', 'left', 'right'.
 	 */
 	keyUp: function(key) {
 		delete this.keyDown[key];
 	},
 
 	/**
-	 * Function to update the bitmap location
+	 * Updates the location of the hero.
 	 * @param  {Integer} delta Create.js takes the time difference between 'then' and 'now'
 	 */
 	updateMove: function(delta) {
@@ -61,13 +66,11 @@ var Hero = new Class({
 	},
 
 	/**
-	 * Function to re-render the hero's bitmap location
+	 * Updates the hero's bitmap location.
 	 */
 	render: function() {
 		//set position
 		this.bitmap.x = this.x;
 		this.bitmap.y = this.y;
-		// TODO - for debug use
-		console.log("hero bitmap x,y updated to (" + this.bitmap.x + "," + this.bitmap.y + ")");
 	}
 });

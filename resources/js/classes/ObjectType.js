@@ -9,8 +9,10 @@ var ObjectType = new Class({
 
 	/**
 	 * Constructor
-	 * @param  {[type]}  id Unique number
-	 * @param  {[type]}  image Image to use for this tile
+	 *
+	 * @constructor
+	 * @param  {integer}  id Unique number
+	 * @param  {Image}  image Image to use for this tile
 	 * @param  {Boolean} isPassable Flag for if object is passable
 	 */
 	initialize: function(id, image, isPassable) {

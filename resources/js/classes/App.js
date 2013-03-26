@@ -64,6 +64,9 @@ var App = new Class({
 		// disconnect the socket
 		this.socket.removeAllListeners();
 		this.socket.disconnect();
-		// TODO end the game as well if it is running
+		// end the game as well if it is running
+		if (this.game.active) {
+			this.game.stop();
+		}
 	}
 });
