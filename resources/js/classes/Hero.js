@@ -7,12 +7,12 @@ var Hero = new Class({
 	speed: null,
 	x: null,
 	y: null,
-	//TODO are width and height needed?
+	//TODO are width and height needed? How else would you initialize the hero to a specific point?
 
 	/**
 	 * Constructor Method.
 	 *
-	 * @consttructor
+	 * @constructor
 	 * @param  {Image|String} image Image or URL string of image to use for the hero.
 	 * @param  {Integer} speed The speed for the hero.
 	 * @param  {Integer} x The x location of the hero on the stage.
@@ -62,6 +62,13 @@ var Hero = new Class({
 		}
 		if ('right' in this.keyDown) { // Player holding right
 			this.x += Math.floor(this.speed * modifier);
+		}
+		if ('enter' in this.keyDown) {
+			// TODO Need to create the textbox object (pseudo-code below)
+			//this.textbox = new ObjectType(2, 'http://localhost:8888/images/tiles/2.png');
+			//this.objectBoard.setTextbox(hero_x_position -= 10, hero_y_position -= 10, textbox);
+			// TODO Basically, place the textbox down on the stage like a general object and set its
+			// initial position somewhere near the hero's current position.
 		}
 	},
 

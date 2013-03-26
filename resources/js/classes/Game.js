@@ -94,6 +94,9 @@ var Game = new Class({
 	_startCreator: function() {
 		// TODO do something for the creator
 		console.log('_startCreator called');
+
+		// TODO http://mootools.net/docs/more/Drag/Drag.Move
+		// http://mootools.net/demos/?demo=Drag.Move
 	},
 
 	// "private" function
