@@ -28,15 +28,14 @@ var Game = new Class({
 		/*
 		 * test EaselJS
 		 */
-		
+
 		// load images from server
 		var image1 = new Image();
 		image1.src = 'http://localhost:8888/images/tiles/1.png';
-		var image2 = new Image();
-		image2.src = 'http://localhost:8888/images/tiles/2.png';
+
 		// create the tile types for these images
 		var type1 = new TileType(1, image1);
-		var type2 = new TileType(2, image2);
+
 		// create the board and display it
 		var board = new Board(20, 15, 20);
 		this.stage.addChild(board.container);
@@ -46,14 +45,27 @@ var Game = new Class({
 		board.setTile(1, 0, type1);
 		board.setTile(2, 0, type1);
 		board.setTile(0, 1, type1);
-		board.setTile(1, 1, type2); // inner box
+		//board.setTile(1, 1, type2); // inner box
 		board.setTile(2, 1, type1);
 		board.setTile(0, 2, type1);
 		board.setTile(1, 2, type1);
 		board.setTile(2, 2, type1);
 
-		var boardTile = new BoardTile(type2);
-		board.setTileWithExisting(5, 5, boardTile);
+		//var boardTile = new BoardTile(type2);
+		//board.setTileWithExisting(5, 5, boardTile);
+
+		//load image from server
+		var image2 = new Image();
+		image2.src = 'http://localhost:8888/images/tiles/2.png';
+		//create the object type
+		var object1 = new ObjectType(1, image2);
+		//create object board and display it
+		var object_board = new ObjectBoard(20, 15, 20);
+		this.stage.addChild(object_board.container);
+
+		//add some objects to the board
+		object_board.setObject(1, 0, object1);
+		object_board.setObject(1, 2, object1);
 
 		/*
 		 * hero test
