@@ -16,8 +16,7 @@ var Game = new Class({
 	 * @param  {HTMLCanvasElement}  canvas    Canvas to draw game on.
 	 * @param  {Boolean} isCreator Is this game played by the creator?
 	 */
-	initialize: function(canvas, isCreator) {
-		this.isCreator = isCreator;
+	initialize: function(canvas) {
 		// create the stage
 		this.stage = new createjs.Stage(canvas);
 	},
@@ -29,6 +28,7 @@ var Game = new Class({
 		/*
 		 * test EaselJS
 		 */
+		
 		// load images from server
 		var image1 = new Image();
 		image1.src = 'http://localhost:8888/images/tiles/1.png';
@@ -71,6 +71,20 @@ var Game = new Class({
 			this.hero.keyUp(event.key);
 		}.bind(this));
 
+		this._keyDownHandler = function(event) {
+			this.hero.keyDown(event.key);
+		}.bind(this);
+
+		this._keyUpHandler = function(event) {
+			this.hero.keyUp(event.key);
+		}.bind(this);
+
+		window.addEvent('keydown', this._keyDownHandler);
+		window.addEvent('keyup', this._keyUpHandler);
+
+		/*window.removeEvent('keydown', this._keyDownHandler);
+		window.removeEvent('keyup', this._keyUpHandler);*/
+
 		// loop to keep updating at each tick of the clock
 		createjs.Ticker.addEventListener('tick', this.gameLoop.bind(this)); // Note: bind is needed to ensure the function is called with the right 'this' scoping
 	},
@@ -90,19 +104,4 @@ var Game = new Class({
 		this.hero.render();
 		this.stage.update();
 	},
-
-	this._keyDownHandler: function(event) {
-		this.hero.keyDown(event.key);
-	}.bind(this);
-
-	this._keyUpHandler: function(event) {
-		this.hero.keyUp(event.key);
-	}.bind(this);
-
-	window.addEvent('keydown', this._keyDownHandler);
-	window.addEvent('keyup', this._keyUpHandler);
-
-	window.removeEvent('keydown', this._keyDownHandler);
-	window.removeEvent('keyup', this._keyUpHandler);
-
 });

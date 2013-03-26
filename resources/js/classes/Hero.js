@@ -7,15 +7,13 @@ var Hero = new Class({
 	speed: null,
 	x: null,
 	y: null,
-	keyDown: {},
-	keyUp: {},
 
 	/**
 	 * Constructor Method
 	 * @param  {Bitmap} image Bitmap takes sprite image and creates a new bitmap
 	 * @param  {Integer} speed Sets the speed for the hero
-	 * @param  {Integer} x Sets x coordinates (actually a float, but we are taking the floor)
-	 * @param  {Integer} y Sets y coordinates (actually a float, but we are taking the floor)]
+	 * @param  {Integer} x Sets x coordinates
+	 * @param  {Integer} y Sets y coordinates
 	 */
 	initialize: function(image, speed, x, y) {
 		this.bitmap = new createjs.Bitmap(image);
@@ -23,11 +21,18 @@ var Hero = new Class({
 		this.x = this.bitmap.x = x;
 		this.y = this.bitmap.y = y;
 	},
-
+	/**
+	 * Function to set the key when it is pressed down
+	 * @param  {String} key String 'up', 'down', 'left', 'right'
+	 */
 	keyDown: function(key) {
 		this.keyDown[key] = true;
 	},
 
+	/**
+	 * Function to delete the state of the key being "down"
+	 * @param  {String} key String 'up', 'down', 'left', 'right'
+	 */
 	keyUp: function(key) {
 		delete this.keyDown[key];
 	},
@@ -41,16 +46,16 @@ var Hero = new Class({
 		var oldX = this.x;
 		var oldY = this.y;
 
-		if (38 in this.keyDown) { // Player holding up
+		if ('up' in this.keyDown) { // Player holding up
 			this.y -= Math.floor(this.speed * modifier);
 		}
-		if (40 in this.keyDown) { // Player holding down
+		if ('down' in this.keyDown) { // Player holding down
 			this.y += Math.floor(this.speed * modifier);
 		}
-		if (37 in this.keyDown) { // Player holding left
+		if ('left' in this.keyDown) { // Player holding left
 			this.x -= Math.floor(this.speed * modifier);
 		}
-		if (39 in this.keyDown) { // Player holding right
+		if ('right' in this.keyDown) { // Player holding right
 			this.x += Math.floor(this.speed * modifier);
 		}
 	},
