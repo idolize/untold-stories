@@ -37,7 +37,7 @@ var ObjectBoard = new Class({
 	 * @return {BoardObject} The object at that location.
 	 */
 	getObject: function(x, y) {
-		return objects[y][x];
+		return this.objects[y][x];
 	},
 
 	/**

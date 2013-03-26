@@ -37,7 +37,7 @@ var Board = new Class({
 	 * @return {BoardTile} The tile at that location.
 	 */
 	getTile: function(x, y) {
-		return tiles[y][x];
+		return this.tiles[y][x];
 	},
 
 	/**
