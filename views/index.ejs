@@ -21,9 +21,19 @@
 	<script type="text/javascript" src="js/client.js"></script>
 	<script type="text/javascript" src="js/classes/App.js"></script>
 	<script type="text/javascript" src="js/classes/Game.js"></script>
-	<script type="text/javascript" src="js/classes/Board.js"></script>
+	<script type="text/javascript" src="js/classes/TileBoard.js"></script>
 	<script type="text/javascript" src="js/classes/TileType.js"></script>
 	<script type="text/javascript" src="js/classes/BoardTile.js"></script>
+	<script type="text/javascript" src="js/classes/ObjectBoard.js"></script>
+	<script type="text/javascript" src="js/classes/ObjectType.js"></script>
+	<script type="text/javascript" src="js/classes/BoardObject.js"></script>
+	<script type="text/javascript" src="js/classes/Hero.js"></script>
+
+	<script type="text/javascript">
+		// rendered server-side for use in client-side scripts
+		var isProduction = <%= process.env.NODE_ENV == 'production' %>;
+		var reqUrl = '<%= url %>';
+	</script>
 
 
 	<!-- DOM -->
