@@ -115,13 +115,7 @@ var Game = new Class({
 			this.board.setTile(x, y, type1);
 		}.bind(this);
 		console.log('_startCreator called');
-<<<<<<< HEAD
-
-		// TODO http://mootools.net/docs/more/Drag/Drag.Move
-		// http://mootools.net/demos/?demo=Drag.Move
-=======
 		this.stage.canvas.addEvent('mousedown', this._mouseDown);
->>>>>>> e0641d99d9b413b53e7adfbf2d69009409eb24f2
 	},
 
 	// "private" function
