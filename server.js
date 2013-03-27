@@ -3,6 +3,22 @@ var express = require('express');
 var http = require('http');
 var app = express();
 var server = http.createServer(app);
+app.set('view engine', 'ejs');
+app.set('view options', {
+	layout: false
+});
+app.set('port', process.env.NODE_ENV == 'production' ? process.env.OPENSHIFT_INTERNAL_PORT : 8888);
+app.use(app.router);
+app.use(express.static(__dirname + '/resources'));
+app.configure('production', function() {
+	// production-only settings for express
+});
+app.configure('development', function() {
+	app.use(express.errorHandler({
+		dumpExceptions: true, 
+		showStack: true
+	}));
+});
 var io = require('socket.io').listen(server);
 io.configure('production', function() {
 	io.enable('browser client etag');
@@ -12,28 +28,12 @@ io.configure('production', function() {
 io.configure('development', function() {
 	io.set('transports', ['websocket']);
 });
-app.set('view engine', 'ejs');
-app.set('view options', {
-	layout: false
-});
-app.configure('production', function() {
-	app.use(express.static(__dirname + '/resources'));
-});
-app.configure('development', function() {
-	app.use(express.methodOverride());
-	app.use(express.bodyParser());
-	app.use(express.static(__dirname + '/resources'));
-	app.use(express.errorHandler({
-		dumpExceptions: true, 
-		showStack: true
-	}));
-	app.use(app.router);
-});
-//app.engine('html', require('ejs').renderFile);
 // HTTP request for base page using express
 app.get('/', function (req, res) {
-	res.render('index', { url: (req.protocol + '://' + req.get('host') + req.url) });
-	//res.sendfile(__dirname + '/index.html');
+	res.render('index', {
+		url: (req.protocol + '://' + req.get('host') + req.url),
+		wsPort: process.env.NODE_ENV == 'production' ? 8000 : app.get('port')
+	});
 });
 
 
@@ -134,7 +134,5 @@ io.sockets.on('connection', function (socket) {
 
 });
 
-
 // start the server
-var port = process.env.NODE_ENV == 'production' ? 80 : 8888;
-server.listen(port);
+server.listen(app.get('port'), process.env.OPENSHIFT_INTERNAL_IP);

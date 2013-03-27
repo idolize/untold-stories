@@ -47,7 +47,7 @@ function loaded() {
 
 		// start the app
 		var app = new App(canvas, isCreator);
-		app.connect(isReconnect, reqUrl);
+		app.connect(isReconnect, globals.reqUrl.replace(/:\d+/, ':'+globals.wsPort));
 
 		// setup callbacks for our custom events
 		// NOTE it is the event listener's responsibility (not the event generator's) to remove any listeners it registers

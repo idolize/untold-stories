@@ -31,8 +31,11 @@
 
 	<script type="text/javascript">
 		// rendered server-side for use in client-side scripts
-		var isProduction = <%= process.env.NODE_ENV == 'production' %>;
-		var reqUrl = '<%= url %>';
+		var globals = {
+			isProduction: <%= process.env.NODE_ENV == 'production' %>,
+			reqUrl: '<%= url %>',
+			wsPort: <%= wsPort %>
+		};
 	</script>
 
 
