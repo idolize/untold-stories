@@ -1,0 +1,27 @@
+<!DOCTYPE html> <!-- Yay, HTML 5! -->
+
+<html>
+<head>
+	<title>Tabula Rasa</title> 
+	<link rel="stylesheet" type="text/css" href="styles/style.css" />
+</head>
+<body>
+	<!-- Scripts -->
+	<script type="text/javascript" src="/socket.io/socket.io.js"></script><!-- loaded dynamically by Node -->
+	<script type="text/javascript" src="http://code.createjs.com/createjs-2013.02.12.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/mootools/1.4.5/mootools-yui-compressed.js"></script>
+	<script type="text/javascript" src="js/client.js"></script>
+	<script type="text/javascript" src="js/classes/Board.js"></script>
+	<script type="text/javascript" src="js/classes/TileType.js"></script>
+	<script type="text/javascript" src="js/classes/BoardTile.js"></script>
+
+	<!-- DOM -->
+	<div id="main" class="wrapper">
+		<h1>Tile Map Testing</h1>
+		<div class="canvaswrap">
+			<canvas id="gamecanvas" width="400" height="300"></canvas>
+		</div>
+		<p id="servermsg"></p>
+	</div>
+</body>
+</html>
