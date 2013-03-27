@@ -94,17 +94,21 @@ var Game = new Class({
 	_startCreator: function() {
 		// TODO do something for the creator
 		this._mouseDown = function(event) {
+			// TODO - the tile type needs to be selected some other way and pulled from another datastructure
 			var image1 = new Image();
-			if (event.rightClick) {
+			if (event.shift) {
 				image1.src = 'http://localhost:8888/images/tiles/2.png';
 			} else {
 				image1.src = 'http://localhost:8888/images/tiles/1.png';
 			}
 
 			// create the tile types for these images
-			var type1 = new TileType((event.rightClick? 2 : 1), image1); //TODO these types will be stored somewhere
+			var type1 = new TileType((event.shift? 2 : 1), image1); //TODO these types will be stored somewhere
+
+			// decide where to put it
 			var x = event.client.x - this.stage.canvas.getPosition().x;
 			var y = event.client.y - this.stage.canvas.getPosition().y;
+			// TODO - the divisor here needs to be a constant defined elsewhere
 			x = Math.floor(x / 20);
 			y = Math.floor(y / 20);
 			console.log('mouse clicked at: ' + x + ', ' + y + (event.rightClick ? ' right click' : ''));
