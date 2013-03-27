@@ -13,6 +13,7 @@
 <body>
 	<!-- Scripts -->
 	<script type="text/javascript" src="/socket.io/socket.io.js"></script><!-- loaded dynamically by Node -->
+	<script type="text/javascript" src="/js/globals.js"></script> <!-- generated dynamically by Node in server.js -->
 	<script type="text/javascript" src="http://code.createjs.com/createjs-2013.02.12.min.js"></script>
 	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/mootools/1.4.5/mootools-yui-compressed.js"></script>
 	<script type="text/javascript" src="js/external/mootools-more-1.4.0.1.js"></script>
@@ -28,15 +29,6 @@
 	<script type="text/javascript" src="js/classes/ObjectType.js"></script>
 	<script type="text/javascript" src="js/classes/BoardObject.js"></script>
 	<script type="text/javascript" src="js/classes/Hero.js"></script>
-
-	<script type="text/javascript">
-		// rendered server-side for use in client-side scripts
-		var globals = {
-			isProduction: <%= process.env.NODE_ENV == 'production' %>,
-			reqUrl: '<%= url %>',
-			wsPort: <%= wsPort %>
-		};
-	</script>
 
 
 	<!-- DOM -->

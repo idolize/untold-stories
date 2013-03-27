@@ -30,10 +30,15 @@ io.configure('development', function() {
 });
 // HTTP request for base page using express
 app.get('/', function (req, res) {
-	res.render('index', {
-		url: (req.protocol + '://' + req.get('host') + req.url),
-		wsPort: process.env.NODE_ENV == 'production' ? 8000 : app.get('port')
-	});
+	res.render('index');
+});
+// send globals to the client when requested
+app.get('/js/globals.js', function(req, res) {
+    res.set('Content-Type', 'text/javascript');
+    res.send('var globals = {\n'+
+    		'reqUrl: '+ '"/",\n' +
+    		'wsPort: '+ (process.env.NODE_ENV == 'production' ? 8000 : app.get('port')) +'\n' +
+    	'};');
 });
 
 
