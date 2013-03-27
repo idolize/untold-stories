@@ -82,7 +82,7 @@ var Game = new Class({
 
 		// load image from server
 		var image2 = new Image();
-		image2.src = 'http://localhost:8888/images/tiles/2.png';
+		image2.src = 'http://localhost:8888/images/objects/obj1.png';
 		// create the object type
 		var object1 = new ObjectType(1, image2);
 		this.currentObjectType = object1;
