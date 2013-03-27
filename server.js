@@ -3,10 +3,23 @@ var express = require('express');
 var http = require('http');
 var app = express();
 var server = http.createServer(app);
-var io = require('socket.io').listen(server, {
-	transports: ['websocket']
+var io = require('socket.io').listen(server);
+io.configure('production', function() {
+	io.enable('browser client etag');
+	io.set('log level', 1);
+	io.set('transports', ['websocket','xhr-polling','jsonp-polling']);
 });
-app.configure(function(){
+io.configure('development', function() {
+	io.set('transports', ['websocket']);
+});
+app.set('view engine', 'ejs');
+app.set('view options', {
+	layout: false
+});
+app.configure('production', function() {
+	app.use(express.static(__dirname + '/resources'));
+});
+app.configure('development', function() {
 	app.use(express.methodOverride());
 	app.use(express.bodyParser());
 	app.use(express.static(__dirname + '/resources'));
@@ -16,9 +29,11 @@ app.configure(function(){
 	}));
 	app.use(app.router);
 });
+//app.engine('html', require('ejs').renderFile);
 // HTTP request for base page using express
 app.get('/', function (req, res) {
-	res.sendfile(__dirname + '/index.html');
+	res.render('index', { url: (req.protocol + '://' + req.get('host') + req.url) });
+	//res.sendfile(__dirname + '/index.html');
 });
 
 
@@ -121,4 +136,5 @@ io.sockets.on('connection', function (socket) {
 
 
 // start the server
-server.listen(8888);
+var port = process.env.NODE_ENV == 'production' ? 80 : 8888;
+server.listen(port);
