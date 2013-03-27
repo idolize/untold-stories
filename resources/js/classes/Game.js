@@ -14,6 +14,9 @@ var Game = new Class({
 	hero: null,
 	objectBoard: null,
 	tileBoard: null,
+	isPlacingObject: false,
+	currentTileType: null,
+	currentObjectType: null,
 
 	/**
 	 * @constructor
@@ -60,6 +63,7 @@ var Game = new Class({
 
 		// create the tile types for these images
 		var type1 = new TileType(1, image1); //TODO these types will be stored somewhere
+		this.currentTileType = type1;
 
 		// create the board and display it
 		this.board = new Board(20, 15, 20);
@@ -81,6 +85,7 @@ var Game = new Class({
 		image2.src = 'http://localhost:8888/images/tiles/2.png';
 		// create the object type
 		var object1 = new ObjectType(1, image2);
+		this.currentObjectType = object1;
 		// create object board and display it
 		this.objectBoard = new ObjectBoard(20, 15, 20);
 		this.stage.addChild(this.objectBoard.container);
@@ -95,16 +100,6 @@ var Game = new Class({
 		// TODO do something for the creator
 		this._mouseDown = function(event) {
 			// TODO - the tile type needs to be selected some other way and pulled from another datastructure
-			var image1 = new Image();
-			if (event.shift) {
-				image1.src = 'http://localhost:8888/images/tiles/2.png';
-			} else {
-				image1.src = 'http://localhost:8888/images/tiles/1.png';
-			}
-
-			// create the tile types for these images
-			var type1 = new TileType((event.shift? 2 : 1), image1); //TODO these types will be stored somewhere
-
 			// decide where to put it
 			var x = event.client.x - this.stage.canvas.getPosition().x;
 			var y = event.client.y - this.stage.canvas.getPosition().y;
@@ -112,7 +107,11 @@ var Game = new Class({
 			x = Math.floor(x / 20);
 			y = Math.floor(y / 20);
 			console.log('mouse clicked at: ' + x + ', ' + y + (event.rightClick ? ' right click' : ''));
-			this.board.setTile(x, y, type1);
+			if (event.shift) {
+				this.objectBoard.setObject(x,y,this.currentObjectType);
+			} else {
+				this.board.setTile(x, y, this.currentTileType);
+			}
 		}.bind(this);
 		console.log('_startCreator called');
 		this.stage.canvas.addEvent('mousedown', this._mouseDown);
@@ -163,5 +162,25 @@ var Game = new Class({
 		// render
 		this.hero.render();
 		this.stage.update();
+	},
+
+	/**
+	 * Sets the current tile type to the given TileType so that the user now places the new type.
+	 * Also switches out of placing objects mode to placing tiles mode.
+	 * @param {TileType} tileType the new tile type
+	 */
+	setCurrentTileType: function(tileType) {
+		this.currentTileType = tileType;
+		this.isPlacingObject = false;
+	},
+
+	/**
+	 * Sets the current object type to the given ObjectType so that the user now places the new type
+	 * Also switches to placing objects mode.
+	 * @param {ObjectType} objectType The new Object Type.
+	 */
+	setCurrentObjectType: function(objectType) {
+		this.currentObjectType = objectType;
+		this.isPlacingObject = true;
 	},
 });
