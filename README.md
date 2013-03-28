@@ -6,6 +6,15 @@ Description
 
 Tell your own story any way you want in a game where absolutely anything goes. ***TabulaRasa***: a multiplayer storytelling game.
 
+Deployment
+---------------------
+
+A version of the application is deployed on RedHat OpenShift at the following URL: [http://tabula-rasa.rhcloud.com](http://tabula-rasa.rhcloud.com/)
+
+The application has different settings for a production environment than a development environment: for example the listening port may be different or the level of debug statements may be different. Rather than hardcode the environment in the application code (which would require maintaing multiple versions of the code), the environment variable `$NODE_ENV` is set to "production" or "development" accordingly (if it is not set then it defaults to development). This is a standard practice among NodeJS applications.
+
+Note: OpenShift support for Websockets is still in preview mode. As such, it [requires that all websocket connections be created on port 8000](https://www.openshift.com/blogs/paas-websockets) rather than the normal web port.
+
 Installation
 ---------------------
 
