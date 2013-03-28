@@ -37,7 +37,7 @@ var Game = new Class({
 			this._initBoards();
 
 			// initialize hero
-			this.hero = new Hero('http://localhost:8888/images/hero/gohan.GIF', 256, 150, 150);
+			this.hero = new Hero('images/hero/gohan.GIF', 256, 150, 150);
 			this.stage.addChild(this.hero.bitmap);
 
 			// now perform specific logic for creator and player
@@ -56,7 +56,7 @@ var Game = new Class({
 	_initBoards: function() {
 		// load images from server
 		var image1 = new Image();
-		image1.src = 'http://localhost:8888/images/tiles/1.png';
+		image1.src = 'images/tiles/1.png';
 
 		// create the tile types for these images
 		var type1 = new TileType(1, image1); //TODO these types will be stored somewhere
@@ -78,7 +78,7 @@ var Game = new Class({
 
 		// load image from server
 		var image2 = new Image();
-		image2.src = 'http://localhost:8888/images/tiles/2.png';
+		image2.src = 'images/tiles/2.png';
 		// create the object type
 		var object1 = new ObjectType(1, image2);
 		// create object board and display it
