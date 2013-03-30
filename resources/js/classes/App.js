@@ -75,7 +75,7 @@ var App = new Class({
 	 */
 	endTurn: function() {
 		var currentState = this.game.endTurn();
-		this.socket.emit('yourTurn', currentState);
+		this.socket.emit('turnEnded', {isCreator: this.isCreator, newState: currentState});
 		this.fireEvent('turnEnded');
 	},
 

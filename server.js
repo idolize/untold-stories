@@ -125,10 +125,11 @@ io.sockets.on('connection', function (socket) {
 		io.sockets.emit('ready');
 	});
 
-	socket.on('yourTurn', function(newState) {
+	socket.on('turnEnded', function(event) {
 		// TODO store the number of turns, etc. here
-		// pass the event to the other client
-		socket.broadcast.emit('yourTurn', newState);
+		// send the event to the other player but no other connected clients
+		var otherSocket = event.isCreator? gameServer.player : gameServer.creator;
+		otherSocket.emit('yourTurn', event.newState);
 	});
 
 	// some client disconnected
