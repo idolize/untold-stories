@@ -60,7 +60,6 @@ var Game = new Class({
 	 * Starts the game.
 	 */
 	start: function() {
-		console.log('Game.start called');
 		// initialize the state
 		this.currentState = {
 			'heroPosX': this.hero.x,
@@ -80,7 +79,6 @@ var Game = new Class({
 	// "private" function
 	_addKeyboardListeners: function() {
 		// add keyboard listeners for player
-		console.log('keyboard listers go');
 		window.addEvent('keydown', this._keyDownHandler);
 		window.addEvent('keyup', this._keyUpHandler);
 	},
@@ -88,27 +86,35 @@ var Game = new Class({
 	// "private" function
 	_removeKeyboardListeners: function() {
 		// remove keyboard listeners for player
-		console.log('keyboard listers die');
 		window.removeEvent('keydown', this._keyDownHandler);
 		window.removeEvent('keyup', this._keyUpHandler);
 	},
 
+	/**
+	 * Changes the state of the game and all game objects to a new state.
+	 * @param {Object} newState The new game state.
+	 */
 	setNewState: function(newState) {
-		console.log('Game.setNewState');
-		console.log(newState);
 		this.currentState = newState;
 		// update the objects and tiles
 		this.hero.x = newState['heroPosX'];
 		this.hero.y = newState['heroPosY'];
 	},
 
+	/**
+	 * Updates the current state object for the game.
+	 * @param  {String} stateVarName The key used for this state variable.
+	 * @param  {*} newVal       Some new value for this state variable.
+	 */
 	updateState: function(stateVarName, newVal) {
 		this.currentState[stateVarName] = newVal;
 	},
 
+	/**
+	 * Begins a new turn.
+	 * @param  {Object} newState The new state object to initialize to for this turn.
+	 */
 	beginTurn: function(newState) {
-		console.log('Game.beginTurn called. newState:');
-		console.log(newState);
 		if (!this.active) {
 			console.log('INFO: Turn started');
 			this.active = true;
@@ -125,8 +131,11 @@ var Game = new Class({
 		}
 	},
 
+	/**
+	 * Ends the active turn.
+	 * @return {Object} The current state object for the game.
+	 */
 	endTurn: function() {
-		console.log('Game.endTurn called');
 		if (this.active) {
 			if (this.isCreator) {
 				// TODO stop creator's turn

@@ -54,13 +54,11 @@ function loaded() {
 
 		// setup callbacks for our custom events
 		var onTurnStarted = function() {
-			console.log('client.js onTurnStarted called');
 			endBtn.erase('disabled');
 			showNotice('info', 'Your turn has started');
 			rightInfo.textContent = 'Active';
 		};
 		var onTurnEnded = function() {
-			console.log('client.js onTurnEnded called');
 			endBtn.set('disabled', true);
 			rightInfo.textContent = 'Waiting';
 		};
@@ -75,7 +73,6 @@ function loaded() {
 			showNotice('notice', cause.msg);
 		};
 		var onGameStarted = function(game) {
-			console.log('client.js onGameStarted called');
 			// remove our event listener for joinFailed
 			app.removeEvent('joinFailed', onJoinFailed);
 			// stop and remove waiting animation

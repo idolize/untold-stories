@@ -37,7 +37,6 @@ var App = new Class({
 	 * Fires either a 'joinFailed' or 'gameStarted' event depending on the result.
 	 */
 	join: function() {
-		console.log('App.join called');
 		this.socket.emit('join', {
 			isCreator: this.isCreator,
 			//TODO pass a username for this person?
@@ -63,17 +62,20 @@ var App = new Class({
 		this.socket.once('ready', onReady);
 	},
 
+	/**
+	 * Callback for when the game indicates a turn has started.
+	 * @param  {Object} newState The new state received for this turn.
+	 */
 	onTurnStarted: function(newState) {
-		console.log('App.onTurnStarted called. newState:');
-		console.log(newState);
 		this.fireEvent('turnStarted');
 	},
 
+	/**
+	 * Ends the current turn in the game and broadcasts the message to the server.
+	 */
 	endTurn: function() {
-		console.log('App.endTurn called');
 		var currentState = this.game.endTurn();
 		this.socket.emit('yourTurn', currentState);
-		console.log('"yourTurn" emit called');
 		this.fireEvent('turnEnded');
 	},
 

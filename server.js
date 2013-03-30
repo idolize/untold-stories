@@ -126,9 +126,7 @@ io.sockets.on('connection', function (socket) {
 	});
 
 	socket.on('yourTurn', function(newState) {
-		// TODO log number of turns, etc. here
-		console.log('newState:');
-		console.log(newState);
+		// TODO store the number of turns, etc. here
 		// pass the event to the other client
 		socket.broadcast.emit('yourTurn', newState);
 	});

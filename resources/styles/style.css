@@ -16,14 +16,13 @@ div.wrapper {
 }
 
 .wrapper h1#logo {
-	background-image: url('../images/logo.png');
-	width: 397px;
-	height: 68px;
+	text-align: center;
+	height: 72px;
+	line-height: 72px;
 	margin: 10px auto;
-	/* Hide the text. */
-	text-indent: 100%;
-	white-space: nowrap;
-	overflow: hidden;
+	font-family: 'Londrina Solid', sans-serif;
+	font-weight: normal;
+	font-size: 4em;
 }
 
 .wrapper #infobar {
