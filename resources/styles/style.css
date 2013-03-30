@@ -8,7 +8,6 @@ body {
 
 div.wrapper {
 	width: 500px;
-	height: 500px;
 	background-color: #fff;
 	box-shadow: 0 5px 8px rgba(0,0,0,0.3) !important;
 	padding: 10px 0;
@@ -27,23 +26,84 @@ div.wrapper {
 	overflow: hidden;
 }
 
+.wrapper #infobar {
+	background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(rgba(0, 0, 0, 0.2)), to(rgba(0, 0, 0, 0.4)));
+	background-image: -webkit-linear-gradient(top, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.4)); 
+	background-image: -moz-linear-gradient(top, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.4));
+	background-image: -ms-linear-gradient(top, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.4));
+	background-image: linear-gradient(top, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.4));
+	border-radius: 10px;
+	-moz-border-radius: 10px;
+	-webkit-border-radius: 10px;
+	padding: 4px;
+	margin: 5px 10px;
+	color: #fff;
+	font-family: sans-serif;
+	font-weight: bold;
+	font-size: 1.25em;
+	height: 35px;
+	position: relative;
+}
+
+.wrapper #infobar #leftinfo, .wrapper #infobar #rightinfo {
+	position: absolute;
+	width: 40%;
+	line-height: 35px;
+}
+
+.wrapper #infobar #leftinfo {
+	left: 30px;
+	text-align: left;
+}
+
+.wrapper #infobar #rightinfo {
+	right: 30px;
+	text-align: right;
+}
+
 .wrapper .canvaswrap {
 	/* Needed to center the canvas */
-	width: 400px;
-	height: 300px;
-	margin: auto;
+	width: 402px;
+	height: 302px;
+	margin: 20px auto 20px auto;
 }
 
 canvas#gamecanvas {
 	border: 1px solid gray;
-	margin: 20px auto 0 auto;
 	width: 400px;
 	height: 300px;
 }
 
 .wrapper #initial {
 	position: absolute;
-	top: 240px;
+	top: 300px;
 	width: 100%;
 	text-align: center;
+}
+
+#bottom {
+	width: 400px;
+	padding: 0 50px;
+	text-align: right;
+	margin-bottom: 35px;
+}
+
+.footer {
+	font-size: 0.8em;
+	text-align: center;
+	margin: 15px auto;
+	color: #aaa;
+}
+
+.footer ul.items {
+ 	display: inline;
+}
+
+.footer ul.items li {
+	display: inline;
+	list-style: none;
+}
+
+.footer ul.items li a, .footer ul.items li a:active, .footer ul.items li a:visited {
+	color: #999;
 }

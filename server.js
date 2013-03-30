@@ -125,6 +125,14 @@ io.sockets.on('connection', function (socket) {
 		io.sockets.emit('ready');
 	});
 
+	socket.on('yourTurn', function(newState) {
+		// TODO log number of turns, etc. here
+		console.log('newState:');
+		console.log(newState);
+		// pass the event to the other client
+		socket.broadcast.emit('yourTurn', newState);
+	});
+
 	// some client disconnected
 	socket.on('disconnect', function() {
 		if (socket['isCreator'] === true) {

@@ -5,6 +5,7 @@
  */
 var App = new Class({
 	Implements: Events,
+	Binds: ['onTurnStarted', 'endTurn'], // see: http://mootools.net/docs/more/Class/Class.Binds
 
 	socket: null,
 	isCreator: null,
@@ -12,7 +13,10 @@ var App = new Class({
 
 	initialize: function(canvas, isCreator) {
 		this.isCreator = isCreator;
-		this.game = new Game(canvas, isCreator);
+
+		var tileSize = 20; // tile size (either width or height b/c square) in pixels - update if image size changes
+
+		this.game = new Game(canvas, tileSize, isCreator);
 	},
 
 	/**
@@ -33,6 +37,7 @@ var App = new Class({
 	 * Fires either a 'joinFailed' or 'gameStarted' event depending on the result.
 	 */
 	join: function() {
+		console.log('App.join called');
 		this.socket.emit('join', {
 			isCreator: this.isCreator,
 			//TODO pass a username for this person?
@@ -42,8 +47,11 @@ var App = new Class({
 			// no longer need to listen for 'joinFailed' messages
 			this.socket.removeListener('joinFailed', onFail);
 			// start the game and notify any listeners
+			this.fireEvent('gameStarted', this);
+			this.game.addEvent('turnStarted', this.onTurnStarted);
 			this.game.start();
-			this.fireEvent('gameStarted', this.game);
+			// make the socket listen for 'yourTurn' events
+			this.socket.on('yourTurn', this.game.beginTurn);
 		}.bind(this); // Note: bind is needed to ensure the function is called with the right 'this' scoping
 		var onFail = function(cause) {
 			// no longer listen for any messages until the app is recreated
@@ -53,6 +61,20 @@ var App = new Class({
 		}.bind(this);
 		this.socket.once('joinFailed', onFail);
 		this.socket.once('ready', onReady);
+	},
+
+	onTurnStarted: function(newState) {
+		console.log('App.onTurnStarted called. newState:');
+		console.log(newState);
+		this.fireEvent('turnStarted');
+	},
+
+	endTurn: function() {
+		console.log('App.endTurn called');
+		var currentState = this.game.endTurn();
+		this.socket.emit('yourTurn', currentState);
+		console.log('"yourTurn" emit called');
+		this.fireEvent('turnEnded');
 	},
 
 	/**

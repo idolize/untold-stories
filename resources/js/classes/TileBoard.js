@@ -1,4 +1,4 @@
-var Board = new Class({
+var TileBoard = new Class({
 	tiles: null,
 	numWide: null,
 	numHigh: null,
