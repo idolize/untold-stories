@@ -8,39 +8,41 @@ var App = new Class({
 	Binds: ['onTurnStarted', 'endTurn'], // see: http://mootools.net/docs/more/Class/Class.Binds
 
 	socket: null,
-	isCreator: null,
 	game: null,
+	canvas: null,
+	tileSize: 20, // tile size (either width or height b/c square) in pixels - update if image size changes
 
-	initialize: function(canvas, isCreator) {
-		this.isCreator = isCreator;
-
-		var tileSize = 20; // tile size (either width or height b/c square) in pixels - update if image size changes
-
-		this.game = new Game(canvas, tileSize, isCreator);
+	initialize: function(canvas) {
+		this.canvas = canvas;
 	},
 
 	/**
 	 * Connects the client to the server.
-	 * @param {Boolean} [isReconnect] If this is not the first time the socket has been connected then this must be true. Defaults to false.
 	 * @param  {String} [serverUrl] The URL of the server to connect to. The default value is 'http://localhost:8888'.
 	 */
-	connect: function(isReconnect, serverUrl) {
+	connect: function(serverUrl) {
 		serverUrl = serverUrl || 'http://localhost:8888';
-		this.socket = io.connect(serverUrl);
-		if (isReconnect) {
-			this.socket.socket.reconnect(); // see http://stackoverflow.com/questions/9598900/how-to-reconnect-after-you-called-disconnect
+		if (!this.socket) {
+			this.socket = io.connect(serverUrl);
+		} else {
+			this.socket.socket.reconnect(); // see http://stackoverflow.com/questions/10437584/socket-io-reconnect
 		}
+		this.socket.once('connect', function() {
+			this.fireEvent('connected');
+		}.bind(this));
 	},
 
 	/**
 	 * Attempts to join the game.
 	 * Fires either a 'joinFailed' or 'gameStarted' event depending on the result.
+	 * @param {Boolean} isCreator Attempting to join as the creator or not.
 	 */
-	join: function() {
+	join: function(isCreator) {
+		this.game = new Game(this.canvas, this.tileSize, isCreator);
 		this.socket.emit('join', {
-			isCreator: this.isCreator,
+			isCreator: this.game.isCreator,
 			//TODO pass a username for this person?
-			name: (this.isCreator ? 'creator' : 'player')
+			name: (this.game.isCreator ? 'creator' : 'player')
 		});
 		var onReady = function() {
 			// no longer need to listen for 'joinFailed' messages
@@ -75,7 +77,7 @@ var App = new Class({
 	 */
 	endTurn: function() {
 		var currentState = this.game.endTurn();
-		this.socket.emit('turnEnded', {isCreator: this.isCreator, newState: currentState});
+		this.socket.emit('turnEnded', {isCreator: this.game.isCreator, newState: currentState});
 		this.fireEvent('turnEnded');
 	},
 

@@ -7,7 +7,6 @@ function loaded() {
 	var leftInfo = document.id('leftinfo')
 	var rightInfo = document.id('rightinfo')
 	var topRight = { y: 'top', x: 'right'};
-	var isReconnect = false;
 	// create waiting popup and animation
 	var waitingTextArea = new Element('div');
 	new Element('p', {html: 'Waiting for other player...'}).inject(waitingTextArea);
@@ -42,15 +41,13 @@ function loaded() {
 	});
 	document.id('play').erase('disabled');
 	var endBtn;
+	// create the app
+	var app = new App(canvas);
 
 	function beginGame(isCreator) {
 		// show waiting animation
 		waitingPopup.open();
 		waitingAnim.start();
-
-		// start the app
-		var app = new App(canvas, isCreator);
-		app.connect(isReconnect, ':'+globals.wsPort);
 
 		// setup callbacks for our custom events
 		var onTurnStarted = function() {
@@ -63,9 +60,8 @@ function loaded() {
 			rightInfo.textContent = 'Waiting';
 		};
 		var onJoinFailed = function(cause) {
-			// discard app instance
+			// destroy app instance
 			app.destroy();
-			app = null;
 			// stop waiting animation
 			waitingAnim.stop();
 			waitingPopup.close();
@@ -101,13 +97,16 @@ function loaded() {
 			app.addEvent('turnEnded', onTurnEnded);
 		};
 
-		// listen for response to join request
-		app.addEvent('joinFailed', onJoinFailed);
-		app.addEvent('gameStarted', onGameStarted);
+		app.addEvent('connected', function() {
+			// listen for response to join request
+			app.addEvent('joinFailed', onJoinFailed);
+			app.addEvent('gameStarted', onGameStarted);
+			// ok to begin attempt to join the server
+			app.join(isCreator);
+		});
 
-		// ok to begin attempt to join the server
-		app.join();
-		isReconnect = true;
+		// start the app
+		app.connect(':'+globals.wsPort);
 	}
 
 	function showNotice(type, msg) {
