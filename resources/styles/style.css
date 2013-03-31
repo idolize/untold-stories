@@ -95,6 +95,7 @@ canvas#gamecanvas {
 }
 
 .footer ul.items {
+	padding: 0;
  	display: inline;
 }
 
