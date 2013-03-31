@@ -52,3 +52,9 @@ Remember: it is almost always the event listener's responsibility (not the event
 
 ### Comments
 Classes and functions can/should be documented using the [JSDoc syntax](http://en.wikipedia.org/wiki/JSDoc). If you are using Sublime Text 2 then install the [DockBlockr plugin](https://tutsplus.com/lesson/docblockr/) to automatically generate these comments for you.
+
+
+Tilesets and Images
+--------------------
+
+Tiles are 32 x 32 pixels in size, saved as PNG-32 images with transparency. A collection of free 16x16 tileset images can be found on opengameart.org: to use these images save the original, resize it to 200% (without using any antialiasing), convert all white pixels to transparent pixels, and then export the image as a PNG-32 image with transparency.

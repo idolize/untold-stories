@@ -129,7 +129,7 @@ io.sockets.on('connection', function (socket) {
 		// TODO store the number of turns, etc. here
 		// send the event to the other player but no other connected clients
 		var otherSocket = event.isCreator? gameServer.player : gameServer.creator;
-		otherSocket.emit('yourTurn', event.newState);
+		otherSocket.emit('yourTurn', event.changes);
 	});
 
 	// some client disconnected

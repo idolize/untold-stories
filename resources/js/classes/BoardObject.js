@@ -13,8 +13,8 @@ var BoardObject = new Class({
 	 * Constructor method.
 	 *
 	 * @constructor
-	 * @param  {ObjectType} objType The type of this tile.
-	 * @param  {ObjectBoard} [objectBoard] The board this tile is on.
+	 * @param  {ObjectType} objType The type of this object.
+	 * @param  {ObjectBoard} [objectBoard] The board this object is on.
 	 */
 	initialize: function(objType, objectBoard) {
 		this.objType = objType;

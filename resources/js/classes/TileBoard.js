@@ -11,6 +11,7 @@ var TileBoard = new Class({
 	 * @constructor
 	 * @param  {integer} numWide Number of tiles wide.
 	 * @param  {integer} numHigh Number of tiles high.
+	 * @param  {integer} tileSize The size of a tile in pixels (width or height since tiles are square).
 	 * @param {TileType[][]} [tiles] A pre-initialized 2D tile array.
 	 */
 	initialize: function(numWide, numHigh, tileSize, tiles) {

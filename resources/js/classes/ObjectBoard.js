@@ -2,7 +2,7 @@ var ObjectBoard = new Class({
 	objects: null,
 	numWide: null,
 	numHigh: null,
-	objectSize: null,
+	tileSize: null,
 	container: null,
 
 	/**
@@ -11,12 +11,13 @@ var ObjectBoard = new Class({
 	 * @constructor
 	 * @param  {integer} numWide Number of objects wide.
 	 * @param  {integer} numHigh Number of objects high.
+	 * @param  {integer} tileSize Since objects snap to the grid, the tile size for the grid is required (in pixels).
 	 * @param {ObjectType[][]} [objects] A pre-initialized 2D object array.
 	 */
-	initialize: function(numWide, numHigh, objectSize, objects) {
+	initialize: function(numWide, numHigh, tileSize, objects) {
 		this.numWide = numWide;
 		this.numHigh = numHigh;
-		this.objectSize = objectSize;
+		this.tileSize = tileSize;
 		this.container = new createjs.Container();
 		if (objects) {
 			this.setAllObjects(objects);
@@ -60,8 +61,8 @@ var ObjectBoard = new Class({
 			boardObject.board = this;
 			boardObject.objPosX = x;
 			boardObject.objPosY = y;
-			boardObject.bitmap.x = this.objectSize * x;
-			boardObject.bitmap.y = this.objectSize * y;
+			boardObject.bitmap.x = this.tileSize * x;
+			boardObject.bitmap.y = this.tileSize * y;
 			// add the bitmap to the display list
 			this.container.addChild(boardObject.bitmap);
 		}

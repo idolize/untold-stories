@@ -66,9 +66,9 @@ var App = new Class({
 
 	/**
 	 * Callback for when the game indicates a turn has started.
-	 * @param  {Object} newState The new state received for this turn.
+	 * @param  {Object} changes The new state changes received for this turn.
 	 */
-	onTurnStarted: function(newState) {
+	onTurnStarted: function(changes) {
 		this.fireEvent('turnStarted');
 	},
 
@@ -76,8 +76,8 @@ var App = new Class({
 	 * Ends the current turn in the game and broadcasts the message to the server.
 	 */
 	endTurn: function() {
-		var currentState = this.game.endTurn();
-		this.socket.emit('turnEnded', {isCreator: this.game.isCreator, newState: currentState});
+		var turnChanges = this.game.endTurn();
+		this.socket.emit('turnEnded', {isCreator: this.game.isCreator, changes: turnChanges});
 		this.fireEvent('turnEnded');
 	},
 
