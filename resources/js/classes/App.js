@@ -10,7 +10,7 @@ var App = new Class({
 	socket: null,
 	game: null,
 	canvas: null,
-	tileSize: 20, // tile size (either width or height b/c square) in pixels - update if image size changes
+	tileSize: 32, // tile size (either width or height b/c square) in pixels - update if image size changes
 
 	initialize: function(canvas) {
 		this.canvas = canvas;
@@ -48,7 +48,7 @@ var App = new Class({
 			// no longer need to listen for 'joinFailed' messages
 			this.socket.removeListener('joinFailed', onFail);
 			// start the game and notify any listeners
-			this.fireEvent('gameStarted', this);
+			this.fireEvent('gameStarted', this.game);
 			this.game.addEvent('turnStarted', this.onTurnStarted);
 			this.game.start();
 			// make the socket listen for 'yourTurn' events

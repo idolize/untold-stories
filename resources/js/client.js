@@ -84,7 +84,7 @@ function loaded() {
 			// show the 'end turn button'
 			endBtn = new Element('button', {
 				html: 'End turn',
-				'class': 'btn',
+				'class': 'btn red',
 				disabled: true,
 				events: {
 					click: app.endTurn

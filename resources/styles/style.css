@@ -7,7 +7,7 @@ body {
 }
 
 div.wrapper {
-	width: 500px;
+	width: 900px;
 	background-color: #fff;
 	box-shadow: 0 5px 8px rgba(0,0,0,0.3) !important;
 	padding: 10px 0;
@@ -35,7 +35,7 @@ div.wrapper {
 	-moz-border-radius: 10px;
 	-webkit-border-radius: 10px;
 	padding: 4px;
-	margin: 5px 10px;
+	margin: 5px 50px;
 	color: #fff;
 	font-family: sans-serif;
 	font-weight: bold;
@@ -62,26 +62,24 @@ div.wrapper {
 
 .wrapper .canvaswrap {
 	/* Needed to center the canvas */
-	width: 402px;
-	height: 302px;
-	margin: 20px auto 20px auto;
+	width: 802px;
+	margin: 20px auto 10px auto;
 }
 
 canvas#gamecanvas {
 	border: 1px solid gray;
-	width: 400px;
-	height: 300px;
+	width: 800px;
+	height: 416px;
 }
 
 .wrapper #initial {
 	position: absolute;
-	top: 300px;
+	top: 350px;
 	width: 100%;
 	text-align: center;
 }
 
 #bottom {
-	width: 400px;
 	padding: 0 50px;
 	text-align: right;
 	margin-bottom: 35px;
