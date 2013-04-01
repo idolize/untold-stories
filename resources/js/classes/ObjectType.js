@@ -11,13 +11,22 @@ var ObjectType = new Class({
 	 * Constructor
 	 *
 	 * @constructor
-	 * @param  {integer}  id Unique number
-	 * @param  {Image}  image Image to use for this tile
-	 * @param  {Boolean} isPassable Flag for if object is passable
+	 * @param  {String}  id Unique name of this type.
+	 * @param  {Image|String}  [image] Image or URL of image to use for this object. If not included it is assumed to be stored in 'images/objects/id.png'.
+	 * @param  {Boolean} isPassable Flag for if object is passable.
 	 */
-	initialize: function(id, image, isPassable) {
+	initialize: function(id, isPassable, image) {
 		this.id = id;
-		this.image = image;
+		if (!image) {
+			image = 'images/objects/'+id+'.png';
+		}
+		if (typeof image == 'string' || image instanceof String) {
+			// download the image
+			this.image = new Image();
+			this.image.src = image;
+		} else {
+			this.image = image;
+		}
 		this.isPassable = isPassable;
 	}
 });

@@ -6,6 +6,15 @@ Description
 
 Tell your own story any way you want in a game where absolutely anything goes. ***TabulaRasa***: a multiplayer storytelling game.
 
+Deployment
+---------------------
+
+A version of the application is deployed on RedHat OpenShift at the following URL: [http://tabula-rasa.rhcloud.com](http://tabula-rasa.rhcloud.com/)
+
+The application has different settings for a production environment than a development environment: for example the listening port may be different or the level of debug statements may be different. Rather than hardcode the environment in the application code (which would require maintaing multiple versions of the code), the environment variable `$NODE_ENV` is set to "production" or "development" accordingly (if it is not set then it defaults to development). This is a standard practice among NodeJS applications.
+
+Note: OpenShift support for Websockets is still in preview mode. As such, it [requires that all websocket connections be created on port 8000](https://www.openshift.com/blogs/paas-websockets) rather than the normal web port.
+
 Installation
 ---------------------
 
@@ -43,3 +52,9 @@ Remember: it is almost always the event listener's responsibility (not the event
 
 ### Comments
 Classes and functions can/should be documented using the [JSDoc syntax](http://en.wikipedia.org/wiki/JSDoc). If you are using Sublime Text 2 then install the [DockBlockr plugin](https://tutsplus.com/lesson/docblockr/) to automatically generate these comments for you.
+
+
+Tilesets and Images
+--------------------
+
+Tiles are 32 x 32 pixels in size, saved as PNG-32 images with transparency. A collection of free 16x16 tileset images [can be found on opengameart.org](http://opengameart.org/content/oga-16x16-jrpg-sprites-tiles): to use these images save the original, resize it to 200% (without using any antialiasing), convert all white pixels to transparent pixels, and then export the image as a PNG-32 image with transparency.
