@@ -3,6 +3,22 @@ var express = require('express');
 var http = require('http');
 var app = express();
 var server = http.createServer(app);
+app.set('view engine', 'ejs');
+app.set('view options', {
+	layout: false
+});
+app.set('port', process.env.NODE_ENV == 'production' ? process.env.OPENSHIFT_INTERNAL_PORT : 8888);
+app.use(app.router);
+app.use(express.static(__dirname + '/resources'));
+app.configure('production', function() {
+	// production-only settings for express
+});
+app.configure('development', function() {
+	app.use(express.errorHandler({
+		dumpExceptions: true, 
+		showStack: true
+	}));
+});
 var io = require('socket.io').listen(server);
 io.configure('production', function() {
 	io.enable('browser client etag');
@@ -12,28 +28,17 @@ io.configure('production', function() {
 io.configure('development', function() {
 	io.set('transports', ['websocket']);
 });
-app.set('view engine', 'ejs');
-app.set('view options', {
-	layout: false
-});
-app.configure('production', function() {
-	app.use(express.static(__dirname + '/resources'));
-});
-app.configure('development', function() {
-	app.use(express.methodOverride());
-	app.use(express.bodyParser());
-	app.use(express.static(__dirname + '/resources'));
-	app.use(express.errorHandler({
-		dumpExceptions: true, 
-		showStack: true
-	}));
-	app.use(app.router);
-});
-//app.engine('html', require('ejs').renderFile);
 // HTTP request for base page using express
 app.get('/', function (req, res) {
-	res.render('index', { url: (req.protocol + '://' + req.get('host') + req.url) });
-	//res.sendfile(__dirname + '/index.html');
+	res.render('index');
+});
+// send globals to the client when requested
+app.get('/js/globals.js', function(req, res) {
+    res.set('Content-Type', 'text/javascript');
+    res.send('var globals = {\n'+
+    		'reqUrl: '+ '"/",\n' +
+    		'wsPort: '+ (process.env.NODE_ENV == 'production' ? 8000 : app.get('port')) +'\n' +
+    	'};');
 });
 app.get('/tileeditor.html', function (req, res) {
     res.sendfile(__dirname + '/tileeditor.html');
@@ -123,6 +128,13 @@ io.sockets.on('connection', function (socket) {
 		io.sockets.emit('ready');
 	});
 
+	socket.on('turnEnded', function(event) {
+		// TODO store the number of turns, etc. here
+		// send the event to the other player but no other connected clients
+		var otherSocket = event.isCreator? gameServer.player : gameServer.creator;
+		otherSocket.emit('yourTurn', event.changes);
+	});
+
 	// some client disconnected
 	socket.on('disconnect', function() {
 		if (socket['isCreator'] === true) {
@@ -137,7 +149,5 @@ io.sockets.on('connection', function (socket) {
 
 });
 
-
 // start the server
-var port = process.env.NODE_ENV == 'production' ? 80 : 8888;
-server.listen(port);
+server.listen(app.get('port'), process.env.OPENSHIFT_INTERNAL_IP);

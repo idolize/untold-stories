@@ -11,13 +11,22 @@ var TileType = new Class({
 	 * Constructor method.
 	 *
 	 * @constructor
-	 * @param  {integer} id Unique number
-	 * @param  {Image} image Image to use for this tile (see DOM docs on Image).
-	 * @param {Boolean} isPassable Flag to check if tile is passable
+	 * @param  {String} id Unique name of this type.
+	 * @param  {Image|String}  [image] Image or URL of image to use for this tile. If not included it is assumed to be stored in 'images/tiles/id.png'.
+	 * @param {Boolean} isPassable Flag to check if tile is passable.
 	 */
-	initialize: function(id, image, isPassable) {
+	initialize: function(id, isPassable, image) {
 		this.id = id;
-		this.image = image;
+		if (!image) {
+			image = 'images/tiles/'+id+'.png';
+		}
+		if (typeof image == 'string' || image instanceof String) {
+			// download the image
+			this.image = new Image();
+			this.image.src = image;
+		} else {
+			this.image = image;
+		}
 		this.isPassable = isPassable;
 	}
 });

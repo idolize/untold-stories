@@ -1,4 +1,4 @@
-var Board = new Class({
+var TileBoard = new Class({
 	tiles: null,
 	numWide: null,
 	numHigh: null,
@@ -11,6 +11,7 @@ var Board = new Class({
 	 * @constructor
 	 * @param  {integer} numWide Number of tiles wide.
 	 * @param  {integer} numHigh Number of tiles high.
+	 * @param  {integer} tileSize The size of a tile in pixels (width or height since tiles are square).
 	 * @param {TileType[][]} [tiles] A pre-initialized 2D tile array.
 	 */
 	initialize: function(numWide, numHigh, tileSize, tiles) {
@@ -47,8 +48,10 @@ var Board = new Class({
 	 * @param  {integer} x Tile position on the x-axis.
 	 * @param  {integer} y Tile position on the y-axis.
 	 * @param  {BoardTile} boardTile The tile to set.
+	 * @return {Boolean} If the tile was added (true) or replaced (false).
 	 */
 	setTileWithExisting: function(x, y, boardTile) {
+		var added = false;
 		var oldTile = this.tiles[y][x];
 		if (oldTile) {
 			// remove the old bitmap from display list
@@ -64,7 +67,9 @@ var Board = new Class({
 			boardTile.bitmap.y = this.tileSize * y;
 			// add the bitmap to the display list
 			this.container.addChild(boardTile.bitmap);
+			added = true;
 		}
+		return added;
 	},
 
 	/**
@@ -75,9 +80,10 @@ var Board = new Class({
 	 * @param {integer} x Tile position on the x-axis.
 	 * @param {integer} y Tile position on the y-axis.
 	 * @param {TileType} tileType The type of tile to place.
+	 * @return {Boolean} If the tile was added (true) or replaced (false).
 	 */
 	setTile: function(x, y, tileType) {
-		this.setTileWithExisting(x, y, new BoardTile(tileType, this));
+		return this.setTileWithExisting(x, y, new BoardTile(tileType, this));
 	},
 
 	/**

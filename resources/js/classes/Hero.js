@@ -7,18 +7,21 @@ var Hero = new Class({
 	speed: null,
 	x: null,
 	y: null,
-	//TODO are width and height needed?
+	width: null,
+	height: null,
 
 	/**
 	 * Constructor Method.
 	 *
 	 * @consttructor
 	 * @param  {Image|String} image Image or URL string of image to use for the hero.
+	 * @param  {Integer} width Width of the image.
+	 * @param  {Integer} height Height of the image.
 	 * @param  {Integer} speed The speed for the hero.
 	 * @param  {Integer} x The x location of the hero on the stage.
 	 * @param  {Integer} y The y location of the hero on the stage.
 	 */
-	initialize: function(image, speed, x, y) {
+	initialize: function(image, width, height, speed, x, y) {
 		this.bitmap = new createjs.Bitmap(image);
 		this.speed = speed;
 		this.x = this.bitmap.x = x;
