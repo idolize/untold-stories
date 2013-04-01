@@ -103,22 +103,24 @@ var Game = new Class({
 		//console.log('INFO: mouse clicked at: ' + x + ', ' + y + (event.rightClick ? ' right click' : ''));
 		if (event.shift) {
 			this.objectBoard.setObject(x, y, this.currentObjectType);
-			if (!this.stateChanges['objsAdded']) this.stateChanges['objsAdded'] = [];
-			this.stateChanges['objsAdded'].push({
+			if (!this.stateChanges['objsAdded']) this.stateChanges['objsAdded'] = {};
+			// map on x,y to only store the last change at that location
+			this.stateChanges['objsAdded'][x+','+y] = {
 				id: this.currentObjectType.id,
 				x: x,
 				y: y,
 				isPassable: this.currentObjectType.isPassable
-			});
+			};
 		} else {
 			this.tileBoard.setTile(x, y, this.currentTileType);
-			if (!this.stateChanges['tilesChanged']) this.stateChanges['tilesChanged'] = [];
-			this.stateChanges['tilesChanged'].push({
+			if (!this.stateChanges['tilesChanged']) this.stateChanges['tilesChanged'] = {};
+			// map on x,y to only store the last change at that location
+			this.stateChanges['tilesChanged'][x+','+y] = {
 				id: this.currentTileType.id,
 				x: x,
 				y: y,
 				isPassable: this.currentTileType.isPassable
-			});
+			};
 		}
 	},
 
@@ -153,7 +155,7 @@ var Game = new Class({
 	applyStateChanges: function(changes) {
 		if (changes['objsAdded']) {
 			var objsAdded = changes['objsAdded'];
-			objsAdded.each(function(obj, index) {
+			Object.each(objsAdded, function(obj, key) {
 				// see if any new images need to be downloaded
 				if (!this.objectTypeMap[obj.id]) {
 					// fetch the image and store it in the map for later
@@ -165,7 +167,7 @@ var Game = new Class({
 		}
 		if (changes['tilesChanged']) {
 			var tilesChanged = changes['tilesChanged'];
-			tilesChanged.each(function(tile, index) {
+			Object.each(tilesChanged, function(tile, key) {
 				// see if any new images need to be downloaded
 				if (!this.tileTypeMap[tile.id]) {
 					// fetch the image and store it in the map for later
@@ -179,8 +181,6 @@ var Game = new Class({
 		// update the objects and tiles
 		if (changes['heroPosX']) this.hero.x = changes['heroPosX'];
 		if (changes['heroPosY']) this.hero.y = changes['heroPosY'];
-		// all changes applied - reset object back to empty
-		this.stateChanges = {};
 	},
 
 	/**
@@ -191,6 +191,9 @@ var Game = new Class({
 		if (!this.active) {
 			console.log('INFO: Turn started');
 			this.active = true;
+
+			// reset record of changes for this turn
+			this.stateChanges = {};
 
 			// (re)initialize the state
 			this.applyStateChanges(changes);

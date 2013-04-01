@@ -48,8 +48,10 @@ var TileBoard = new Class({
 	 * @param  {integer} x Tile position on the x-axis.
 	 * @param  {integer} y Tile position on the y-axis.
 	 * @param  {BoardTile} boardTile The tile to set.
+	 * @return {Boolean} If the tile was added (true) or replaced (false).
 	 */
 	setTileWithExisting: function(x, y, boardTile) {
+		var added = false;
 		var oldTile = this.tiles[y][x];
 		if (oldTile) {
 			// remove the old bitmap from display list
@@ -65,7 +67,9 @@ var TileBoard = new Class({
 			boardTile.bitmap.y = this.tileSize * y;
 			// add the bitmap to the display list
 			this.container.addChild(boardTile.bitmap);
+			added = true;
 		}
+		return added;
 	},
 
 	/**
@@ -76,9 +80,10 @@ var TileBoard = new Class({
 	 * @param {integer} x Tile position on the x-axis.
 	 * @param {integer} y Tile position on the y-axis.
 	 * @param {TileType} tileType The type of tile to place.
+	 * @return {Boolean} If the tile was added (true) or replaced (false).
 	 */
 	setTile: function(x, y, tileType) {
-		this.setTileWithExisting(x, y, new BoardTile(tileType, this));
+		return this.setTileWithExisting(x, y, new BoardTile(tileType, this));
 	},
 
 	/**
