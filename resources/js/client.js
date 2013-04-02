@@ -6,7 +6,7 @@ function loaded() {
 	var canvas = document.id('gamecanvas');
 	var leftInfo = document.id('leftinfo')
 	var rightInfo = document.id('rightinfo')
-	var topRight = { y: 'top', x: 'right'};
+	var topRight = { y: 'top', x: 'right' };
 	// create waiting popup and animation
 	var waitingTextArea = new Element('div');
 	new Element('p', {html: 'Waiting for other player...'}).inject(waitingTextArea);
@@ -46,8 +46,7 @@ function loaded() {
 
 	function beginGame(isCreator) {
 		// show waiting animation
-		waitingPopup.open();
-		waitingAnim.start();
+		showWaiting(true);
 
 		// setup callbacks for our custom events
 		var onTurnStarted = function() {
@@ -59,22 +58,31 @@ function loaded() {
 			endBtn.set('disabled', true);
 			rightInfo.textContent = 'Waiting';
 		};
+		var onConnectFailed = function() {
+			if (app) app.destroy();
+			showWaiting(false);
+			// display failure message
+			showNotice('error', 'Socket connection failed');
+		};
+		var onDisconnected = function() {
+			// display failure message
+			showNotice('error', 'Socket disconnected');
+		};
 		var onJoinFailed = function(cause) {
-			// destroy app instance
-			app.destroy();
 			// stop waiting animation
-			waitingAnim.stop();
-			waitingPopup.close();
+			showWaiting(false);
 			// display the failure message
 			showNotice('notice', cause.msg);
+		};
+		var onOtherPlayerDisconnected = function() {
+			// display message
+			showNotice('notice', 'Other player disconnected');
 		};
 		var onGameStarted = function(game) {
 			// remove our event listener for joinFailed
 			app.removeEvent('joinFailed', onJoinFailed);
-			// stop and remove waiting animation
-			waitingAnim.stop();
-			waitingAnim.elem.dispose();
-			waitingPopup.close();
+			// stop waiting animation
+			showWaiting(false);
 			// remove the play button
 			document.id('play').dispose();
 			showNotice('info', ('Game started. You are the ' + (game.isCreator ? 'creator' : 'player') + '.'));
@@ -95,6 +103,7 @@ function loaded() {
 			// now listen for turn events
 			app.addEvent('turnStarted', onTurnStarted);
 			app.addEvent('turnEnded', onTurnEnded);
+			app.addEvent('otherPlayerDisconnected', onOtherPlayerDisconnected);
 		};
 
 		app.addEvent('connected', function() {
@@ -104,9 +113,21 @@ function loaded() {
 			// ok to begin attempt to join the server
 			app.join(isCreator);
 		});
+		app.addEvent('connectFailed', onConnectFailed);
+		app.addEvent('disconnected', onDisconnected);
 
 		// start the app
 		app.connect(':'+globals.wsPort);
+	}
+
+	function showWaiting(show) {
+		if (show) {
+			waitingPopup.open();
+			waitingAnim.start();
+		} else {
+			waitingAnim.stop();
+			waitingPopup.close();
+		}
 	}
 
 	function showNotice(type, msg) {
