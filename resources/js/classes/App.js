@@ -22,11 +22,7 @@ var App = new Class({
 	 */
 	connect: function(serverUrl) {
 		serverUrl = serverUrl || 'http://localhost:8888';
-		if (!this.socket) {
-			this.socket = io.connect(serverUrl);
-		} else {
-			this.socket = io.connect(serverUrl, {'force new connection':true}); // see https://github.com/LearnBoost/socket.io-client/issues/251
-		}
+		this.socket = io.connect(serverUrl, {'force new connection':true}); // see https://github.com/LearnBoost/socket.io-client/issues/251
 		this.socket.once('error', function() {
 			console.log('ERROR: Unable to connect to socket');
 			this.fireEvent('connectFailed');
@@ -34,10 +30,6 @@ var App = new Class({
 		this.socket.once('reconnect_error', function() {
 			console.log('ERROR: Reconnect to socket failed');
 			this.fireEvent('connectFailed');
-		}.bind(this));
-		this.socket.once('disconnect', function() {
-			console.log('ERROR: Socket disconnected');
-			this.fireEvent('disconnected');
 		}.bind(this));
 		this.socket.once('connect', function() {
 			this.fireEvent('connected');
@@ -67,11 +59,16 @@ var App = new Class({
 			this.socket.on('yourTurn', this.game.beginTurn);
 			// make the socket listen for 'otherPlayerDisconnected' events
 			this.socket.once('otherPlayerDisconnected', this.onOtherPlayerDisconnected);
+			// if our own socket disconnects
+			this.socket.once('disconnect', function() {
+				console.log('ERROR: Socket disconnected');
+				this.fireEvent('disconnected');
+			}.bind(this));
 		}.bind(this); // Note: bind is needed to ensure the function is called with the right 'this' scoping
 		var onFail = function(cause) {
-			this.destroy();
 			// update DOM elsewhere
 			this.fireEvent('joinFailed', cause);
+			this.destroy();
 		}.bind(this);
 		this.socket.once('joinFailed', onFail);
 		this.socket.once('ready', onReady);
