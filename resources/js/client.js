@@ -4,8 +4,9 @@
  */
 function loaded() {
 	var canvas = document.id('gamecanvas');
+	var leftInfo = document.id('leftinfo')
+	var rightInfo = document.id('rightinfo')
 	var topRight = { y: 'top', x: 'right'};
-	var isReconnect = false;
 	// create waiting popup and animation
 	var waitingTextArea = new Element('div');
 	new Element('p', {html: 'Waiting for other player...'}).inject(waitingTextArea);
@@ -26,35 +27,41 @@ function loaded() {
 			{ title: 'Player',
 				event: function() {
 					this.close();
-					begin(false);
+					beginGame(false);
 				}
 			},
 			{ title: 'Creator',
 				event: function() {
 					this.close();
-					begin(true);
+					beginGame(true);
 				}
 			}
 		],
 		attach: 'play' // attach this dialog to the play button's onClick handler
 	});
+	document.id('play').erase('disabled');
+	var endBtn;
+	// create the app
+	var app = new App(canvas);
 
-
-	function begin(isCreator) {
+	function beginGame(isCreator) {
 		// show waiting animation
 		waitingPopup.open();
 		waitingAnim.start();
 
-		// start the app
-		var app = new App(canvas, isCreator);
-		app.connect(isReconnect, reqUrl);
-
 		// setup callbacks for our custom events
-		// NOTE it is the event listener's responsibility (not the event generator's) to remove any listeners it registers
+		var onTurnStarted = function() {
+			endBtn.erase('disabled');
+			showNotice('info', 'Your turn has started');
+			rightInfo.textContent = 'Active';
+		};
+		var onTurnEnded = function() {
+			endBtn.set('disabled', true);
+			rightInfo.textContent = 'Waiting';
+		};
 		var onJoinFailed = function(cause) {
-			// discard app instance
+			// destroy app instance
 			app.destroy();
-			app = null;
 			// stop waiting animation
 			waitingAnim.stop();
 			waitingPopup.close();
@@ -71,13 +78,35 @@ function loaded() {
 			// remove the play button
 			document.id('play').dispose();
 			showNotice('info', ('Game started. You are the ' + (game.isCreator ? 'creator' : 'player') + '.'));
-		};
-		app.addEvent('joinFailed', onJoinFailed);
-		app.addEvent('gameStarted', onGameStarted);
+			leftInfo.textContent = (game.isCreator ? 'Creator' : 'Player');
+			rightInfo.textContent = 'Waiting';
 
-		// ok to attempt to join the server
-		app.join();
-		isReconnect = true;
+			// show the 'end turn button'
+			endBtn = new Element('button', {
+				html: 'End turn',
+				'class': 'btn red',
+				disabled: true,
+				events: {
+					click: app.endTurn
+				},
+				id: 'endturn'
+			});
+			endBtn.inject('bottom');
+			// now listen for turn events
+			app.addEvent('turnStarted', onTurnStarted);
+			app.addEvent('turnEnded', onTurnEnded);
+		};
+
+		app.addEvent('connected', function() {
+			// listen for response to join request
+			app.addEvent('joinFailed', onJoinFailed);
+			app.addEvent('gameStarted', onGameStarted);
+			// ok to begin attempt to join the server
+			app.join(isCreator);
+		});
+
+		// start the app
+		app.connect(':'+globals.wsPort);
 	}
 
 	function showNotice(type, msg) {
