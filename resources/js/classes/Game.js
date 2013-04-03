@@ -25,6 +25,9 @@ var Game = new Class({
 	currentTileType: null,
 	currentObjectType: null,
     isMouseDown: null,
+    lastClickBoardX: -1,
+    lastClickBoardY: -1,
+    lastClickWasTile: false,
 
 	/**
 	 * @constructor
@@ -125,6 +128,9 @@ var Game = new Class({
 			};
 		}
         this.isMouseDown = true;
+        this.lastClickBoardX = x;
+        this.lastClickBoardY = y;
+        this.lastClickWasTile = !event.shift;
 	},
 
     // "private" function
@@ -140,28 +146,33 @@ var Game = new Class({
 		    var y = event.page.y - this.stage.canvas.getPosition().y;
 		    x = Math.floor(x / this.tileSize);
 		    y = Math.floor(y / this.tileSize);
-		    //console.log('INFO: mouse clicked at: ' + x + ', ' + y + (event.rightClick ? ' right click' : ''));
-		    if (event.shift) {
-			    this.objectBoard.setObject(x, y, this.currentObjectType);
-			    if (!this.stateChanges['objsAdded']) this.stateChanges['objsAdded'] = {};
-			    // map on x,y to only store the last change at that location
-			    this.stateChanges['objsAdded'][x+','+y] = {
-				    id: this.currentObjectType.id,
-				    x: x,
-				    y: y,
-				    isPassable: this.currentObjectType.isPassable
-			    };
-		    } else {
-			    this.tileBoard.setTile(x, y, this.currentTileType);
-			    if (!this.stateChanges['tilesChanged']) this.stateChanges['tilesChanged'] = {};
-			    // map on x,y to only store the last change at that location
-			    this.stateChanges['tilesChanged'][x+','+y] = {
-				    id: this.currentTileType.id,
-				    x: x,
-				    y: y,
-				    isPassable: this.currentTileType.isPassable
-			    };
-		    }
+            if (x != this.lastClickBoardX || y != this.lastClickBoardY) {
+		        //console.log('INFO: mouse clicked at: ' + x + ', ' + y + (event.rightClick ? ' right click' : ''));
+		        if (event.shift) {
+			        this.objectBoard.setObject(x, y, this.currentObjectType);
+			        if (!this.stateChanges['objsAdded']) this.stateChanges['objsAdded'] = {};
+			        // map on x,y to only store the last change at that location
+			        this.stateChanges['objsAdded'][x+','+y] = {
+				        id: this.currentObjectType.id,
+				        x: x,
+				        y: y,
+				        isPassable: this.currentObjectType.isPassable
+			        };
+		        } else {
+			        this.tileBoard.setTile(x, y, this.currentTileType);
+			        if (!this.stateChanges['tilesChanged']) this.stateChanges['tilesChanged'] = {};
+			        // map on x,y to only store the last change at that location
+			        this.stateChanges['tilesChanged'][x+','+y] = {
+				        id: this.currentTileType.id,
+				        x: x,
+				        y: y,
+				        isPassable: this.currentTileType.isPassable
+			        };
+		        }
+                this.lastClickBoardX = x;
+                this.lastClickBoardY = y;
+                this.lastClickWasTile = !event.shift;
+            }
         }
     },
 
