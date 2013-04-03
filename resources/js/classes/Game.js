@@ -6,7 +6,7 @@
  */
 var Game = new Class({
 	Implements: Events,
-	Binds: ['beginTurn', 'gameLoop', '_mouseDownHandler'], // see: http://mootools.net/docs/more/Class/Class.Binds
+	Binds: ['beginTurn', 'gameLoop', '_mouseDownHandler', '_mouseMoveHandler', '_mouseUpHandler'], // see: http://mootools.net/docs/more/Class/Class.Binds
 
 	heroImageUrl: 'images/hero/hero.png',
 	heroSpeed: 256,
@@ -24,6 +24,7 @@ var Game = new Class({
 	tileTypeMap: null,
 	currentTileType: null,
 	currentObjectType: null,
+    isMouseDown: null,
 
 	/**
 	 * @constructor
@@ -39,6 +40,7 @@ var Game = new Class({
 		this.active = false;
 		this.objectTypeMap = {};
 		this.tileTypeMap = {};
+        this.isMouseDown = false;
 
 		// create the stage
 		this.stage = new createjs.Stage(canvas);
@@ -122,7 +124,46 @@ var Game = new Class({
 				isPassable: this.currentTileType.isPassable
 			};
 		}
+        this.isMouseDown = true;
 	},
+
+    // "private" function
+    _mouseUpHandler: function(event) {
+        this.isMouseDown = false;
+    },
+
+    // "private" function
+    _mouseMoveHandler: function(event) {
+		// decide where to put it
+        if (this.isMouseDown) {
+		    var x = event.page.x - this.stage.canvas.getPosition().x;
+		    var y = event.page.y - this.stage.canvas.getPosition().y;
+		    x = Math.floor(x / this.tileSize);
+		    y = Math.floor(y / this.tileSize);
+		    //console.log('INFO: mouse clicked at: ' + x + ', ' + y + (event.rightClick ? ' right click' : ''));
+		    if (event.shift) {
+			    this.objectBoard.setObject(x, y, this.currentObjectType);
+			    if (!this.stateChanges['objsAdded']) this.stateChanges['objsAdded'] = {};
+			    // map on x,y to only store the last change at that location
+			    this.stateChanges['objsAdded'][x+','+y] = {
+				    id: this.currentObjectType.id,
+				    x: x,
+				    y: y,
+				    isPassable: this.currentObjectType.isPassable
+			    };
+		    } else {
+			    this.tileBoard.setTile(x, y, this.currentTileType);
+			    if (!this.stateChanges['tilesChanged']) this.stateChanges['tilesChanged'] = {};
+			    // map on x,y to only store the last change at that location
+			    this.stateChanges['tilesChanged'][x+','+y] = {
+				    id: this.currentTileType.id,
+				    x: x,
+				    y: y,
+				    isPassable: this.currentTileType.isPassable
+			    };
+		    }
+        }
+    },
 
 	// "private" function
 	_initBoards: function() {
@@ -176,6 +217,8 @@ var Game = new Class({
 	// "private" function
 	_addMouseListener: function() {
 		this.stage.canvas.addEvent('mousedown', this._mouseDownHandler);
+        this.stage.canvas.addEvent('mousemove', this._mouseMoveHandler);
+        this.stage.canvas.addEvent('mouseup', this._mouseUpHandler);
 	},
 
 	// "private" function
