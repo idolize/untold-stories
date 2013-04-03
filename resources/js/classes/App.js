@@ -5,7 +5,7 @@
  */
 var App = new Class({
 	Implements: Events,
-	Binds: ['onTurnStarted', 'endTurn'], // see: http://mootools.net/docs/more/Class/Class.Binds
+	Binds: ['onTurnStarted', 'endTurn', 'onOtherPlayerDisconnected'], // see: http://mootools.net/docs/more/Class/Class.Binds
 
 	socket: null,
 	game: null,
@@ -22,11 +22,15 @@ var App = new Class({
 	 */
 	connect: function(serverUrl) {
 		serverUrl = serverUrl || 'http://localhost:8888';
-		if (!this.socket) {
-			this.socket = io.connect(serverUrl);
-		} else {
-			this.socket.socket.reconnect(); // see http://stackoverflow.com/questions/10437584/socket-io-reconnect
-		}
+		this.socket = io.connect(serverUrl, {'force new connection':true}); // see https://github.com/LearnBoost/socket.io-client/issues/251
+		this.socket.once('error', function() {
+			console.log('ERROR: Unable to connect to socket');
+			this.fireEvent('connectFailed');
+		}.bind(this));
+		this.socket.once('reconnect_error', function() {
+			console.log('ERROR: Reconnect to socket failed');
+			this.fireEvent('connectFailed');
+		}.bind(this));
 		this.socket.once('connect', function() {
 			this.fireEvent('connected');
 		}.bind(this));
@@ -53,12 +57,18 @@ var App = new Class({
 			this.game.start();
 			// make the socket listen for 'yourTurn' events
 			this.socket.on('yourTurn', this.game.beginTurn);
+			// make the socket listen for 'otherPlayerDisconnected' events
+			this.socket.once('otherPlayerDisconnected', this.onOtherPlayerDisconnected);
+			// if our own socket disconnects
+			this.socket.once('disconnect', function() {
+				console.log('ERROR: Socket disconnected');
+				this.fireEvent('disconnected');
+			}.bind(this));
 		}.bind(this); // Note: bind is needed to ensure the function is called with the right 'this' scoping
 		var onFail = function(cause) {
-			// no longer listen for any messages until the app is recreated
-			this.socket.removeAllListeners();
 			// update DOM elsewhere
 			this.fireEvent('joinFailed', cause);
+			this.destroy();
 		}.bind(this);
 		this.socket.once('joinFailed', onFail);
 		this.socket.once('ready', onReady);
@@ -73,11 +83,20 @@ var App = new Class({
 	},
 
 	/**
+	 * Callback for if the other player in the game disconnects prematurely.
+	 */
+	onOtherPlayerDisconnected: function() {
+		console.log('INFO: Other player disconnected');
+		this.fireEvent('otherPlayerDisconnected');
+		this.destroy();
+	},
+
+	/**
 	 * Ends the current turn in the game and broadcasts the message to the server.
 	 */
 	endTurn: function() {
 		var turnChanges = this.game.endTurn();
-		this.socket.emit('turnEnded', {isCreator: this.game.isCreator, changes: turnChanges});
+		this.socket.emit('turnEnded', turnChanges);
 		this.fireEvent('turnEnded');
 	},
 
@@ -91,8 +110,8 @@ var App = new Class({
 		this.socket.removeAllListeners();
 		this.socket.disconnect();
 		// end the game as well if it is running
-		if (this.game.active) {
-			this.game.stop();
+		if (this.game && this.game.active) {
+			this.game.endGame();
 		}
 	}
 });

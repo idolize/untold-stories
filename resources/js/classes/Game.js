@@ -185,7 +185,7 @@ var Game = new Class({
 
 	/**
 	 * Updates the state of the game and all game objects based on a set of changes.
-	 * @param {Object} newState The new game state.
+	 * @param {Object} changes The new game state changes.
 	 */
 	applyStateChanges: function(changes) {
 		if (changes['objsAdded']) {
@@ -257,7 +257,7 @@ var Game = new Class({
 			console.log('INFO: Turn ended');
 			this.active = false;
 		}
-		this.fireEvent('turnEnded', this.stateChanges); // not used currently - just in case someone cares
+		this.fireEvent('turnEnded', this.stateChanges); // not used currently - just in case someone cares to listen
 		return this.stateChanges;
 	},
 
@@ -267,7 +267,7 @@ var Game = new Class({
 	 */
 	endGame: function() {
 		// force any active turn to end
-		if (this.active) endTurn();
+		if (this.active) this.endTurn();
 		// stop game timer
 		createjs.Ticker.removeEventListener('tick', this.gameLoop);
 		this.fireEvent('gameOver');
