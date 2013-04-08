@@ -176,42 +176,6 @@ var Game = new Class({
         }
     },
 
-	// "private" function
-	_initBoards: function() {
-		// load images from server
-		var image1 = new Image();
-		image1.src = 'http://localhost:8888/images/tiles/1.png';
-
-		// create the tile types for these images
-		var type1 = new TileType(1, image1); //TODO these types will be stored somewhere
-		this.currentTileType = type1;
-
-		// create the board and display it
-		this.board = new Board(20, 15, 20);
-		this.stage.addChild(this.board.container);
-
-		// update some of the tiles on the board
-		this.board.setTile(0, 0, type1);
-		this.board.setTile(1, 0, type1);
-		this.board.setTile(2, 0, type1);
-		this.board.setTile(0, 1, type1);
-		//this.board.setTile(1, 1, type2); // inner box
-		this.board.setTile(2, 1, type1);
-		this.board.setTile(0, 2, type1);
-		this.board.setTile(1, 2, type1);
-		this.board.setTile(2, 2, type1);
-
-		// load image from server
-		var image2 = new Image();
-		image2.src = 'http://localhost:8888/images/objects/obj1.png';
-		// create the object type
-		var object1 = new ObjectType(1, image2);
-		this.currentObjectType = object1;
-		// create object board and display it
-		this.objectBoard = new ObjectBoard(20, 15, 20);
-		this.stage.addChild(this.objectBoard.container);
-    },
-
 	_addKeyboardListeners: function() {
 		// add keyboard listeners for player
 		window.addEvent('keydown', this._keyDownHandler);
@@ -242,6 +206,7 @@ var Game = new Class({
 	 * @param {Object} changes The new game state changes.
 	 */
 	applyStateChanges: function(changes) {
+		// update objects
 		if (changes['objsAdded']) {
 			var objsAdded = changes['objsAdded'];
 			Object.each(objsAdded, function(obj, key) {
@@ -254,6 +219,8 @@ var Game = new Class({
 				this.objectBoard.setObject(obj.x, obj.y, this.objectTypeMap[obj.id]);
 			}, this);
 		}
+		// TODO handle object deletion or object movement
+		// update tiles
 		if (changes['tilesChanged']) {
 			var tilesChanged = changes['tilesChanged'];
 			Object.each(tilesChanged, function(tile, key) {
@@ -266,8 +233,7 @@ var Game = new Class({
 				this.tileBoard.setTile(tile.x, tile.y, this.tileTypeMap[tile.id]);
 			}, this);
 		}
-		// TODO handle object deletion or object movement
-		// update the objects and tiles
+		// update the hero position
 		if (changes['heroPosX']) this.hero.x = changes['heroPosX'];
 		if (changes['heroPosY']) this.hero.y = changes['heroPosY'];
 	},
