@@ -2,5 +2,3 @@
 
 # This folder is automatically created by npm
 node_modules/
-# This folder is used by OpenShift
-.openshift/

@@ -6,7 +6,7 @@
  */
 var Game = new Class({
 	Implements: Events,
-	Binds: ['beginTurn', 'gameLoop', '_mouseDownHandler'], // see: http://mootools.net/docs/more/Class/Class.Binds
+	Binds: ['beginTurn', 'gameLoop', '_mouseDownHandler', '_mouseMoveHandler', '_mouseUpHandler'], // see: http://mootools.net/docs/more/Class/Class.Binds
 
 	heroImageUrl: 'images/hero/hero.png',
 	heroSpeed: 256,
@@ -24,6 +24,10 @@ var Game = new Class({
 	tileTypeMap: null,
 	currentTileType: null,
 	currentObjectType: null,
+    isMouseDown: null,
+    lastClickBoardX: -1,
+    lastClickBoardY: -1,
+    lastClickWasTile: false,
 
 	/**
 	 * @constructor
@@ -39,6 +43,7 @@ var Game = new Class({
 		this.active = false;
 		this.objectTypeMap = {};
 		this.tileTypeMap = {};
+        this.isMouseDown = false;
 
 		// create the stage
 		this.stage = new createjs.Stage(canvas);
@@ -122,9 +127,55 @@ var Game = new Class({
 				isPassable: this.currentTileType.isPassable
 			};
 		}
+        this.isMouseDown = true;
+        this.lastClickBoardX = x;
+        this.lastClickBoardY = y;
+        this.lastClickWasTile = !event.shift;
 	},
 
-	// "private" function
+    // "private" function
+    _mouseUpHandler: function(event) {
+        this.isMouseDown = false;
+    },
+
+    // "private" function
+    _mouseMoveHandler: function(event) {
+		// decide where to put it
+        if (this.isMouseDown) {
+		    var x = event.page.x - this.stage.canvas.getPosition().x;
+		    var y = event.page.y - this.stage.canvas.getPosition().y;
+		    x = Math.floor(x / this.tileSize);
+		    y = Math.floor(y / this.tileSize);
+            if (x != this.lastClickBoardX || y != this.lastClickBoardY) {
+		        //console.log('INFO: mouse clicked at: ' + x + ', ' + y + (event.rightClick ? ' right click' : ''));
+		        if (event.shift) {
+			        this.objectBoard.setObject(x, y, this.currentObjectType);
+			        if (!this.stateChanges['objsAdded']) this.stateChanges['objsAdded'] = {};
+			        // map on x,y to only store the last change at that location
+			        this.stateChanges['objsAdded'][x+','+y] = {
+				        id: this.currentObjectType.id,
+				        x: x,
+				        y: y,
+				        isPassable: this.currentObjectType.isPassable
+			        };
+		        } else {
+			        this.tileBoard.setTile(x, y, this.currentTileType);
+			        if (!this.stateChanges['tilesChanged']) this.stateChanges['tilesChanged'] = {};
+			        // map on x,y to only store the last change at that location
+			        this.stateChanges['tilesChanged'][x+','+y] = {
+				        id: this.currentTileType.id,
+				        x: x,
+				        y: y,
+				        isPassable: this.currentTileType.isPassable
+			        };
+		        }
+                this.lastClickBoardX = x;
+                this.lastClickBoardY = y;
+                this.lastClickWasTile = !event.shift;
+            }
+        }
+    },
+
 	_addKeyboardListeners: function() {
 		// add keyboard listeners for player
 		window.addEvent('keydown', this._keyDownHandler);
@@ -141,6 +192,8 @@ var Game = new Class({
 	// "private" function
 	_addMouseListener: function() {
 		this.stage.canvas.addEvent('mousedown', this._mouseDownHandler);
+        this.stage.canvas.addEvent('mousemove', this._mouseMoveHandler);
+        this.stage.canvas.addEvent('mouseup', this._mouseUpHandler);
 	},
 
 	// "private" function
@@ -150,9 +203,10 @@ var Game = new Class({
 
 	/**
 	 * Updates the state of the game and all game objects based on a set of changes.
-	 * @param {Object} newState The new game state.
+	 * @param {Object} changes The new game state changes.
 	 */
 	applyStateChanges: function(changes) {
+		// update objects
 		if (changes['objsAdded']) {
 			var objsAdded = changes['objsAdded'];
 			Object.each(objsAdded, function(obj, key) {
@@ -165,6 +219,8 @@ var Game = new Class({
 				this.objectBoard.setObject(obj.x, obj.y, this.objectTypeMap[obj.id]);
 			}, this);
 		}
+		// TODO handle object deletion or object movement
+		// update tiles
 		if (changes['tilesChanged']) {
 			var tilesChanged = changes['tilesChanged'];
 			Object.each(tilesChanged, function(tile, key) {
@@ -177,8 +233,7 @@ var Game = new Class({
 				this.tileBoard.setTile(tile.x, tile.y, this.tileTypeMap[tile.id]);
 			}, this);
 		}
-		// TODO handle object deletion or object movement
-		// update the objects and tiles
+		// update the hero position
 		if (changes['heroPosX']) this.hero.x = changes['heroPosX'];
 		if (changes['heroPosY']) this.hero.y = changes['heroPosY'];
 	},
@@ -222,7 +277,7 @@ var Game = new Class({
 			console.log('INFO: Turn ended');
 			this.active = false;
 		}
-		this.fireEvent('turnEnded', this.stateChanges); // not used currently - just in case someone cares
+		this.fireEvent('turnEnded', this.stateChanges); // not used currently - just in case someone cares to listen
 		return this.stateChanges;
 	},
 
@@ -232,7 +287,7 @@ var Game = new Class({
 	 */
 	endGame: function() {
 		// force any active turn to end
-		if (this.active) endTurn();
+		if (this.active) this.endTurn();
 		// stop game timer
 		createjs.Ticker.removeEventListener('tick', this.gameLoop);
 		this.fireEvent('gameOver');
@@ -258,5 +313,25 @@ var Game = new Class({
 		// render
 		this.hero.render();
 		this.stage.update();
+	},
+
+	/**
+	 * Sets the current tile type to the given TileType so that the user now places the new type.
+	 * Also switches out of placing objects mode to placing tiles mode.
+	 * @param {TileType} tileType the new tile type
+	 */
+	setCurrentTileType: function(tileType) {
+		this.currentTileType = tileType;
+		this.isPlacingObject = false;
+	},
+
+	/**
+	 * Sets the current object type to the given ObjectType so that the user now places the new type
+	 * Also switches to placing objects mode.
+	 * @param {ObjectType} objectType The new Object Type.
+	 */
+	setCurrentObjectType: function(objectType) {
+		this.currentObjectType = objectType;
+		this.isPlacingObject = true;
 	},
 });
