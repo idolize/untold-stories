@@ -10,6 +10,46 @@
 	<link rel="stylesheet" type="text/css" href="styles/external/mBoxNotice.css" />
 	<link rel="stylesheet" type="text/css" href="styles/external/mForm.css" />
 	<link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Londrina+Solid"> <!--font-->
+	<style>
+		ul.tabs{
+		  height:20px;
+		  list-style-type: none;
+		}
+
+		ul.tabs li {
+		  float:left;
+		  background-color:#ccc;
+		  cursor:pointer;
+		  padding:4px 15px 4px 15px;
+		  border:1px solid #ddd;
+		  border-bottom:none;
+		  position:relative;
+		  top:1px;
+		  margin-right:2px;
+		  text-shadow:0 -1px 0 #ccc;
+		  color:#eee;
+		  font-weight:bold;
+		}
+
+		ul.tabs li.selected {
+		  background-color:#eee;
+		  border:1px solid #ccc;
+		  border-bottom:1px solid #eee;
+		  color:#000;
+		  text-shadow:0 -1px 0 #ccc;
+		}
+
+		ul.contents {
+		  border:1px solid #bbb;
+		  height:100px;
+		  clear:both;
+		  background-color:#ccc;
+		}
+
+		ul.contents li{
+		   margin:10px
+		}
+		</style>
 </head>
 <body>
 	<!-- Scripts -->
@@ -20,6 +60,7 @@
 	<script type="text/javascript" src="js/external/mootools-more-1.4.0.1.js"></script>
 	<script type="text/javascript" src="js/external/mBox.All.min.js"></script>
 	<script type="text/javascript" src="js/external/MUX.Loaders.min.js"></script>
+	<script type="text/javascript" src="js/external/tinytab.js" ></script>
 	<script type="text/javascript" src="js/client.js"></script>
 	<script type="text/javascript" src="js/classes/App.js"></script>
 	<script type="text/javascript" src="js/classes/Game.js"></script>
@@ -43,6 +84,18 @@
 			<button id="play" class="btn large babyblue">Play</button>
 		</div>
 		<div id="bottom"></div>
+
+		<div id="element_id" style="display:none">
+			<ul class="tabs">
+			  <li>Tiles</li>
+			  <li>Objects</li>
+			</ul>
+			<ul class="contents">
+			  <li>One line of code.</li>
+			  <li>No more than a simple tab system.</li>
+			</ul>
+		</div>
+
 	</div>
 	<div class="footer">
 		<ul class="items">

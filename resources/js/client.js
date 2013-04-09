@@ -112,7 +112,7 @@ function loaded() {
 				toolbarBox = new mBox({
 					title: 'Toolbar',
 					content: "toolbar stuff goes here...",
-					width: 50,
+					width: 100,
 					height: 200,
 					draggable: true,
 					target: 'main',
@@ -134,8 +134,8 @@ function loaded() {
 
 				selectorBox = new mBox({
 					title: 'Tiles and Objects',
-					content: "tiles and objects go here using tabs...",
-					width: 150,
+					content: "element_id",
+					width: 250,
 					height: 400,
 					draggable: true,
 					target: 'main',
@@ -154,6 +154,8 @@ function loaded() {
 					openOnInit: true,
 					attach: 'main',
 				});
+
+				tb = new TinyTab($$('ul.tabs li'),$$('ul.contents li'));
 			} else {
 				textboxBtn = new Element('button', {
 					html: 'Textbox',
