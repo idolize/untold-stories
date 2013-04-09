@@ -2,14 +2,20 @@
  * Perform all DOM manipulation in this top level function (by listening to events from app or app.game).
  * @see  <a href="http://mootools.net/docs/core/Element/Element">MooTools Element class</a> for DOM tools.
  */
+
 function loaded() {
 	var canvas = document.id('gamecanvas');
 	var leftInfo = document.id('leftinfo')
 	var rightInfo = document.id('rightinfo')
-	var topRight = { y: 'top', x: 'right' };
+	var topRight = {
+		y: 'top',
+		x: 'right'
+	};
 	// create waiting popup and animation
 	var waitingTextArea = new Element('div');
-	new Element('p', {html: 'Waiting for other player...'}).inject(waitingTextArea);
+	new Element('p', {
+		html: 'Waiting for other player...'
+	}).inject(waitingTextArea);
 	var waitingAnim = new MUX.Loader.Bar();
 	waitingAnim.elem.inject(waitingTextArea);
 	var waitingPopup = new mBox({
@@ -23,24 +29,28 @@ function loaded() {
 	var joinModal = new mBox.Modal({
 		title: 'Join a game',
 		content: 'Select what you wish to play as...',
-		buttons: [
-			{ title: 'Player',
-				event: function() {
-					this.close();
-					beginGame(false);
-				}
-			},
-			{ title: 'Creator',
-				event: function() {
-					this.close();
-					beginGame(true);
-				}
+		buttons: [{
+			title: 'Player',
+			event: function() {
+				this.close();
+				beginGame(false);
 			}
-		],
+		}, {
+			title: 'Creator',
+			event: function() {
+				this.close();
+				beginGame(true);
+			}
+		}],
 		attach: 'play' // attach this dialog to the play button's onClick handler
 	});
+
 	document.id('play').erase('disabled');
 	var endBtn;
+	var textboxBtn;
+	var interactBtn;
+	var toolbarBox;
+	var selectorBox;
 	// create the app
 	var app = new App(canvas);
 
@@ -51,11 +61,19 @@ function loaded() {
 		// setup callbacks for our custom events
 		var onTurnStarted = function() {
 			endBtn.erase('disabled');
+			if (!isCreator) {
+				textboxBtn.erase('disabled');
+				interactBtn.erase('disabled');
+			}
 			showNotice('info', 'Your turn has started');
 			rightInfo.textContent = 'Active';
 		};
 		var onTurnEnded = function() {
 			endBtn.set('disabled', true);
+			if (!isCreator) {
+				textboxBtn.set('disabled', true);
+				interactBtn.set('disabled', true);
+			}
 			rightInfo.textContent = 'Waiting';
 		};
 		var onConnectFailed = function() {
@@ -89,6 +107,70 @@ function loaded() {
 			leftInfo.textContent = (game.isCreator ? 'Creator' : 'Player');
 			rightInfo.textContent = 'Waiting';
 
+			// show the tile and object selector
+			if (isCreator) {
+				toolbarBox = new mBox({
+					title: 'Toolbar',
+					content: "toolbar stuff goes here...",
+					width: 50,
+					height: 200,
+					draggable: true,
+					target: 'main',
+					position: {
+						x: ['left', 'outside'],
+						y: ['center'],
+					},
+					offset: {
+						x: -10,
+						y: -5,
+					},
+					closeOnEsc: false,
+					closeOnClick: false,
+					closeOnBodyClick: false,
+					closeOnMouseleave: false,
+					openOnInit: true,
+					attach: 'main',
+				});
+
+				selectorBox = new mBox({
+					title: 'Tiles and Objects',
+					content: "tiles and objects go here using tabs...",
+					width: 150,
+					height: 400,
+					draggable: true,
+					target: 'main',
+					position: {
+						x: ['right', 'outside'],
+						y: ['center'],
+					},
+					offset: {
+						x: 10,
+						y: -5,
+					},
+					closeOnEsc: false,
+					closeOnClick: false,
+					closeOnBodyClick: false,
+					closeOnMouseleave: false,
+					openOnInit: true,
+					attach: 'main',
+				});
+			} else {
+				textboxBtn = new Element('button', {
+					html: 'Textbox',
+					'class': 'btn',
+					disabled: true,
+					id: 'textbox'
+				});
+
+				interactBtn = new Element('button', {
+					html: 'Interact',
+					'class': 'btn',
+					disabled: true,
+					id: 'interact'
+				});
+				textboxBtn.inject('bottom');
+				interactBtn.inject('bottom');
+			}
 			// show the 'end turn button'
 			endBtn = new Element('button', {
 				html: 'End turn',
@@ -117,7 +199,7 @@ function loaded() {
 		app.addEvent('disconnected', onDisconnected);
 
 		// start the app
-		app.connect(':'+globals.wsPort);
+		app.connect(':' + globals.wsPort);
 	}
 
 	function showWaiting(show) {
