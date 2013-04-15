@@ -193,7 +193,7 @@ var Game = new Class({
 	_addMouseListener: function() {
 		this.stage.canvas.addEvent('mousedown', this._mouseDownHandler);
         this.stage.canvas.addEvent('mousemove', this._mouseMoveHandler);
-        this.stage.canvas.addEvent('mouseup', this._mouseUpHandler);
+        window.addEvent('mouseup', this._mouseUpHandler);
 	},
 
 	// "private" function
