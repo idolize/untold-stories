@@ -134,8 +134,8 @@ function loaded() {
 
 				selectorBox = new mBox({
 					title: 'Tiles and Objects',
-					content: "element_id",
-					width: 250,
+					content: "selectorTabs",
+					width: 300,
 					height: 400,
 					draggable: true,
 					target: 'main',
