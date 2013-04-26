@@ -263,9 +263,9 @@ var Game = new Class({
 			
 			if (this.isCreator) {
 				this._addMouseListener();
-			} else {
+			}// else {
 				this._addKeyboardListeners();
-			}
+			//}
 			this.fireEvent('turnStarted', changes);
 		}
 	},
@@ -278,9 +278,9 @@ var Game = new Class({
 		if (this.active) {
 			if (this.isCreator) {
 				this._removeMouseListener();
-			} else {
+			}// else {
 				this._removeKeyboardListeners();
-			}
+		//	}
 			// turn is now over
 			console.log('INFO: Turn ended');
 			this.active = false;
@@ -309,12 +309,12 @@ var Game = new Class({
 	gameLoop: function(event) {
 		// update the game logic
 		
-		if (!this.isCreator) {
+		//if (!this.isCreator) {
 			this.hero.updateMove(event.delta); // time elapsed in ms since the last tick
 			// update the state changes record of this move
 			this.stateChanges['heroPosX'] = this.hero.x;
 			this.stateChanges['heroPosY'] = this.hero.y;
-		}
+		//}
 
 		// TODO collision checking goes here
 
