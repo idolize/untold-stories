@@ -24,11 +24,11 @@ var Game = new Class({
 	tileTypeMap: null,
 	currentTileType: null,
 	currentObjectType: null,
-    isMouseDown: null,
-    lastClickBoardX: -1,
-    lastClickBoardY: -1,
-    lastClickWasTile: false,
-    textFromOtherPlayer: null,
+	isMouseDown: null,
+	lastClickBoardX: -1,
+	lastClickBoardY: -1,
+	lastClickWasTile: false,
+	textFromOtherPlayer: null,
 
 	/**
 	 * @constructor
@@ -44,16 +44,16 @@ var Game = new Class({
 		this.active = false;
 		this.objectTypeMap = {};
 		this.tileTypeMap = {};
-        this.isMouseDown = false;
-        this.textFromOtherPlayer = "";
+		this.isMouseDown = false;
+		this.textFromOtherPlayer = "";
 
 		// create the stage
 		this.stage = new createjs.Stage(canvas);
-		console.log('INFO: Canvas: ' + this.width + 'px x ' + this.height +'px');
+		console.log('INFO: Canvas: ' + this.width + 'px x ' + this.height + 'px');
 		// create the tile board and add it to the display list
-		var numWide = Math.floor(this.width/tileSize);
-		var numHigh = Math.floor(this.height/tileSize);
-		console.log('INFO: Tile board: '+numWide+ ' x ' + numHigh+ ' tiles at tile size '+tileSize + 'px');
+		var numWide = Math.floor(this.width / tileSize);
+		var numHigh = Math.floor(this.height / tileSize);
+		console.log('INFO: Tile board: ' + numWide + ' x ' + numHigh + ' tiles at tile size ' + tileSize + 'px');
 		this.tileBoard = new TileBoard(numWide, numHigh, this.tileSize);
 		this.stage.addChild(this.tileBoard.container);
 		// create the object board and add it to the display list
@@ -108,79 +108,79 @@ var Game = new Class({
 		x = Math.floor(x / this.tileSize);
 		y = Math.floor(y / this.tileSize);
 		//console.log('INFO: mouse clicked at: ' + x + ', ' + y + (event.rightClick ? ' right click' : ''));
-        if (!event.rightClick) {
-	    	if (event.shift) {
-	    		this.objectBoard.setObject(x, y, this.currentObjectType);
-	    		if (!this.stateChanges['objsChanged']) this.stateChanges['objsChanged'] = {};
-	    		// map on x,y to only store the last change at that location
-	    		this.stateChanges['objsChanged'][x+','+y] = {
-	    			id: this.currentObjectType.id,
-	    			x: x,
-	    			y: y,
-	    			isPassable: this.currentObjectType.isPassable
-	    		};
-	    	} else {
-	    		this.tileBoard.setTile(x, y, this.currentTileType);
-	    		if (!this.stateChanges['tilesChanged']) this.stateChanges['tilesChanged'] = {};
-	    		// map on x,y to only store the last change at that location
-	    		this.stateChanges['tilesChanged'][x+','+y] = {
-	    			id: this.currentTileType.id,
-	    			x: x,
-	    			y: y,
-	    			isPassable: this.currentTileType.isPassable
-	    		};
-	    	}
-            this.isMouseDown = true;
-            this.lastClickBoardX = x;
-            this.lastClickBoardY = y;
-            this.lastClickWasTile = !event.shift;
-        } else {
-            this.clearScreen(true);
-        }
+		if (!event.rightClick) {
+			if (event.shift) {
+				this.objectBoard.setObject(x, y, this.currentObjectType);
+				if (!this.stateChanges['objsChanged']) this.stateChanges['objsChanged'] = {};
+				// map on x,y to only store the last change at that location
+				this.stateChanges['objsChanged'][x + ',' + y] = {
+					id: this.currentObjectType.id,
+					x: x,
+					y: y,
+					isPassable: this.currentObjectType.isPassable
+				};
+			} else {
+				this.tileBoard.setTile(x, y, this.currentTileType);
+				if (!this.stateChanges['tilesChanged']) this.stateChanges['tilesChanged'] = {};
+				// map on x,y to only store the last change at that location
+				this.stateChanges['tilesChanged'][x + ',' + y] = {
+					id: this.currentTileType.id,
+					x: x,
+					y: y,
+					isPassable: this.currentTileType.isPassable
+				};
+			}
+			this.isMouseDown = true;
+			this.lastClickBoardX = x;
+			this.lastClickBoardY = y;
+			this.lastClickWasTile = !event.shift;
+		} else {
+			this.clearScreen(true);
+		}
 	},
 
-    // "private" function
-    _mouseUpHandler: function(event) {
-        this.isMouseDown = false;
-    },
+	// "private" function
+	_mouseUpHandler: function(event) {
+		this.isMouseDown = false;
+	},
 
-    // "private" function
-    _mouseMoveHandler: function(event) {
+	// "private" function
+	_mouseMoveHandler: function(event) {
 		// decide where to put it
-        if (this.isMouseDown) {
-		    var x = event.page.x - this.stage.canvas.getPosition().x;
-		    var y = event.page.y - this.stage.canvas.getPosition().y;
-		    x = Math.floor(x / this.tileSize);
-		    y = Math.floor(y / this.tileSize);
-            if (x != this.lastClickBoardX || y != this.lastClickBoardY) {
-		        //console.log('INFO: mouse clicked at: ' + x + ', ' + y + (event.rightClick ? ' right click' : ''));
-		        if (event.shift) {
-			        this.objectBoard.setObject(x, y, this.currentObjectType);
-			        if (!this.stateChanges['objsChanged']) this.stateChanges['objsChanged'] = {};
-			        // map on x,y to only store the last change at that location
-			        this.stateChanges['objsChanged'][x+','+y] = {
-				        id: this.currentObjectType.id,
-				        x: x,
-				        y: y,
-				        isPassable: this.currentObjectType.isPassable
-			        };
-		        } else {
-			        this.tileBoard.setTile(x, y, this.currentTileType);
-			        if (!this.stateChanges['tilesChanged']) this.stateChanges['tilesChanged'] = {};
-			        // map on x,y to only store the last change at that location
-			        this.stateChanges['tilesChanged'][x+','+y] = {
-				        id: this.currentTileType.id,
-				        x: x,
-				        y: y,
-				        isPassable: this.currentTileType.isPassable
-			        };
-		        }
-                this.lastClickBoardX = x;
-                this.lastClickBoardY = y;
-                this.lastClickWasTile = !event.shift;
-            }
-        }
-    },
+		if (this.isMouseDown) {
+			var x = event.page.x - this.stage.canvas.getPosition().x;
+			var y = event.page.y - this.stage.canvas.getPosition().y;
+			x = Math.floor(x / this.tileSize);
+			y = Math.floor(y / this.tileSize);
+			if (x != this.lastClickBoardX || y != this.lastClickBoardY) {
+				//console.log('INFO: mouse clicked at: ' + x + ', ' + y + (event.rightClick ? ' right click' : ''));
+				if (event.shift) {
+					this.objectBoard.setObject(x, y, this.currentObjectType);
+					if (!this.stateChanges['objsChanged']) this.stateChanges['objsChanged'] = {};
+					// map on x,y to only store the last change at that location
+					this.stateChanges['objsChanged'][x + ',' + y] = {
+						id: this.currentObjectType.id,
+						x: x,
+						y: y,
+						isPassable: this.currentObjectType.isPassable
+					};
+				} else {
+					this.tileBoard.setTile(x, y, this.currentTileType);
+					if (!this.stateChanges['tilesChanged']) this.stateChanges['tilesChanged'] = {};
+					// map on x,y to only store the last change at that location
+					this.stateChanges['tilesChanged'][x + ',' + y] = {
+						id: this.currentTileType.id,
+						x: x,
+						y: y,
+						isPassable: this.currentTileType.isPassable
+					};
+				}
+				this.lastClickBoardX = x;
+				this.lastClickBoardY = y;
+				this.lastClickWasTile = !event.shift;
+			}
+		}
+	},
 
 	_addKeyboardListeners: function() {
 		// add keyboard listeners for player
@@ -198,8 +198,8 @@ var Game = new Class({
 	// "private" function
 	_addMouseListener: function() {
 		this.stage.canvas.addEvent('mousedown', this._mouseDownHandler);
-        this.stage.canvas.addEvent('mousemove', this._mouseMoveHandler);
-        window.addEvent('mouseup', this._mouseUpHandler);
+		this.stage.canvas.addEvent('mousemove', this._mouseMoveHandler);
+		window.addEvent('mouseup', this._mouseUpHandler);
 	},
 
 	// "private" function
@@ -212,10 +212,10 @@ var Game = new Class({
 	 * @param {Object} changes The new game state changes.
 	 */
 	applyStateChanges: function(changes) {
-        // if scene cleared
-        if (changes['cleared']) {
-            this.clearScreen(false);
-        }
+		// if scene cleared
+		if (changes['cleared']) {
+			this.clearScreen(false);
+		}
 		// update objects
 		if (changes['objsChanged']) {
 			var objsChanged = changes['objsChanged'];
@@ -253,7 +253,7 @@ var Game = new Class({
 		} else {
 			this.textFromOtherPlayer = '';
 		}
-		
+
 		// update the hero position
 		if (changes['heroPosX']) this.hero.x = changes['heroPosX'];
 		if (changes['heroPosY']) this.hero.y = changes['heroPosY'];
@@ -273,7 +273,7 @@ var Game = new Class({
 
 			// (re)initialize the state
 			this.applyStateChanges(changes);
-			
+
 			if (this.isCreator) {
 				this._addMouseListener();
 			}
@@ -352,17 +352,17 @@ var Game = new Class({
 		this.isPlacingObject = true;
 	},
 
-    /**
-     * Clears all objects and tiles from the screen.
-     * @param {boolean} clearChanges if true, set the clear flag in the changes and clear the current changes.
-     */
-    clearScreen: function(clearChanges) {
-    	this.tileBoard.clearBoard();
-        this.objectBoard.clearBoard();
-        if (clearChanges) {
-            this.stateChanges['cleared'] = true;
-            this.stateChanges['tilesChanged'] = {};
-            this.stateChanges['objsChanged'] = {};
-        }
-    },
+	/**
+	 * Clears all objects and tiles from the screen.
+	 * @param {boolean} clearChanges if true, set the clear flag in the changes and clear the current changes.
+	 */
+	clearScreen: function(clearChanges) {
+		this.tileBoard.clearBoard();
+		this.objectBoard.clearBoard();
+		if (clearChanges) {
+			this.stateChanges['cleared'] = true;
+			this.stateChanges['tilesChanged'] = {};
+			this.stateChanges['objsChanged'] = {};
+		}
+	},
 });

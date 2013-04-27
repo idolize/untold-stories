@@ -63,7 +63,9 @@ function loaded() {
 			document.id('textbox').erase('disabled');
 
 			if (app.game.textFromOtherPlayer) {
-				document.id('textlog').grab(new Element('p', {html: ((app.game.isCreator ? 'Player' : 'Creator') + ': ' + app.game.textFromOtherPlayer)}));
+				document.id('textlog').grab(new Element('p', {
+					html: ((app.game.isCreator ? 'Player' : 'Creator') + ': ' + app.game.textFromOtherPlayer)
+				}));
 			}
 			showNotice('info', 'Your turn has started');
 			rightInfo.textContent = 'Active';
@@ -73,7 +75,9 @@ function loaded() {
 			var textbox = document.id('textbox');
 			textbox.set('disabled', 'disabled');
 			var textboxval = textbox.get('value');
-			if (textboxval) document.id('textlog').grab(new Element('p', {html: ('Me: ' + textboxval)}));
+			if (textboxval) document.id('textlog').grab(new Element('p', {
+				html: ('Me: ' + textboxval)
+			}));
 			textbox.set('value', '');
 			rightInfo.textContent = 'Waiting';
 		};
