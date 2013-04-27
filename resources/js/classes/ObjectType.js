@@ -12,8 +12,8 @@ var ObjectType = new Class({
 	 *
 	 * @constructor
 	 * @param  {String}  id Unique name of this type.
-	 * @param  {Image|String}  [image] Image or URL of image to use for this object. If not included it is assumed to be stored in 'images/objects/id.png'.
 	 * @param  {Boolean} isPassable Flag for if object is passable.
+	 * @param  {Image|String}  [image] Image or URL of image to use for this object. If not included it is assumed to be stored in 'images/objects/id.png'.
 	 */
 	initialize: function(id, isPassable, image) {
 		this.id = id;

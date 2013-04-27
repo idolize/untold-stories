@@ -12,8 +12,8 @@ var TileType = new Class({
 	 *
 	 * @constructor
 	 * @param  {String} id Unique name of this type.
-	 * @param  {Image|String}  [image] Image or URL of image to use for this tile. If not included it is assumed to be stored in 'images/tiles/id.png'.
 	 * @param {Boolean} isPassable Flag to check if tile is passable.
+	 * @param  {Image|String}  [image] Image or URL of image to use for this tile. If not included it is assumed to be stored in 'images/tiles/id.png'.
 	 */
 	initialize: function(id, isPassable, image) {
 		this.id = id;

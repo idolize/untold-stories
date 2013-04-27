@@ -333,22 +333,52 @@ var Game = new Class({
 	},
 
 	/**
-	 * Sets the current tile type to the given TileType so that the user now places the new type.
-	 * Also switches out of placing objects mode to placing tiles mode.
-	 * @param {TileType} tileType the new tile type
+	 * Gets the existing tile type from the map by id if it exists, if not a new instance is created, added to the map,
+	 * and returned.
+	 * @param  {String} tileId The id for the tile.
+	 * @return {TileType} The associated tile type.
 	 */
-	setCurrentTileType: function(tileType) {
-		this.currentTileType = tileType;
+	getTileTypeInstance: function(tileId) {
+		var entry = this.tileTypeMap[tileId];
+		if (!entry) {
+			entry = new TileType(tileId, true); //TODO handle isPassable
+			this.tileTypeMap[tileId] = entry;
+		}
+		return entry;
+	},
+
+	/**
+	 * Gets the existing object type from the map by id if it exists, if not a new instance is created, added to the map,
+	 * and returned.
+	 * @param  {String} objectId The id for the object.
+	 * @return {ObjectType} The associated object type.
+	 */
+	getObjectTypeInstance: function(objectId) {
+		var entry = this.objectTypeMap[objectId];
+		if (!entry) {
+			entry = new ObjectType(objectId, true); //TODO handle isPassable
+			this.objectTypeMap[objectId] = entry;
+		}
+		return entry;
+	},
+
+	/**
+	 * Sets the current tile type to the type associated with the given id so that the user now places the new type.
+	 * Also switches out of placing objects mode to placing tiles mode.
+	 * @param {String} tileId the new tile type id.
+	 */
+	setCurrentTileType: function(tileId) {
+		this.currentTileType = getTileTypeInstance(tileId);
 		this.isPlacingObject = false;
 	},
 
 	/**
-	 * Sets the current object type to the given ObjectType so that the user now places the new type
+	 * Sets the current object type to the type associated with the given id so that the user now places the new type.
 	 * Also switches to placing objects mode.
-	 * @param {ObjectType} objectType The new Object Type.
+	 * @param {String} objectId The new object type id.
 	 */
-	setCurrentObjectType: function(objectType) {
-		this.currentObjectType = objectType;
+	setCurrentObjectType: function(objectId) {
+		this.currentObjectType = getObjectTypeInstance(objectId);
 		this.isPlacingObject = true;
 	},
 
