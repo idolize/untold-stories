@@ -368,7 +368,7 @@ var Game = new Class({
 	 * @param {String} tileId the new tile type id.
 	 */
 	setCurrentTileType: function(tileId) {
-		this.currentTileType = getTileTypeInstance(tileId);
+		this.currentTileType = this.getTileTypeInstance(tileId);
 		this.isPlacingObject = false;
 	},
 
@@ -378,7 +378,7 @@ var Game = new Class({
 	 * @param {String} objectId The new object type id.
 	 */
 	setCurrentObjectType: function(objectId) {
-		this.currentObjectType = getObjectTypeInstance(objectId);
+		this.currentObjectType = this.getObjectTypeInstance(objectId);
 		this.isPlacingObject = true;
 	},
 
