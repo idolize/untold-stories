@@ -28,6 +28,7 @@ var Game = new Class({
     lastClickBoardX: -1,
     lastClickBoardY: -1,
     lastClickWasTile: false,
+    textFromOtherPlayer: null,
 
 	/**
 	 * @constructor
@@ -44,6 +45,7 @@ var Game = new Class({
 		this.objectTypeMap = {};
 		this.tileTypeMap = {};
         this.isMouseDown = false;
+        this.textFromOtherPlayer = "";
 
 		// create the stage
 		this.stage = new createjs.Stage(canvas);
@@ -241,6 +243,12 @@ var Game = new Class({
 				this.tileBoard.setTile(tile.x, tile.y, this.tileTypeMap[tile.id]);
 			}, this);
 		}
+		if (changes['textbox']) {
+			this.textFromOtherPlayer = changes['textbox'];
+		} else {
+			this.textFromOtherPlayer = '';
+		}
+		
 		// update the hero position
 		if (changes['heroPosX']) this.hero.x = changes['heroPosX'];
 		if (changes['heroPosY']) this.hero.y = changes['heroPosY'];
@@ -263,9 +271,8 @@ var Game = new Class({
 			
 			if (this.isCreator) {
 				this._addMouseListener();
-			}// else {
-				this._addKeyboardListeners();
-			//}
+			}
+			this._addKeyboardListeners(); // allow both player and creator to move the hero with keyboard
 			this.fireEvent('turnStarted', changes);
 		}
 	},
@@ -278,9 +285,8 @@ var Game = new Class({
 		if (this.active) {
 			if (this.isCreator) {
 				this._removeMouseListener();
-			}// else {
-				this._removeKeyboardListeners();
-		//	}
+			}
+			this._removeKeyboardListeners();
 			// turn is now over
 			console.log('INFO: Turn ended');
 			this.active = false;
@@ -308,13 +314,11 @@ var Game = new Class({
 	 */
 	gameLoop: function(event) {
 		// update the game logic
-		
-		//if (!this.isCreator) {
-			this.hero.updateMove(event.delta); // time elapsed in ms since the last tick
-			// update the state changes record of this move
-			this.stateChanges['heroPosX'] = this.hero.x;
-			this.stateChanges['heroPosY'] = this.hero.y;
-		//}
+
+		this.hero.updateMove(event.delta); // time elapsed in ms since the last tick
+		// update the state changes record of this move
+		this.stateChanges['heroPosX'] = this.hero.x;
+		this.stateChanges['heroPosY'] = this.hero.y;
 
 		// TODO collision checking goes here
 

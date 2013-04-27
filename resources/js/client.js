@@ -4,8 +4,8 @@
  */
 function loaded() {
 	var canvas = document.id('gamecanvas');
-	var leftInfo = document.id('leftinfo')
-	var rightInfo = document.id('rightinfo')
+	var leftInfo = document.id('leftinfo');
+	var rightInfo = document.id('rightinfo');
 	var topRight = { y: 'top', x: 'right' };
 	// create waiting popup and animation
 	var waitingTextArea = new Element('div');
@@ -51,11 +51,22 @@ function loaded() {
 		// setup callbacks for our custom events
 		var onTurnStarted = function() {
 			endBtn.erase('disabled');
+			document.id('textbox').erase('disabled');
+
+			if (app.game.textFromOtherPlayer) {
+				document.id('textlog').grab(new Element('p', {html: ((app.game.isCreator ? 'Player' : 'Creator') + ': ' + app.game.textFromOtherPlayer)}));
+			}
+
 			showNotice('info', 'Your turn has started');
 			rightInfo.textContent = 'Active';
 		};
 		var onTurnEnded = function() {
-			endBtn.set('disabled', true);
+			endBtn.set('disabled', 'disabled');
+			var textbox = document.id('textbox');
+			textbox.set('disabled', 'disabled');
+			var textboxval = textbox.get('value');
+			if (textboxval) document.id('textlog').grab(new Element('p', {html: ('Me: ' + textboxval)}));
+			textbox.set('value', '');
 			rightInfo.textContent = 'Waiting';
 		};
 		var onConnectFailed = function() {
@@ -89,13 +100,31 @@ function loaded() {
 			leftInfo.textContent = (game.isCreator ? 'Creator' : 'Player');
 			rightInfo.textContent = 'Waiting';
 
+			// show the textbox and log
+			var textlog = new Element('div', {
+				style: 'margin: 0 auto; width: 780px; overflow-y: scroll; height: 100px; border: 1px solid gray; padding: 10px; font-size: 0.8em',
+				id: 'textlog'
+			});
+			textlog.inject('middle');
+			var textbox = new Element('input', {
+				value: '',
+				disabled: 'disabled',
+				placeholder: 'Enter a message or action for your turn',
+				style: 'display: block; margin: 10px auto; width: 800px;',
+				id: 'textbox'
+			});
+			textbox.inject('middle');
+
 			// show the 'end turn button'
 			endBtn = new Element('button', {
 				html: 'End turn',
 				'class': 'btn red',
-				disabled: true,
+				disabled: 'disabled',
 				events: {
-					click: app.endTurn
+					click: function() {
+						app.game.stateChanges['textbox'] = textbox.get('value');
+						app.endTurn();
+					}
 				},
 				id: 'endturn'
 			});
