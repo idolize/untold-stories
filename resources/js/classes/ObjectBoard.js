@@ -42,6 +42,28 @@ var ObjectBoard = new Class({
 	},
 
 	/**
+	 * Deletes an object from the board.
+	 * 
+	 * @param  {integer} x object position on the x-axis.
+	 * @param  {integer} y object position on the y-axis.
+	 */
+	deleteObject: function(x, y) {
+		setObjectWithExisting(x, y, null);
+	},
+
+	/**
+	 * Deletes all objects from the board.
+	 */
+	clearBoard: function() {
+	 	this.container.removeAllChildren();
+	 	for (var i = 0; i < this.width; i++) {
+	 		for (var j = 0; j < this.height; j++) {
+	 			this.objects[j][i] = null;
+	 		}
+	 	}
+	 },
+
+	/**
 	 * Sets the object at the specified location.
 	 * This method is useful to reuse existing BoardObject instances.
 	 *

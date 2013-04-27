@@ -37,12 +37,26 @@ io.configure('development', function() {
 app.get('/', function (req, res) {
 	res.render('index');
 });
+var path = require('path');
+var fs = require('fs');
 // send globals to the client when requested
 app.get('/js/globals.js', function(req, res) {
     res.set('Content-Type', 'application/javascript');
+	var objectImgs = fs.readdirSync('resources/images/objects');
+	var tileImgs = fs.readdirSync('resources/images/tiles');
+
+	var stripIdFromPath = function(fullPath) {
+		return path.basename(fullPath, '.png');
+	}
+	var onlyPngs = function(id) {
+		return path.extname(id) == '.png';
+	}
+
     var globals = {
     	reqUrl: '/',
-    	wsPort: isProduction ? 8000 : devPort // 8000 is hardcoded for OpenShift ws preview, see: https://www.openshift.com/blogs/paas-websockets
+    	wsPort: isProduction ? 8000 : devPort, // 8000 is hardcoded for OpenShift ws preview, see: https://www.openshift.com/blogs/paas-websockets
+    	tileIds: tileImgs.filter(onlyPngs).map(stripIdFromPath),
+    	objectIds: objectImgs.filter(onlyPngs).map(stripIdFromPath)
     }
     res.send('var globals = ' + JSON.stringify(globals));
 });
