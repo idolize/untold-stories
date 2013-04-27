@@ -106,31 +106,35 @@ var Game = new Class({
 		x = Math.floor(x / this.tileSize);
 		y = Math.floor(y / this.tileSize);
 		//console.log('INFO: mouse clicked at: ' + x + ', ' + y + (event.rightClick ? ' right click' : ''));
-		if (event.shift) {
-			this.objectBoard.setObject(x, y, this.currentObjectType);
-			if (!this.stateChanges['objsAdded']) this.stateChanges['objsAdded'] = {};
-			// map on x,y to only store the last change at that location
-			this.stateChanges['objsAdded'][x+','+y] = {
-				id: this.currentObjectType.id,
-				x: x,
-				y: y,
-				isPassable: this.currentObjectType.isPassable
-			};
-		} else {
-			this.tileBoard.setTile(x, y, this.currentTileType);
-			if (!this.stateChanges['tilesChanged']) this.stateChanges['tilesChanged'] = {};
-			// map on x,y to only store the last change at that location
-			this.stateChanges['tilesChanged'][x+','+y] = {
-				id: this.currentTileType.id,
-				x: x,
-				y: y,
-				isPassable: this.currentTileType.isPassable
-			};
-		}
-        this.isMouseDown = true;
-        this.lastClickBoardX = x;
-        this.lastClickBoardY = y;
-        this.lastClickWasTile = !event.shift;
+        if (!event.rightClick) {
+	    	if (event.shift) {
+	    		this.objectBoard.setObject(x, y, this.currentObjectType);
+	    		if (!this.stateChanges['objsAdded']) this.stateChanges['objsAdded'] = {};
+	    		// map on x,y to only store the last change at that location
+	    		this.stateChanges['objsAdded'][x+','+y] = {
+	    			id: this.currentObjectType.id,
+	    			x: x,
+	    			y: y,
+	    			isPassable: this.currentObjectType.isPassable
+	    		};
+	    	} else {
+	    		this.tileBoard.setTile(x, y, this.currentTileType);
+	    		if (!this.stateChanges['tilesChanged']) this.stateChanges['tilesChanged'] = {};
+	    		// map on x,y to only store the last change at that location
+	    		this.stateChanges['tilesChanged'][x+','+y] = {
+	    			id: this.currentTileType.id,
+	    			x: x,
+	    			y: y,
+	    			isPassable: this.currentTileType.isPassable
+	    		};
+	    	}
+            this.isMouseDown = true;
+            this.lastClickBoardX = x;
+            this.lastClickBoardY = y;
+            this.lastClickWasTile = !event.shift;
+        } else {
+            this.clearScreen(true);
+        }
 	},
 
     // "private" function
@@ -193,7 +197,7 @@ var Game = new Class({
 	_addMouseListener: function() {
 		this.stage.canvas.addEvent('mousedown', this._mouseDownHandler);
         this.stage.canvas.addEvent('mousemove', this._mouseMoveHandler);
-        this.stage.canvas.addEvent('mouseup', this._mouseUpHandler);
+        window.addEvent('mouseup', this._mouseUpHandler);
 	},
 
 	// "private" function
@@ -206,6 +210,10 @@ var Game = new Class({
 	 * @param {Object} changes The new game state changes.
 	 */
 	applyStateChanges: function(changes) {
+        // if scene cleared
+        if (changes['cleared']) {
+            this.clearScreen(false);
+        }
 		// update objects
 		if (changes['objsAdded']) {
 			var objsAdded = changes['objsAdded'];
@@ -255,9 +263,9 @@ var Game = new Class({
 			
 			if (this.isCreator) {
 				this._addMouseListener();
-			} else {
+			}// else {
 				this._addKeyboardListeners();
-			}
+			//}
 			this.fireEvent('turnStarted', changes);
 		}
 	},
@@ -270,9 +278,9 @@ var Game = new Class({
 		if (this.active) {
 			if (this.isCreator) {
 				this._removeMouseListener();
-			} else {
+			}// else {
 				this._removeKeyboardListeners();
-			}
+		//	}
 			// turn is now over
 			console.log('INFO: Turn ended');
 			this.active = false;
@@ -301,12 +309,12 @@ var Game = new Class({
 	gameLoop: function(event) {
 		// update the game logic
 		
-		if (!this.isCreator) {
+		//if (!this.isCreator) {
 			this.hero.updateMove(event.delta); // time elapsed in ms since the last tick
 			// update the state changes record of this move
 			this.stateChanges['heroPosX'] = this.hero.x;
 			this.stateChanges['heroPosY'] = this.hero.y;
-		}
+		//}
 
 		// TODO collision checking goes here
 
@@ -334,4 +342,25 @@ var Game = new Class({
 		this.currentObjectType = objectType;
 		this.isPlacingObject = true;
 	},
+
+    /**
+     * Clears all objects and tiles from the screen.
+     * If the parameter is true, sets the cleared flag in the changes object and clears the changes
+     * @param {boolean} clearChanges if true, set the clear flag in the changes and clear the current changes
+     */
+    clearScreen: function(clearChanges) {
+        var w = this.width / this.tileSize;
+        var h = this.height / this.tileSize;
+        for (var i = 0; i < w; i++) {
+            for (var j = 0; j < h; j++) {
+                this.tileBoard.setTileWithExisting(i,j,null);
+                this.objectBoard.setObjectWithExisting(i,j,null);
+            }
+        }
+        if (clearChanges) {
+            this.stateChanges['cleared'] = true;
+            this.stateChanges['tilesChanged'] = {};
+            this.stateChanges['objsAdded'] = {};
+        }
+    },
 });
