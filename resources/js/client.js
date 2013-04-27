@@ -47,8 +47,6 @@ function loaded() {
 
 	document.id('play').erase('disabled');
 	var endBtn;
-	var textboxBtn;
-	var interactBtn;
 	var toolbarBox;
 	var selectorBox;
 	// create the app
@@ -135,8 +133,8 @@ function loaded() {
 				selectorBox = new mBox({
 					title: 'Tiles and Objects',
 					content: "selectorTabs",
-					width: 300,
-					height: 400,
+					width: 200,
+					height: 300,
 					draggable: true,
 					target: 'main',
 					position: {
@@ -155,24 +153,42 @@ function loaded() {
 					attach: 'main',
 				});
 
-				tb = new TinyTab($$('ul.tabs li'),$$('ul.contents li'));
-			} else {
-				textboxBtn = new Element('button', {
-					html: 'Textbox',
-					'class': 'btn',
-					disabled: true,
-					id: 'textbox'
-				});
+				tb = new TinyTab($$('ul.tabs li'), $$('ul.contents li'));
 
-				interactBtn = new Element('button', {
-					html: 'Interact',
-					'class': 'btn',
-					disabled: true,
-					id: 'interact'
-				});
-				textboxBtn.inject('bottom');
-				interactBtn.inject('bottom');
+				// buttons for tiles and objects
+
+				for (var i = 0; i < globals.objectIds.length; i++) {
+					var id = globals.objectIds[i];
+
+					var objectBtn = new Element('img', {
+						src: 'images/objects/' + id + '.png',
+						'class': 'imgBtn',
+						events: {
+							click: function() {
+								app.game.setObjectType(id);
+							}
+						}
+					});
+					objectBtn.inject('objectSelect');
+				}
+
+				for (var i = 0; i < globals.tileIds.length; i++) {
+					var id = globals.tileIds[i];
+
+					var tileBtn = new Element('img', {
+						src: 'images/objects/' + id + '.png',
+						'class': 'imgBtn',
+						events: {
+							click: function() {
+								app.game.setObjectType(id);
+							}
+						}
+					});
+					tileBtn.inject('tileSelect');
+				}
+
 			}
+
 			// show the 'end turn button'
 			endBtn = new Element('button', {
 				html: 'End turn',
