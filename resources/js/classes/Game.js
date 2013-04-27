@@ -28,6 +28,7 @@ var Game = new Class({
     lastClickBoardX: -1,
     lastClickBoardY: -1,
     lastClickWasTile: false,
+    textFromOtherPlayer: null,
 
 	/**
 	 * @constructor
@@ -44,6 +45,7 @@ var Game = new Class({
 		this.objectTypeMap = {};
 		this.tileTypeMap = {};
         this.isMouseDown = false;
+        this.textFromOtherPlayer = "";
 
 		// create the stage
 		this.stage = new createjs.Stage(canvas);
@@ -109,9 +111,9 @@ var Game = new Class({
         if (!event.rightClick) {
 	    	if (event.shift) {
 	    		this.objectBoard.setObject(x, y, this.currentObjectType);
-	    		if (!this.stateChanges['objsAdded']) this.stateChanges['objsAdded'] = {};
+	    		if (!this.stateChanges['objsChanged']) this.stateChanges['objsChanged'] = {};
 	    		// map on x,y to only store the last change at that location
-	    		this.stateChanges['objsAdded'][x+','+y] = {
+	    		this.stateChanges['objsChanged'][x+','+y] = {
 	    			id: this.currentObjectType.id,
 	    			x: x,
 	    			y: y,
@@ -154,9 +156,9 @@ var Game = new Class({
 		        //console.log('INFO: mouse clicked at: ' + x + ', ' + y + (event.rightClick ? ' right click' : ''));
 		        if (event.shift) {
 			        this.objectBoard.setObject(x, y, this.currentObjectType);
-			        if (!this.stateChanges['objsAdded']) this.stateChanges['objsAdded'] = {};
+			        if (!this.stateChanges['objsChanged']) this.stateChanges['objsChanged'] = {};
 			        // map on x,y to only store the last change at that location
-			        this.stateChanges['objsAdded'][x+','+y] = {
+			        this.stateChanges['objsChanged'][x+','+y] = {
 				        id: this.currentObjectType.id,
 				        x: x,
 				        y: y,
@@ -215,16 +217,21 @@ var Game = new Class({
             this.clearScreen(false);
         }
 		// update objects
-		if (changes['objsAdded']) {
-			var objsAdded = changes['objsAdded'];
-			Object.each(objsAdded, function(obj, key) {
-				// see if any new images need to be downloaded
-				if (!this.objectTypeMap[obj.id]) {
-					// fetch the image and store it in the map for later
-					this.objectTypeMap[obj.id] = new ObjectType(obj.id, obj.isPassable);
+		if (changes['objsChanged']) {
+			var objsChanged = changes['objsChanged'];
+			Object.each(objsChanged, function(obj, key) {
+				if (obj.id == null) { // delete the object
+					console.log('Deleted object at: ', obj.x, ',', obj.y);
+					this.objectBoard.deleteObject(obj.x, obj.y);
+				} else { // add a new object
+					// see if any new images need to be downloaded
+					if (!this.objectTypeMap[obj.id]) {
+						// fetch the image and store it in the map for later
+						this.objectTypeMap[obj.id] = new ObjectType(obj.id, obj.isPassable);
+					}
+					// add new object to the board
+					this.objectBoard.setObject(obj.x, obj.y, this.objectTypeMap[obj.id]);
 				}
-				// add new object to the board
-				this.objectBoard.setObject(obj.x, obj.y, this.objectTypeMap[obj.id]);
 			}, this);
 		}
 		// TODO handle object deletion or object movement
@@ -241,6 +248,12 @@ var Game = new Class({
 				this.tileBoard.setTile(tile.x, tile.y, this.tileTypeMap[tile.id]);
 			}, this);
 		}
+		if (changes['textbox']) {
+			this.textFromOtherPlayer = changes['textbox'];
+		} else {
+			this.textFromOtherPlayer = '';
+		}
+		
 		// update the hero position
 		if (changes['heroPosX']) this.hero.x = changes['heroPosX'];
 		if (changes['heroPosY']) this.hero.y = changes['heroPosY'];
@@ -263,9 +276,8 @@ var Game = new Class({
 			
 			if (this.isCreator) {
 				this._addMouseListener();
-			}// else {
-				this._addKeyboardListeners();
-			//}
+			}
+			this._addKeyboardListeners(); // allow both player and creator to move the hero with keyboard
 			this.fireEvent('turnStarted', changes);
 		}
 	},
@@ -278,9 +290,8 @@ var Game = new Class({
 		if (this.active) {
 			if (this.isCreator) {
 				this._removeMouseListener();
-			}// else {
-				this._removeKeyboardListeners();
-		//	}
+			}
+			this._removeKeyboardListeners();
 			// turn is now over
 			console.log('INFO: Turn ended');
 			this.active = false;
@@ -308,13 +319,11 @@ var Game = new Class({
 	 */
 	gameLoop: function(event) {
 		// update the game logic
-		
-		//if (!this.isCreator) {
-			this.hero.updateMove(event.delta); // time elapsed in ms since the last tick
-			// update the state changes record of this move
-			this.stateChanges['heroPosX'] = this.hero.x;
-			this.stateChanges['heroPosY'] = this.hero.y;
-		//}
+
+		this.hero.updateMove(event.delta); // time elapsed in ms since the last tick
+		// update the state changes record of this move
+		this.stateChanges['heroPosX'] = this.hero.x;
+		this.stateChanges['heroPosY'] = this.hero.y;
 
 		// TODO collision checking goes here
 
@@ -345,22 +354,15 @@ var Game = new Class({
 
     /**
      * Clears all objects and tiles from the screen.
-     * If the parameter is true, sets the cleared flag in the changes object and clears the changes
-     * @param {boolean} clearChanges if true, set the clear flag in the changes and clear the current changes
+     * @param {boolean} clearChanges if true, set the clear flag in the changes and clear the current changes.
      */
     clearScreen: function(clearChanges) {
-        var w = this.width / this.tileSize;
-        var h = this.height / this.tileSize;
-        for (var i = 0; i < w; i++) {
-            for (var j = 0; j < h; j++) {
-                this.tileBoard.setTileWithExisting(i,j,null);
-                this.objectBoard.setObjectWithExisting(i,j,null);
-            }
-        }
+    	this.tileBoard.clearBoard();
+        this.objectBoard.clearBoard();
         if (clearChanges) {
             this.stateChanges['cleared'] = true;
             this.stateChanges['tilesChanged'] = {};
-            this.stateChanges['objsAdded'] = {};
+            this.stateChanges['objsChanged'] = {};
         }
     },
 });

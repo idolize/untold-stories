@@ -42,6 +42,18 @@ var TileBoard = new Class({
 	},
 
 	/**
+	 * Deletes all tiles from the board.
+	 */
+	clearBoard: function() {
+	 	this.container.removeAllChildren();
+	 	for (var i = 0; i < this.width; i++) {
+	 		for (var j = 0; j < this.height; j++) {
+	 			this.tiles[j][i] = null;
+	 		}
+	 	}
+	 },
+
+	/**
 	 * Sets the tile at the specified location.
 	 * This method is useful to reuse existing BoardTile instances.
 	 *
