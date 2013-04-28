@@ -72,6 +72,7 @@ var ObjectBoard = new Class({
 	 * @param  {BoardObject} boardObject The object to set.
 	 */
 	setObjectWithExisting: function(x, y, boardObject) {
+		if (y >= this.numHigh || x >= this.numWide) return;
 		var oldObject = this.objects[y][x];
 		if (oldObject) {
 			// remove the old bitmap from display list
