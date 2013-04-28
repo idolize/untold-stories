@@ -141,7 +141,7 @@ function loaded() {
 					title: 'Tiles and Objects',
 					content: "selectorTabs",
 					width: 200,
-					height: 300,
+					height: 200,
 					draggable: true,
 					target: 'main',
 					position: {
