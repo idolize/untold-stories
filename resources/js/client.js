@@ -2,11 +2,11 @@
  * Perform all DOM manipulation in this top level function (by listening to events from app or app.game).
  * @see  <a href="http://mootools.net/docs/core/Element/Element">MooTools Element class</a> for DOM tools.
  */
-
 function loaded() {
 	var canvas = document.id('gamecanvas');
-	var leftInfo = document.id('leftinfo')
-	var rightInfo = document.id('rightinfo')
+	var leftInfo = document.id('leftinfo');
+	var rightInfo = document.id('rightinfo');
+	var tabs;
 	var topRight = {
 		y: 'top',
 		x: 'right'
@@ -53,6 +53,7 @@ function loaded() {
 	// create the app
 	var app = new App(canvas);
 
+	/** Sets everything in motion for the entire application and game. */
 	function beginGame(isCreator) {
 		// show waiting animation
 		showWaiting(true);
@@ -121,6 +122,7 @@ function loaded() {
 					height: 200,
 					draggable: true,
 					target: 'main',
+					addClass: { 'title': 'paneltitle' },
 					position: {
 						x: ['left', 'outside'],
 						y: ['center'],
@@ -133,17 +135,17 @@ function loaded() {
 					closeOnClick: false,
 					closeOnBodyClick: false,
 					closeOnMouseleave: false,
-					openOnInit: true,
-					attach: 'main',
+					openOnInit: true
 				});
 
+				// TODO? would be *super* cool to use this for our selector: http://mcpants.github.io/jquery.shapeshift/
 				selectorBox = new mBox({
 					title: 'Tiles and Objects',
 					content: "selectorTabs",
 					width: 200,
-					height: 200,
 					draggable: true,
 					target: 'main',
+					addClass: { 'title': 'paneltitle' },
 					position: {
 						x: ['right', 'outside'],
 						y: ['center'],
@@ -156,23 +158,27 @@ function loaded() {
 					closeOnClick: false,
 					closeOnBodyClick: false,
 					closeOnMouseleave: false,
-					openOnInit: true,
-					attach: 'main',
+					openOnInit: true
 				});
 
-				tb = new TinyTab($$('ul.tabs li'), $$('ul.contents li'));
+				tabs = new TinyTab($$('ul.tabs li'), $$('ul.contents li'));
 
-				// buttons for tiles and objects
-
+				// buttons for objects
+				var prevObjBtn = null;
+				var prevTileBtn = null;
 				for (var i = 0; i < globals.objectIds.length; i++) {
 					var id = globals.objectIds[i];
-
 					var objectBtn = new Element('img', {
 						src: 'images/objects/' + id + '.png',
-						'class': 'imgBtn',
+						'class': 'imgBtn tile',
 						events: {
 							click: function() {
-								console.log(this['objectId']);
+								this.addClass('selected');
+								if (prevObjBtn) prevObjBtn.removeClass('selected');
+								prevObjBtn = this;
+								// deselect the tile too
+								if (prevTileBtn) prevTileBtn.removeClass('selected');
+								prevTileBtn = null;
 								app.game.setCurrentObjectType(this['objectId']);
 							}
 						}
@@ -181,16 +187,21 @@ function loaded() {
 					objectBtn.inject('objectSelect');
 					console.log('Correct id = '+objectBtn.get('src'));
 				}
-
+				// buttons for tiles
 				for (var i = 0; i < globals.tileIds.length; i++) {
 					var id = globals.tileIds[i];
 
 					var tileBtn = new Element('img', {
 						src: 'images/tiles/' + id + '.png',
-						'class': 'imgBtn',
+						'class': 'imgBtn object',
 						events: {
 							click: function() {
-								console.log(this['tileId']);
+								this.addClass('selected');
+								if (prevTileBtn) prevTileBtn.removeClass('selected');
+								prevTileBtn = this;
+								// deselect the object too
+								if (prevObjBtn) prevObjBtn.removeClass('selected');
+								prevObjBtn = null;
 								app.game.setCurrentTileType(this['tileId']);
 							}
 						}
@@ -204,7 +215,7 @@ function loaded() {
 
 			// show the textbox and log
 			var textlog = new Element('div', {
-				style: 'margin: 0 auto; width: 780px; overflow-y: scroll; height: 100px; border: 1px solid gray; padding: 10px; font-size: 0.8em',
+				style: 'margin: 0 auto; width: 460px; overflow-y: scroll; height: 100px; border: 1px solid gray; padding: 10px; font-size: 0.8em',
 				id: 'textlog'
 			});
 			textlog.inject('middle');
@@ -212,7 +223,7 @@ function loaded() {
 				value: '',
 				disabled: 'disabled',
 				placeholder: 'Enter a message or action for your turn',
-				style: 'display: block; margin: 10px auto; width: 800px;',
+				style: 'display: block; margin: 10px auto; width: 480px;',
 				id: 'textbox'
 			});
 			textbox.inject('middle');
@@ -251,6 +262,10 @@ function loaded() {
 		app.connect(':' + globals.wsPort);
 	}
 
+	/**
+	 * Shows or hides the waiting notice modal.
+	 * @param  {boolean} show If the notice should be shown or hidden.
+	 */
 	function showWaiting(show) {
 		if (show) {
 			waitingPopup.open();
@@ -261,6 +276,12 @@ function loaded() {
 		}
 	}
 
+	/**
+	 * Shows a notice in the top right of the screen.
+	 * @param  {String} type The type of message to display, which affects the icon.
+	 *                       Can be either 'alert', 'info', 'error', 'ok', or 'default' (no icon).
+	 * @param  {String} msg  The message, or content, of the notice.
+	 */
 	function showNotice(type, msg) {
 		new mBox.Notice({
 			type: type,

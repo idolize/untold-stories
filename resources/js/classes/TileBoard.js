@@ -119,9 +119,26 @@ var TileBoard = new Class({
 				if (tileType) {
 					this.setTile(x, y, tileType);
 				} else {
-					// set undefined entry
-					this.setTileWithExisting(x, y, tileType);
+					// set empty entry
+					this.setTileWithExisting(x, y, null);
 				}
+			}
+		}
+	},
+
+	/**
+	 * Sets all of the tiles on the board to a single type.
+	 * 
+	 * @param {TileType} tileType The type to set every tile to.
+	 */
+	setAllTilesToOneType: function(tileType) {
+		// remove all children from display list
+		this.container.removeAllChildren();
+		// iteratively change every tile in the array
+		for (var y = 0; y < this.tiles.length; y++) {
+			var row = this.tiles[y];
+			for (var x = 0; x < row.length; x++) {
+				this.setTile(x, y, tileType);
 			}
 		}
 	}

@@ -30,6 +30,3 @@ var TileType = new Class({
 		this.isPassable = isPassable;
 	}
 });
-
-// constant for the ID representing no image
-TileType.EMPTY_ID = -1;

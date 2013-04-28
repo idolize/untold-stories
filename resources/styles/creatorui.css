@@ -1,0 +1,58 @@
+.paneltitle {
+	font: 2em bold arial,sans-serif;
+}
+
+ul.tabs{
+	list-style-type: none;
+	background-color: #eee;
+}
+
+ul.tabs li {
+	float: left;
+	background-color: #eee;
+	cursor: pointer;
+	padding: 4px 15px 4px 15px;
+	border-left: 1px solid #ddd;
+	border-right: 1px solid #ddd;
+	border-top: 1px solid #ddd;
+	border-bottom: 0 none;
+	position: relative;
+	top: 1px;
+	margin-right: 2px;
+	text-shadow: 0 -1px 0 #ccc;
+	color: gray;
+	font-weight: bold;
+}
+
+ul.tabs li.selected {
+	border-left: 1px solid #bbb;
+	border-right: 1px solid #bbb;
+	border-top: 1px solid #bbb;
+	color: #000;
+	background-color: #ccc;
+	text-shadow: 0 -1px 0 #ccc;
+}
+
+ul.contents {
+	border: 1px solid #bbb;
+	height: 420px;
+	clear: both;
+	background-color: #ccc;
+	overflow-y: scroll;
+	margin: 0;
+	padding: 0;
+}
+
+ul.contents li{
+	margin: 10px
+}
+
+ul.contents .selected {
+	background-color: #333;
+	filter: alpha(opacity=40); opacity: 0.4; 
+}
+
+.imgBtn {
+	margin: 2px;
+	border: 1px solid #ddd;
+}

@@ -25,9 +25,9 @@ var Game = new Class({
 	currentTileType: null,
 	currentObjectType: null,
 	isMouseDown: null,
+	isPlacingObject: null,
 	lastClickBoardX: -1,
 	lastClickBoardY: -1,
-	lastClickWasTile: false,
 	textFromOtherPlayer: null,
 
 	/**
@@ -45,7 +45,8 @@ var Game = new Class({
 		this.objectTypeMap = {};
 		this.tileTypeMap = {};
 		this.isMouseDown = false;
-		this.textFromOtherPlayer = "";
+		this.isPlacingObject = false;
+		this.textFromOtherPlayer = '';
 
 		// create the stage
 		this.stage = new createjs.Stage(canvas);
@@ -55,6 +56,8 @@ var Game = new Class({
 		var numHigh = Math.floor(this.height / tileSize);
 		console.log('INFO: Tile board: ' + numWide + ' x ' + numHigh + ' tiles at tile size ' + tileSize + 'px');
 		this.tileBoard = new TileBoard(numWide, numHigh, this.tileSize);
+		// initialize scene
+		this.tileBoard.setAllTilesToOneType(this.getTileTypeInstance(globals.initialTileId));
 		this.stage.addChild(this.tileBoard.container);
 		// create the object board and add it to the display list
 		this.objectBoard = new ObjectBoard(numWide, numHigh, this.tileSize);
@@ -109,7 +112,7 @@ var Game = new Class({
 		y = Math.floor(y / this.tileSize);
 		//console.log('INFO: mouse clicked at: ' + x + ', ' + y + (event.rightClick ? ' right click' : ''));
 		if (!event.rightClick) {
-			if (event.shift) {
+			if (this.isPlacingObject) {
 				this.objectBoard.setObject(x, y, this.currentObjectType);
 				if (!this.stateChanges['objsChanged']) this.stateChanges['objsChanged'] = {};
 				// map on x,y to only store the last change at that location
@@ -133,7 +136,6 @@ var Game = new Class({
 			this.isMouseDown = true;
 			this.lastClickBoardX = x;
 			this.lastClickBoardY = y;
-			this.lastClickWasTile = !event.shift;
 		} else {
 			this.clearScreen(true);
 		}
@@ -154,7 +156,7 @@ var Game = new Class({
 			y = Math.floor(y / this.tileSize);
 			if (x != this.lastClickBoardX || y != this.lastClickBoardY) {
 				//console.log('INFO: mouse clicked at: ' + x + ', ' + y + (event.rightClick ? ' right click' : ''));
-				if (event.shift) {
+				if (this.isPlacingObject) {
 					this.objectBoard.setObject(x, y, this.currentObjectType);
 					if (!this.stateChanges['objsChanged']) this.stateChanges['objsChanged'] = {};
 					// map on x,y to only store the last change at that location

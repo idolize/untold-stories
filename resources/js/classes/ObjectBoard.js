@@ -124,8 +124,8 @@ var ObjectBoard = new Class({
 				if (objType) {
 					this.setObject(x, y, objType);
 				} else {
-					// set undefined entry
-					this.setObjectWithExisting(x, y, objType);
+					// set empty entry
+					this.setObjectWithExisting(x, y, null);
 				}
 			}
 		}

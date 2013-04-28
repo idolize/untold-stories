@@ -30,6 +30,3 @@ var ObjectType = new Class({
 		this.isPassable = isPassable;
 	}
 });
-
-// constant for the ID representing no image
-ObjectType.EMPTY_ID = -1;

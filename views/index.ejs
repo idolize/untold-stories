@@ -5,51 +5,12 @@
 	<title>Tabula Rasa</title> 
 	<link rel="stylesheet" type="text/css" href="styles/style.css" />
 	<link rel="stylesheet" type="text/css" href="styles/buttons.css" />
+	<link rel="stylesheet" type="text/css" href="styles/creatorui.css" />
 	<link rel="stylesheet" type="text/css" href="styles/external/mBoxCore.css" />
 	<link rel="stylesheet" type="text/css" href="styles/external/mBoxModal.css" />
 	<link rel="stylesheet" type="text/css" href="styles/external/mBoxNotice.css" />
 	<link rel="stylesheet" type="text/css" href="styles/external/mForm.css" />
 	<link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Londrina+Solid"> <!--font-->
-	<style>
-		ul.tabs{
-		  list-style-type: none;
-		}
-
-		ul.tabs li {
-		  float:left;
-		  background-color:#ccc;
-		  cursor:pointer;
-		  padding:4px 15px 4px 15px;
-		  border:1px solid #ddd;
-		  border-bottom:none;
-		  position:relative;
-		  top:1px;
-		  margin-right:2px;
-		  text-shadow:0 -1px 0 #ccc;
-		  color:#eee;
-		  font-weight:bold;
-		}
-
-		ul.tabs li.selected {
-		  background-color:#eee;
-		  border:1px solid #ccc;
-		  border-bottom:1px solid #eee;
-		  color:#000;
-		  text-shadow:0 -1px 0 #ccc;
-		}
-
-		ul.contents {
-		  border:1px solid #bbb;
-		  height:100px;
-		  clear:both;
-		  background-color:#ccc;
-		  overflow-y: scroll;
-		}
-
-		ul.contents li{
-		   margin:10px
-		}
-		</style>
 </head>
 <body>
 	<!-- Scripts -->
@@ -78,7 +39,7 @@
 		<h1 id="logo">Tabula Rasa</h1>
 		<div id="infobar"><div id="leftinfo">&ndash;&ndash;</div><div id="rightinfo">&ndash;&ndash;</div></div>
 		<div class="canvaswrap">
-			<canvas id="gamecanvas" width="800" height="416"></canvas>
+			<canvas id="gamecanvas" width="480" height="416"></canvas>
 		</div>
 		<div id="initial">
 			<button id="play" class="btn large babyblue">Play</button>

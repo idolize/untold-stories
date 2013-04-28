@@ -56,7 +56,8 @@ app.get('/js/globals.js', function(req, res) {
     	reqUrl: '/',
     	wsPort: isProduction ? 8000 : devPort, // 8000 is hardcoded for OpenShift ws preview, see: https://www.openshift.com/blogs/paas-websockets
     	tileIds: tileImgs.filter(onlyPngs).map(stripIdFromPath),
-    	objectIds: objectImgs.filter(onlyPngs).map(stripIdFromPath)
+    	objectIds: objectImgs.filter(onlyPngs).map(stripIdFromPath),
+    	initialTileId: 'grass1'
     }
     res.send('var globals = ' + JSON.stringify(globals));
 });

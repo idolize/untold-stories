@@ -7,7 +7,7 @@ body {
 }
 
 div.wrapper {
-	width: 900px;
+	width: 580px;
 	background-color: #fff;
 	box-shadow: 0 5px 8px rgba(0,0,0,0.3) !important;
 	padding: 10px 0;
@@ -62,13 +62,13 @@ div.wrapper {
 
 .wrapper .canvaswrap {
 	/* Needed to center the canvas */
-	width: 802px;
+	width: 482px;
 	margin: 20px auto 10px auto;
 }
 
 canvas#gamecanvas {
 	border: 1px solid gray;
-	width: 800px;
+	width: 480px;
 	height: 416px;
 }
 
