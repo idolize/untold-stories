@@ -172,11 +172,14 @@ function loaded() {
 						'class': 'imgBtn',
 						events: {
 							click: function() {
-								app.game.setCurrentObjectType(id);
+								console.log(this['objectId']);
+								app.game.setCurrentObjectType(this['objectId']);
 							}
 						}
 					});
+					objectBtn['objectId'] = id,
 					objectBtn.inject('objectSelect');
+					console.log('Correct id = '+objectBtn.get('src'));
 				}
 
 				for (var i = 0; i < globals.tileIds.length; i++) {
@@ -187,11 +190,14 @@ function loaded() {
 						'class': 'imgBtn',
 						events: {
 							click: function() {
-								app.game.setCurrentTileType(id);
+								console.log(this['tileId']);
+								app.game.setCurrentTileType(this['tileId']);
 							}
 						}
 					});
+					tileBtn['tileId'] = id,
 					tileBtn.inject('tileSelect');
+					console.log('Correct id = '+tileBtn.get('src'));
 				}
 
 			}
