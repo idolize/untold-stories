@@ -63,6 +63,7 @@ var TileBoard = new Class({
 	 * @return {Boolean} If the tile was added (true) or replaced (false).
 	 */
 	setTileWithExisting: function(x, y, boardTile) {
+		if (y >= this.numHigh || x >= this.numWide) return;
 		var added = false;
 		var oldTile = this.tiles[y][x];
 		if (oldTile) {
