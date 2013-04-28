@@ -10,7 +10,11 @@
 	<link rel="stylesheet" type="text/css" href="styles/external/mBoxModal.css" />
 	<link rel="stylesheet" type="text/css" href="styles/external/mBoxNotice.css" />
 	<link rel="stylesheet" type="text/css" href="styles/external/mForm.css" />
+	<link rel="stylesheet" type="text/css" href="styles/external/introjs.css" />
 	<link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Londrina+Solid"> <!--font-->
+	<!--[if lte IE 8]>
+  <link rel="stylesheet" type="text/css" href="styles/external/introjs-ie.css"/>
+	<!-- <![endif]-->
 </head>
 <body>
 	<!-- Scripts -->
@@ -32,6 +36,70 @@
 	<script type="text/javascript" src="js/classes/ObjectType.js"></script>
 	<script type="text/javascript" src="js/classes/BoardObject.js"></script>
 	<script type="text/javascript" src="js/classes/Hero.js"></script>
+	<script type="text/javascript" src="js/external/intro.js"></script>
+    <script type="text/javascript">
+      function startCreatorIntro(){
+        var intro = introJs();
+          intro.setOptions({
+            steps: [
+              {
+                element: document.getElementById('logo'),
+                intro: "Hello all! :) This project's called Intro.js."
+              },
+              {
+                element: document.getElementById('infobar'),
+                intro: "Ok, wasn't that fun?",
+                position: 'right'
+              },
+              {
+                element: document.getElementById('middle'),
+                intro: 'More features, more fun.',
+                position: 'left'
+              },
+              {
+                element: document.getElementById('gamecanvas'),
+                intro: "Let's try it. It's free and open-source.",
+                position: 'bottom'
+              },
+              {
+                element: document.getElementById('selectorTabs'),
+                intro: 'Get it, use it.'
+              }
+            ]
+          });
+
+          intro.start();
+      }
+
+      function startPlayerIntro(){
+        var intro = introJs();
+          intro.setOptions({
+            steps: [
+              {
+                element: document.getElementById('logo'),
+                intro: "Hello all! :) This project's called Intro.js."
+              },
+              {
+                element: document.getElementById('infobar'),
+                intro: "Ok, wasn't that fun?",
+                position: 'right'
+              },
+              {
+                element: document.getElementById('middle'),
+                intro: 'More features, more fun.',
+                position: 'left'
+              },
+              {
+                element: document.getElementById('gamecanvas'),
+                intro: "Let's try it. It's free and open-source.",
+                position: 'bottom'
+              }
+            ]
+          });
+
+          intro.start();
+      }
+    </script>
 
 
 	<!-- DOM -->

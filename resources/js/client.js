@@ -2,6 +2,7 @@
  * Perform all DOM manipulation in this top level function (by listening to events from app or app.game).
  * @see  <a href="http://mootools.net/docs/core/Element/Element">MooTools Element class</a> for DOM tools.
  */
+
 function loaded() {
 	var canvas = document.id('gamecanvas');
 	var leftInfo = document.id('leftinfo');
@@ -50,10 +51,13 @@ function loaded() {
 	var endBtn;
 	var toolbarBox;
 	var selectorBox;
+	var creatorHelpBtn;
+	var playerHelpBtn;
 	// create the app
 	var app = new App(canvas);
 
 	/** Sets everything in motion for the entire application and game. */
+
 	function beginGame(isCreator) {
 		// show waiting animation
 		showWaiting(true);
@@ -122,7 +126,9 @@ function loaded() {
 					height: 200,
 					draggable: true,
 					target: 'main',
-					addClass: { 'title': 'paneltitle' },
+					addClass: {
+						'title': 'paneltitle'
+					},
 					position: {
 						x: ['left', 'outside'],
 						y: ['center'],
@@ -145,7 +151,9 @@ function loaded() {
 					width: 200,
 					draggable: true,
 					target: 'main',
-					addClass: { 'title': 'paneltitle' },
+					addClass: {
+						'title': 'paneltitle'
+					},
 					position: {
 						x: ['right', 'outside'],
 						y: ['center'],
@@ -185,7 +193,7 @@ function loaded() {
 					});
 					objectBtn['objectId'] = id,
 					objectBtn.inject('objectSelect');
-					console.log('Correct id = '+objectBtn.get('src'));
+					console.log('Correct id = ' + objectBtn.get('src'));
 				}
 				// buttons for tiles
 				for (var i = 0; i < globals.tileIds.length; i++) {
@@ -208,9 +216,31 @@ function loaded() {
 					});
 					tileBtn['tileId'] = id,
 					tileBtn.inject('tileSelect');
-					console.log('Correct id = '+tileBtn.get('src'));
+					console.log('Correct id = ' + tileBtn.get('src'));
 				}
 
+				var creatorHelpBtn = new Element('button', {
+					html: 'Tutorial',
+					'class': 'btn',
+					events: {
+						click: function() {
+							startCreatorIntro();
+						}
+					}
+				});
+				creatorHelpBtn.inject('bottom');
+
+			} else {
+				var playerHelpBtn = new Element('button', {
+					html: 'Tutorial',
+					'class': 'btn',
+					events: {
+						click: function() {
+							startPlayerIntro();
+						}
+					}
+				});
+				playerHelpBtn.inject('bottom');
 			}
 
 			// show the textbox and log
@@ -242,6 +272,7 @@ function loaded() {
 				id: 'endturn'
 			});
 			endBtn.inject('bottom');
+
 			// now listen for turn events
 			app.addEvent('turnStarted', onTurnStarted);
 			app.addEvent('turnEnded', onTurnEnded);
@@ -266,6 +297,7 @@ function loaded() {
 	 * Shows or hides the waiting notice modal.
 	 * @param  {boolean} show If the notice should be shown or hidden.
 	 */
+
 	function showWaiting(show) {
 		if (show) {
 			waitingPopup.open();
@@ -282,6 +314,7 @@ function loaded() {
 	 *                       Can be either 'alert', 'info', 'error', 'ok', or 'default' (no icon).
 	 * @param  {String} msg  The message, or content, of the notice.
 	 */
+
 	function showNotice(type, msg) {
 		new mBox.Notice({
 			type: type,
