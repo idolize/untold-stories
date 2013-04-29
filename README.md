@@ -58,3 +58,7 @@ Tilesets and Images
 --------------------
 
 Tiles are 32 x 32 pixels in size, saved as PNG-32 images with transparency. A collection of free 16x16 tileset images [can be found on opengameart.org](http://opengameart.org/content/oga-16x16-jrpg-sprites-tiles): to use these images save the original, resize it to 200% (without using any antialiasing), convert all white pixels to transparent pixels, and then export the image as a PNG-32 image with transparency.
+
+
+### Toolbar Icons
+Toolbar icons are taken from the [Open Icon Library](http://openiconlibrary.sourceforge.net/) and are liscenced under the [CC BY-SA 3.0 liscence](http://creativecommons.org/licenses/by-sa/3.0/).

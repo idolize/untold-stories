@@ -85,6 +85,10 @@ canvas#gamecanvas {
 	margin-bottom: 35px;
 }
 
+#bottom #tutorialBtn {
+	float: left;
+}
+
 .footer {
 	font-size: 0.8em;
 	text-align: center;

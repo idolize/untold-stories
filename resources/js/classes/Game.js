@@ -111,34 +111,30 @@ var Game = new Class({
 		x = Math.floor(x / this.tileSize);
 		y = Math.floor(y / this.tileSize);
 		//console.log('INFO: mouse clicked at: ' + x + ', ' + y + (event.rightClick ? ' right click' : ''));
-		if (!event.rightClick) {
-			if (this.isPlacingObject) {
-				this.objectBoard.setObject(x, y, this.currentObjectType);
-				if (!this.stateChanges['objsChanged']) this.stateChanges['objsChanged'] = {};
-				// map on x,y to only store the last change at that location
-				this.stateChanges['objsChanged'][x + ',' + y] = {
-					id: this.currentObjectType.id,
-					x: x,
-					y: y,
-					isPassable: this.currentObjectType.isPassable
-				};
-			} else {
-				this.tileBoard.setTile(x, y, this.currentTileType);
-				if (!this.stateChanges['tilesChanged']) this.stateChanges['tilesChanged'] = {};
-				// map on x,y to only store the last change at that location
-				this.stateChanges['tilesChanged'][x + ',' + y] = {
-					id: this.currentTileType.id,
-					x: x,
-					y: y,
-					isPassable: this.currentTileType.isPassable
-				};
-			}
-			this.isMouseDown = true;
-			this.lastClickBoardX = x;
-			this.lastClickBoardY = y;
+		if (this.isPlacingObject) {
+			this.objectBoard.setObject(x, y, this.currentObjectType);
+			if (!this.stateChanges['objsChanged']) this.stateChanges['objsChanged'] = {};
+			// map on x,y to only store the last change at that location
+			this.stateChanges['objsChanged'][x + ',' + y] = {
+				id: this.currentObjectType.id,
+				x: x,
+				y: y,
+				isPassable: this.currentObjectType.isPassable
+			};
 		} else {
-			this.clearScreen(true);
+			this.tileBoard.setTile(x, y, this.currentTileType);
+			if (!this.stateChanges['tilesChanged']) this.stateChanges['tilesChanged'] = {};
+			// map on x,y to only store the last change at that location
+			this.stateChanges['tilesChanged'][x + ',' + y] = {
+				id: this.currentTileType.id,
+				x: x,
+				y: y,
+				isPassable: this.currentTileType.isPassable
+			};
 		}
+		this.isMouseDown = true;
+		this.lastClickBoardX = x;
+		this.lastClickBoardY = y;
 	},
 
 	// "private" function
@@ -223,7 +219,7 @@ var Game = new Class({
 			var objsChanged = changes['objsChanged'];
 			Object.each(objsChanged, function(obj, key) {
 				if (obj.id == null) { // delete the object
-					console.log('Deleted object at: ', obj.x, ',', obj.y);
+					//console.log('INFO: Deleted object at: ', obj.x, ',', obj.y);
 					this.objectBoard.deleteObject(obj.x, obj.y);
 				} else { // add a new object
 					// see if any new images need to be downloaded

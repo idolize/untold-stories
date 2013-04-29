@@ -33,12 +33,14 @@ function loaded() {
 		content: 'Select what you wish to play as...',
 		buttons: [{
 			title: 'Player',
+			id: 'startPlayerBtn',
 			event: function() {
 				this.close();
 				beginGame(false);
 			}
 		}, {
 			title: 'Creator',
+			id: 'startCreatorBtn',
 			event: function() {
 				this.close();
 				beginGame(true);
@@ -46,6 +48,27 @@ function loaded() {
 		}],
 		attach: 'play' // attach this dialog to the play button's onClick handler
 	});
+	// add tooltips for the buttons
+	new mBox.Tooltip({
+		content: 'Act as the player, controlling the hero and interacting with whatever happens along this crazy story.',
+		theme: 'Black',
+		width: 150,
+		position: {
+			x: 'left',
+			y: 'center'
+		},
+		attach: 'startPlayerBtn'
+	});
+	new mBox.Tooltip({
+		content: 'Act as the creator, creating the entire game world piece by piece. You are the core storyteller of the game.',
+		theme: 'Black',
+		width: 150,
+		position: {
+			x: 'right',
+			y: 'center'
+		},
+		attach: 'startCreatorBtn'
+	});	
 
 	document.id('play').erase('disabled');
 	var endBtn;
@@ -119,9 +142,56 @@ function loaded() {
 
 			// show the tile and object selector
 			if (isCreator) {
+				var toolbarContent = new Element('div', { id: 'toolbarContent' });
+				var clearBtn = new Element('input', {
+					type: 'image',
+					src: '../images/tools/clear.png',
+					events: {
+						click: function() {
+							if (app.game.active) app.game.clearScreen(true);
+						}
+					}
+				});
+				new mBox.Tooltip({
+					content: 'Clear the world',
+					theme: 'Black',
+					attach: clearBtn
+				});
+				clearBtn.inject(toolbarContent);
+				var deleteBtn = new Element('input', {
+					type: 'image',
+					src: '../images/tools/delete.png',
+					events: {
+						click: function() {
+							console.log('TODO: Implement delete object functionality'); //TODO
+						}
+					}
+				});
+				new mBox.Tooltip({
+					content: 'Delete an object',
+					theme: 'Black',
+					attach: deleteBtn
+				});
+				deleteBtn.inject(toolbarContent);
+				var editBtn = new Element('input', {
+					type: 'image',
+					src: '../images/tools/edit.png',
+					events: {
+						click: function() {
+							console.log('TODO: Implement edit object functionality'); //TODO
+						}
+					}
+				});
+				new mBox.Tooltip({
+					content: 'Edit an object',
+					theme: 'Black',
+					attach: editBtn
+				});
+				editBtn.inject(toolbarContent);
+
 				toolbarBox = new mBox({
 					title: 'Toolbar',
-					content: "toolbar stuff goes here...",
+					content: toolbarContent,
 					width: 100,
 					height: 200,
 					draggable: true,
@@ -141,13 +211,24 @@ function loaded() {
 					closeOnClick: false,
 					closeOnBodyClick: false,
 					closeOnMouseleave: false,
-					openOnInit: true
+					openOnInit: true,
+					zIndex: 7000,
+					id: 'toolbarBox'
 				});
 
 				// TODO? would be *super* cool to use this for our selector: http://mcpants.github.io/jquery.shapeshift/
+				var selectorTabs = new Element('div', { id: 'selectorTabs' });
+				var tabsList = new Element('ul', { 'class': 'tabs' });
+				tabsList.grab(new Element('li', { html: 'Tiles' }));
+				tabsList.grab(new Element('li', { html: 'Objects' }));
+				var contentsList = new Element('ul', { 'class': 'contents' });
+				contentsList.grab(new Element('li', { id: 'tileSelect' }));
+				contentsList.grab(new Element('li', { id: 'objectSelect' }));
+				selectorTabs.grab(tabsList);
+				selectorTabs.grab(contentsList);
 				selectorBox = new mBox({
 					title: 'Tiles and Objects',
-					content: "selectorTabs",
+					content: selectorTabs,
 					width: 200,
 					draggable: true,
 					target: 'main',
@@ -166,81 +247,63 @@ function loaded() {
 					closeOnClick: false,
 					closeOnBodyClick: false,
 					closeOnMouseleave: false,
-					openOnInit: true
+					openOnInit: true,
+					zIndex: 7000,
+					id: 'selectorBox'
 				});
-
-				tabs = new TinyTab($$('ul.tabs li'), $$('ul.contents li'));
+				tabs = new TinyTab(tabsList.getChildren(), contentsList.getChildren());
 
 				// buttons for objects
-				var prevObjBtn = null;
-				var prevTileBtn = null;
+				var prevImgBtn = null;
 				for (var i = 0; i < globals.objectIds.length; i++) {
 					var id = globals.objectIds[i];
-					var objectBtn = new Element('img', {
+					var objectBtn = new Element('input', {
+						type: 'image',
 						src: 'images/objects/' + id + '.png',
 						'class': 'imgBtn tile',
 						events: {
 							click: function() {
 								this.addClass('selected');
-								if (prevObjBtn) prevObjBtn.removeClass('selected');
-								prevObjBtn = this;
-								// deselect the tile too
-								if (prevTileBtn) prevTileBtn.removeClass('selected');
-								prevTileBtn = null;
+								if (prevImgBtn) prevImgBtn.removeClass('selected');
+								prevImgBtn = this;
+								// update the game state
 								app.game.setCurrentObjectType(this['objectId']);
 							}
 						}
 					});
-					objectBtn['objectId'] = id,
+					objectBtn['objectId'] = id, //TODO this is hacky
 					objectBtn.inject('objectSelect');
-					console.log('Correct id = ' + objectBtn.get('src'));
+					new mBox.Tooltip({
+						content: ('Object "'+id+'"'),
+						theme: 'Black',
+						attach: objectBtn
+					});
 				}
 				// buttons for tiles
 				for (var i = 0; i < globals.tileIds.length; i++) {
 					var id = globals.tileIds[i];
-
-					var tileBtn = new Element('img', {
+					var tileBtn = new Element('input', {
+						type: 'image',
 						src: 'images/tiles/' + id + '.png',
 						'class': 'imgBtn object',
 						events: {
 							click: function() {
 								this.addClass('selected');
-								if (prevTileBtn) prevTileBtn.removeClass('selected');
-								prevTileBtn = this;
-								// deselect the object too
-								if (prevObjBtn) prevObjBtn.removeClass('selected');
-								prevObjBtn = null;
+								if (prevImgBtn) prevImgBtn.removeClass('selected');
+								prevImgBtn = this;
+								// update the game state
 								app.game.setCurrentTileType(this['tileId']);
 							}
 						}
 					});
-					tileBtn['tileId'] = id,
+					tileBtn['tileId'] = id, //TODO this is hacky
 					tileBtn.inject('tileSelect');
-					console.log('Correct id = ' + tileBtn.get('src'));
+					new mBox.Tooltip({
+						content: ('Tile "'+id+'"'),
+						theme: 'Black',
+						attach: tileBtn
+					});
 				}
-
-				var creatorHelpBtn = new Element('button', {
-					html: 'Tutorial',
-					'class': 'btn',
-					events: {
-						click: function() {
-							startCreatorIntro();
-						}
-					}
-				});
-				creatorHelpBtn.inject('bottom');
-
-			} else {
-				var playerHelpBtn = new Element('button', {
-					html: 'Tutorial',
-					'class': 'btn',
-					events: {
-						click: function() {
-							startPlayerIntro();
-						}
-					}
-				});
-				playerHelpBtn.inject('bottom');
 			}
 
 			// show the textbox and log
@@ -272,6 +335,16 @@ function loaded() {
 				id: 'endturn'
 			});
 			endBtn.inject('bottom');
+
+			var tutorialBtn = new Element('button', {
+				html: 'Tutorial',
+				'class': 'btn lime',
+				events: {
+					click: (isCreator ? startCreatorIntro : startPlayerIntro)
+				},
+				id: 'tutorialBtn'
+			});
+			tutorialBtn.inject('bottom');
 
 			// now listen for turn events
 			app.addEvent('turnStarted', onTurnStarted);

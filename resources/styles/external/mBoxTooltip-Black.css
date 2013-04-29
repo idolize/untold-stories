@@ -1,0 +1,50 @@
+/* Tooltip-Theme: Black */
+
+.mBox.Tooltip-Black {
+	font-size: 11px;
+	line-height: normal;
+}
+
+.mBox.Tooltip-Black .mBoxContainer {
+	background-color: #000;
+	border-radius: 3px;
+}
+
+.mBox.Tooltip-Black .mBoxContent {
+	color: #fff;
+	padding: 5px 8px;
+}
+
+.mBox.Tooltip-Black .mBoxTitle {
+	color: #fff;
+	font-weight: bold;
+	padding: 4px 8px 2px;
+}
+
+.mBox.Tooltip-Black .mBoxPointer {
+	background: no-repeat url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAsAAAAVCAYAAACQcBTNAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAIZJREFUeNqUUkEOwCAIo2b//3I3iBp1MFgvxlCKtog8ICkLeJxWPziTwF7g2qBojqInsJEj4tbQCsTZoGSUmCTGM7IGnB/EF1FxOYXV300Antl/wCg1RAF4f0CSILwLM9uqCY7FMuvgrGk4gpWoH0irRm1v7uPTqI2s8oGvL4FoN9w1uAUYAJb2PwK9FWu9AAAAAElFTkSuQmCC);
+}
+
+.mBox.Tooltip-Black .mBoxPointerTop {
+	width: 7px;
+	height: 4px;
+	background-position: -1px -10px;
+}
+
+.mBox.Tooltip-Black .mBoxPointerBottom {
+	width: 7px;
+	height: 4px;
+	background-position: -1px -17px;
+}
+
+.mBox.Tooltip-Black .mBoxPointerRight {
+	width: 4px;
+	height: 7px;
+	background-position: -7px -1px;
+}
+
+.mBox.Tooltip-Black .mBoxPointerLeft {
+	width: 4px;
+	height: 7px;
+	background-position: 0px -1px;
+}

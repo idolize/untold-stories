@@ -1,0 +1,99 @@
+/* Tooltip-Theme: default */
+
+.mBox.Tooltip {
+	font-size: 11px;
+	line-height: normal;
+}
+
+.mBox.Tooltip .mBoxContainer {
+	background: #fff;
+	border: 1px solid #d6d6d6;
+	box-shadow: 0 0 4px rgba(0, 0, 0, 0.25);
+	border-radius: 5px;
+}
+
+.mBox.Tooltip .mBoxContent {
+	background: #fff;
+	color: #353535;
+	padding: 5px 8px;
+	border-radius: 5px;
+}
+
+.mBox.Tooltip.hasTitle .mBoxContent {
+	border-top-left-radius: 0;
+	border-top-right-radius: 0;
+}
+
+.mBox.Tooltip .mBoxTitleContainer {
+	position: relative;
+}
+
+.mBox.Tooltip .mBoxTitle {
+	position: relative;
+	color: #505050;
+	text-shadow: 0 1px 0 #fff;
+	padding: 5px 8px;
+	font-weight: bold;
+	border-bottom: 1px solid #d6d6d6;
+	background-color: #f8f8f8;
+	background-image: -webkit-linear-gradient(top,#fdfdfd,#f4f4f4);
+	background-image: -moz-linear-gradient(top,#fdfdfd,#f4f4f4);
+	background-image: -ms-linear-gradient(top,#fdfdfd,#f4f4f4);
+	background-image: -o-linear-gradient(top,#fdfdfd,#f4f4f4);
+	background-image: linear-gradient(top,#fdfdfd,#f4f4f4);
+	filter: progid:DXImageTransform.Microsoft.Gradient(GradientType=0,StartColorStr=#fdfdfd,EndColorStr=#f4f4f4);
+	box-shadow:inset 0 -1px 1px rgba(255, 255, 255, 0.8);
+	border-radius: 5px 5px 0 0;
+}
+
+.mBox.Tooltip .mBoxClose {
+	display: block;
+	cursor: pointer;
+	width: 13px;
+	height: 13px;
+	position: absolute;
+	top: 5px;
+	right: 8px;
+}
+
+.mBox.Tooltip .mBoxClose > div {
+	opacity: 0.65;
+	width: 7px; 
+	height: 7px;
+	position: absolute;
+	top: 3px;
+	left: 3px;
+	background: 0 0 no-repeat url(data:image/gif;base64,R0lGODlhBwAHAJEDAMjIyLCwsLy8vP///yH5BAEAAAMALAAAAAAHAAcAAAIPDIZgNnoqGIoCtRAfc/IWADs=);
+}
+
+.mBox.Tooltip .mBoxClose:hover > div {
+	opacity: 1;
+}
+
+.mBox.Tooltip .mBoxPointer {
+	background: no-repeat url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABMAAAAlCAYAAACgc9J8AAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAP9JREFUeNq01oENhCAMBdCWuIgTuP8WOoGj9GhSDaeUfjiuCSEm+iKFVllESGNdVzrPk55xHIfewHnItm1MrVDMG/u+i0aeyWZp3R9CJRaBIWRB5YUHItAL80AEqmI1EIFcrAQ1rwjUxEoQgULsAue+2ayc/W83p5+z6RXggOO1WQGhrsFXP/Oip58tAaQTZ4QMbEbyEB2GCKEBdtpmru4NsC4aHg8PLJ/3lim2xDv02jYDz1kNQsGEQgiYeqAQBPuZQF1jFKqBYTn1RLK1D4+v3E3NGfgNkJlfdKi0XrUZgc1OWyt0Dwz/z37tGhA20s+WR4t+1iBbzTJyaD8CDAB7WgNSzh/AnwAAAABJRU5ErkJggg==);
+}
+
+.mBox.Tooltip .mBoxPointerTop {
+	width: 17px;
+	height: 9px;
+	background-position: 0px -18px;
+}
+
+.mBox.Tooltip .mBoxPointerBottom {
+	width: 17px;
+	height: 9px;
+	background-position: 0px -28px;
+}
+
+.mBox.Tooltip .mBoxPointerRight {
+	width: 9px;
+	height: 17px;
+	background-position: -10px 0px;
+}
+
+.mBox.Tooltip .mBoxPointerLeft {
+	width: 9px;
+	height: 17px;
+	background-position: 0px 0px;
+}
