@@ -29,7 +29,8 @@ function loaded() {
 	// create join game dialog
 	var joinModal = new mBox.Modal({
 		title: 'Join a game',
-		content: 'Select what you wish to play as...',
+		content: '<p class="startprompt">How do you want to play the game?</p>',
+		target: 'gamecanvas',
 		buttons: [{
 			title: 'Player',
 			id: 'startPlayerBtn',
@@ -79,7 +80,6 @@ function loaded() {
 	var app = new App(canvas);
 
 	/** Sets everything in motion for the entire application and game. */
-
 	function beginGame(isCreator) {
 		// show waiting animation
 		showWaiting(true);
@@ -154,9 +154,11 @@ function loaded() {
 				});
                 var confirmClearDialog = new mBox.Modal({
 		            title: 'Are you sure?',
-		            content: 'Clearing the screen deletes all tiles and objects that have been placed.  Are you sure you want to do this?',
+		            content: '<p>Clearing the screen deletes all tiles and objects that have been placed.</p><p>Are you sure you want to do this?</p>',
+		            target: 'gamecanvas',
 		            buttons: [{
-			            title: 'Yes',
+			            title: 'Clear',
+			            addClass: 'button_green',
 			            event: function() {
 			            	app.game.clearScreen(true);
 				            this.close();

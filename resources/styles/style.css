@@ -109,3 +109,7 @@ canvas#gamecanvas {
 .footer ul.items li a, .footer ul.items li a:active, .footer ul.items li a:visited {
 	color: #999;
 }
+
+.startprompt {
+	font-size: 150%;
+}
