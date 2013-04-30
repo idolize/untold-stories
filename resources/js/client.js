@@ -117,7 +117,7 @@ function loaded() {
 			if (isCreator) {
 				toolbarBox = new mBox({
 					title: 'Toolbar',
-					content: "toolbar stuff goes here...",
+					content: "toolbar",
 					width: 100,
 					height: 200,
 					draggable: true,
@@ -137,6 +137,20 @@ function loaded() {
 					closeOnMouseleave: false,
 					openOnInit: true
 				});
+
+                // toolbar buttons
+                var clearButton = new Element('button', {
+                    name: "clearButton",
+                    type: "button",
+                    html: "Clear",
+                    events: {
+                        click: function() {
+                            app.game.clearScreen(true);
+                        }
+                    },
+                });
+                clearButton.inject('toolbar');
+                var deleteButton;
 
 				// TODO? would be *super* cool to use this for our selector: http://mcpants.github.io/jquery.shapeshift/
 				selectorBox = new mBox({
