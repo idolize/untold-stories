@@ -2,7 +2,6 @@
  * Perform all DOM manipulation in this top level function (by listening to events from app or app.game).
  * @see  <a href="http://mootools.net/docs/core/Element/Element">MooTools Element class</a> for DOM tools.
  */
-
 function loaded() {
 	var canvas = document.id('gamecanvas');
 	var leftInfo = document.id('leftinfo');
@@ -143,15 +142,32 @@ function loaded() {
 			// show the tile and object selector
 			if (isCreator) {
 				var toolbarContent = new Element('div', { id: 'toolbarContent' });
+				// toolbar buttons
 				var clearBtn = new Element('input', {
 					type: 'image',
 					src: '../images/tools/clear.png',
 					events: {
 						click: function() {
-							if (app.game.active) app.game.clearScreen(true);
+							if (app.game.active) confirmClearDialog.open();
 						}
 					}
 				});
+                var confirmClearDialog = new mBox.Modal({
+		            title: 'Are you sure?',
+		            content: 'Clearing the screen deletes all tiles and objects that have been placed.  Are you sure you want to do this?',
+		            buttons: [{
+			            title: 'Yes',
+			            event: function() {
+			            	app.game.clearScreen(true);
+				            this.close();
+			            }
+		            }, {
+                        title: "Cancel",
+                        event: function() {
+                            this.close();
+                        }
+                    }]
+                });
 				new mBox.Tooltip({
 					content: 'Clear the world',
 					theme: 'Black',
@@ -196,9 +212,7 @@ function loaded() {
 					height: 200,
 					draggable: true,
 					target: 'main',
-					addClass: {
-						'title': 'paneltitle'
-					},
+					addClass: { 'title': 'paneltitle' },
 					position: {
 						x: ['left', 'outside'],
 						y: ['center'],
@@ -370,7 +384,6 @@ function loaded() {
 	 * Shows or hides the waiting notice modal.
 	 * @param  {boolean} show If the notice should be shown or hidden.
 	 */
-
 	function showWaiting(show) {
 		if (show) {
 			waitingPopup.open();
@@ -387,7 +400,6 @@ function loaded() {
 	 *                       Can be either 'alert', 'info', 'error', 'ok', or 'default' (no icon).
 	 * @param  {String} msg  The message, or content, of the notice.
 	 */
-
 	function showNotice(type, msg) {
 		new mBox.Notice({
 			type: type,
