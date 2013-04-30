@@ -141,16 +141,28 @@ function loaded() {
                 // toolbar buttons
                 var clearButton = new Element('button', {
                     name: "clearButton",
+                    id: "clearButton",
                     type: "button",
                     html: "Clear",
-                    events: {
-                        click: function() {
-                            app.game.clearScreen(true);
-                        }
-                    },
                 });
                 clearButton.inject('toolbar');
-                var deleteButton;
+                var confirmDialog = new mBox.Modal({
+		            title: 'Are you sure?',
+		            content: 'Clearing the screen deletes all tiles and objects that have been placed.  Are you sure you want to do this?',
+		            buttons: [{
+			            title: 'Yes',
+			            event: function() {
+                            app.game.clearScreen(true);
+				            this.close();
+			            }
+		            }, {
+                        title: "Cancel",
+                        event: function() {
+                            this.close();
+                        }
+                    }],
+                    attach: 'clearButton',
+                });
 
 				// TODO? would be *super* cool to use this for our selector: http://mcpants.github.io/jquery.shapeshift/
 				selectorBox = new mBox({
