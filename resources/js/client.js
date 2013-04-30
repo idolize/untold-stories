@@ -278,7 +278,7 @@ function loaded() {
 						events: {
 							click: function() {
 								this.addClass('selected');
-								if (prevImgBtn) prevImgBtn.removeClass('selected');
+								if (prevImgBtn && prevImgBtn != this) prevImgBtn.removeClass('selected');
 								prevImgBtn = this;
 								// update the game state
 								app.game.setCurrentObjectType(this['objectId']);
@@ -303,7 +303,7 @@ function loaded() {
 						events: {
 							click: function() {
 								this.addClass('selected');
-								if (prevImgBtn) prevImgBtn.removeClass('selected');
+								if (prevImgBtn && prevImgBtn != this) prevImgBtn.removeClass('selected');
 								prevImgBtn = this;
 								// update the game state
 								app.game.setCurrentTileType(this['tileId']);
