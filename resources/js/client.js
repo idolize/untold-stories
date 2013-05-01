@@ -163,7 +163,11 @@ function loaded() {
 						this.addClass('selectedBtn');
 						if (prevImgBtn && prevImgBtn != this) prevImgBtn.removeClass('selectedBtn');
 						prevImgBtn = this;
-						showNotice('info', 'TODO: Implement delete object functionality'); //TODO
+                        if (isCreator) {
+                            app.setActionMode(App.ActionMode.DELETE);
+                        } else {
+						    showNotice('info', 'TODO: Implement delete textbox functionality'); //TODO
+                        }
 					}
 				}
 			});

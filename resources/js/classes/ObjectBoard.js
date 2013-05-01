@@ -41,6 +41,27 @@ var ObjectBoard = new Class({
 		return this.objects[y][x];
 	},
 
+    /**
+     * Gets the board coordinates of the object that is on top of the display list at
+     * canvas position (x,y)
+     *
+     * @param {integer} x canvas position on the x-axis
+     * @param {integer} y canvas position on the y-axis
+     *
+     * @return {Object} an object with x and y for the board coordinates of the object.
+     *                  If no object was under the mouse, returns null
+     */
+    getBoardCoordinatesOfObjectAtGlobalPosition: function(x,y) {
+        var entry = this.container.getObjectUnderPoint(x,y);
+        if (entry) {
+            var boardX = Math.floor(entry.x/this.tileSize);
+            var boardY = Math.floor(entry.y/this.tileSize);
+            return { x: boardX, y: boardY };
+        } else {
+            return null;
+        }
+    },
+
 	/**
 	 * Deletes an object from the board.
 	 * 
@@ -48,7 +69,7 @@ var ObjectBoard = new Class({
 	 * @param  {integer} y object position on the y-axis.
 	 */
 	deleteObject: function(x, y) {
-		setObjectWithExisting(x, y, null);
+		this.setObjectWithExisting(x, y, null);
 	},
 
 	/**
