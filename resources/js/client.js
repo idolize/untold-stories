@@ -15,7 +15,7 @@ function loaded() {
 	// create waiting popup and animation
 	var waitingTextArea = new Element('div');
 	new Element('p', {
-		html: 'Waiting for other player...'
+		text: 'Waiting for other player...'
 	}).inject(waitingTextArea);
 	var waitingAnim = new MUX.Loader.Bar();
 	waitingAnim.elem.inject(waitingTextArea);
@@ -87,25 +87,11 @@ function loaded() {
 		// setup callbacks for our custom events
 		var onTurnStarted = function() {
 			endBtn.erase('disabled');
-			document.id('textbox').erase('disabled');
-
-			if (app.game.textFromOtherPlayer) {
-				document.id('textlog').grab(new Element('p', {
-					html: ((app.game.isCreator ? 'Player' : 'Creator') + ': ' + app.game.textFromOtherPlayer)
-				}));
-			}
 			showNotice('info', 'Your turn has started');
 			rightInfo.textContent = 'Active';
 		};
 		var onTurnEnded = function() {
 			endBtn.set('disabled', 'disabled');
-			var textbox = document.id('textbox');
-			textbox.set('disabled', 'disabled');
-			var textboxval = textbox.get('value');
-			if (textboxval) document.id('textlog').grab(new Element('p', {
-				html: ('Me: ' + textboxval)
-			}));
-			textbox.set('value', '');
 			rightInfo.textContent = 'Waiting';
 		};
 		var onConnectFailed = function() {
@@ -139,12 +125,217 @@ function loaded() {
 			leftInfo.textContent = (game.isCreator ? 'Creator' : 'Player');
 			rightInfo.textContent = 'Waiting';
 
-			// show the tile and object selector
+			// set the starting action mode of the app
 			if (isCreator) {
-				var toolbarContent = new Element('div', { id: 'toolbarContent' });
-				// toolbar buttons
+				this.setActionMode(App.ActionMode.PLACE, this.game.getTileTypeInstance('grass2'));
+			} else {
+				this.setActionMode(App.ActionMode.TEXT);
+			}
+
+			var constructTextbox = function(text, isAction) {
+				var element = new Element('p', {
+					'class': 'textbox' + (isAction? ' action' : ''),
+					text: text	
+				});
+				return element;
+			};
+			app.game.addEvent('textboxNeedsConstructing', function(textbox) {
+				var element = constructTextbox(textbox.text, false);
+				element.inject('textcontainer');
+				app.game.addTextbox(element, textbox.text, textbox.x, textbox.y, true);
+			});
+			app.game.addEvent('actionNeedsConstructing', function(textbox) {
+				var element = constructTextbox(textbox.text, true);
+				element.inject('textcontainer');
+				app.game.addAction(element, textbox.text, textbox.x, textbox.y, true);
+			});
+
+			// show the toolbar
+			var prevImgBtn = null;
+			var toolbarContent = new Element('div', { id: 'toolbarContent' });
+
+			var deleteBtn = new Element('input', {
+				type: 'image',
+				'class': 'toolbarbtn',
+				src: '../images/tools/delete.png',
+				events: {
+					click: function() {
+						this.addClass('selectedBtn');
+						if (prevImgBtn && prevImgBtn != this) prevImgBtn.removeClass('selectedBtn');
+						prevImgBtn = this;
+						showNotice('info', 'TODO: Implement delete object functionality'); //TODO
+					}
+				}
+			});
+			new mBox.Tooltip({
+				content: 'Delete '+(isCreator ? 'an object or textbox' : 'textbox or action'),
+				theme: 'Black',
+				attach: deleteBtn
+			});
+			deleteBtn.inject(toolbarContent);
+
+			var moveBtn = new Element('input', {
+				type: 'image',
+				'class': 'toolbarbtn',
+				src: '../images/tools/move.png',
+				events: {
+					click: function() {
+						this.addClass('selectedBtn');
+						if (prevImgBtn && prevImgBtn != this) prevImgBtn.removeClass('selectedBtn');
+						prevImgBtn = this;
+						showNotice('info', 'TODO: Implement move object functionality'); //TODO
+					}
+				}
+			});
+			new mBox.Tooltip({
+				content: 'Move '+(isCreator ? 'an object or textbox' : 'textbox or action'),
+				theme: 'Black',
+				attach: moveBtn
+			});
+			moveBtn.inject(toolbarContent);
+
+
+			var textboxPrompt = new mBox.Modal({
+				content: '<div style="width:213px;"><textarea style="width:200px; margin-top:5px" cols="30" rows="3" id="textboxContent"></textarea></div>',
+				title: 'Enter your text',
+				closeOnBodyClick: false,
+				buttons: [
+					{title: 'Cancel'},
+					{
+						title: 'Add',
+						addClass: 'button_green',
+						event: function() {
+							var text = document.id('textboxContent').get('value');
+							document.id('textboxContent').set('value', '');
+							var textNode = constructTextbox(text, this['isAction']);
+							textNode.inject('textcontainer');
+							if (this['isAction']) {
+								app.game.addAction(textNode, text, this['textboxPos'].x, this['textboxPos'].y);
+							} else {
+								app.game.addTextbox(textNode, text, this['textboxPos'].x, this['textboxPos'].y);
+							}
+							this.close();
+						}
+					}
+				]
+			});
+			var textboxBtn = new Element('input', {
+				type: 'image',
+				'class': 'toolbarbtn',
+				src: '../images/tools/textbox.png',
+				events: {
+					click: function() {
+						this.addClass('selectedBtn');
+						if (prevImgBtn && prevImgBtn != this) prevImgBtn.removeClass('selectedBtn');
+						prevImgBtn = this;
+						app.setActionMode(App.ActionMode.TEXT);
+						app.addEvent('textboxCreateRequest', function(pos) {
+							if (!isCreator && app.game.numTextboxesByMe > 0) {
+								// this is a player attempting to place a second textbox
+								// TODO move the current textbox to the new location or disable the button
+								showNotice('info', 'The player can only have one textbox per turn');
+							} else {
+								textboxPrompt.open();
+								document.id('textboxContent').focus();
+								textboxPrompt['textboxPos'] = pos;
+								textboxPrompt['isAction'] = false;
+							}
+						});
+					}
+				}
+			});
+			new mBox.Tooltip({
+				content: 'Insert a textbox',
+				theme: 'Black',
+				attach: textboxBtn
+			});
+			textboxBtn.inject(toolbarContent);
+
+			if (!isCreator) {
+				var actionBtn = new Element('input', {
+					type: 'image',
+					'class': 'toolbarbtn',
+					src: '../images/tools/action.png',
+					events: {
+						click: function() {
+							this.addClass('selectedBtn');
+							if (prevImgBtn && prevImgBtn != this) prevImgBtn.removeClass('selectedBtn');
+							prevImgBtn = this;
+							app.setActionMode(App.ActionMode.ACTION);
+							app.addEvent('actionCreateRequest', function(pos) {
+								console.log('client.js: actionCreateRequest callback initiated');
+								if (app.game.actionBox != null) {
+									// this is a player attempting to place a second action
+									// TODO move the current action to the new location or diable the button
+									showNotice('info', 'The player can only have one action per turn');
+								} else {
+									textboxPrompt.open();
+									document.id('textboxContent').focus();
+									textboxPrompt['textboxPos'] = pos;
+									textboxPrompt['isAction'] = true;
+								}
+							});
+						}
+					}
+				});
+				new mBox.Tooltip({
+					content: 'Insert an action',
+					theme: 'Black',
+					attach: actionBtn
+				});
+				actionBtn.inject(toolbarContent);
+			}
+
+			toolbarBox = new mBox({
+				title: 'Toolbar',
+				content: toolbarContent,
+				width: 100,
+				height: 200,
+				draggable: true,
+				target: 'main',
+				addClass: { 'title': 'paneltitle' },
+				position: {
+					x: ['left', 'outside'],
+					y: ['center'],
+				},
+				offset: {
+					x: -10,
+					y: -5,
+				},
+				closeOnEsc: false,
+				closeOnClick: false,
+				closeOnBodyClick: false,
+				closeOnMouseleave: false,
+				openOnInit: true,
+				zIndex: 7000,
+				id: 'toolbarBox'
+			});
+
+			if (isCreator) {
+				// creator-only toolbar buttons
+				var editBtn = new Element('input', {
+					type: 'image',
+					'class': 'toolbarbtn',
+					src: '../images/tools/edit.png',
+					events: {
+						click: function() {
+							this.addClass('selectedBtn');
+							if (prevImgBtn && prevImgBtn != this) prevImgBtn.removeClass('selectedBtn');
+							prevImgBtn = this;
+							showNotice('info', 'TODO: Implement edit object functionality'); //TODO
+						}
+					}
+				});
+				new mBox.Tooltip({
+					content: 'Edit an object',
+					theme: 'Black',
+					attach: editBtn
+				});
+				editBtn.inject(toolbarContent);
+
 				var clearBtn = new Element('input', {
 					type: 'image',
+					'class': 'toolbarbtn',
 					src: '../images/tools/clear.png',
 					events: {
 						click: function() {
@@ -176,67 +367,13 @@ function loaded() {
 					attach: clearBtn
 				});
 				clearBtn.inject(toolbarContent);
-				var deleteBtn = new Element('input', {
-					type: 'image',
-					src: '../images/tools/delete.png',
-					events: {
-						click: function() {
-							console.log('TODO: Implement delete object functionality'); //TODO
-						}
-					}
-				});
-				new mBox.Tooltip({
-					content: 'Delete an object',
-					theme: 'Black',
-					attach: deleteBtn
-				});
-				deleteBtn.inject(toolbarContent);
-				var editBtn = new Element('input', {
-					type: 'image',
-					src: '../images/tools/edit.png',
-					events: {
-						click: function() {
-							console.log('TODO: Implement edit object functionality'); //TODO
-						}
-					}
-				});
-				new mBox.Tooltip({
-					content: 'Edit an object',
-					theme: 'Black',
-					attach: editBtn
-				});
-				editBtn.inject(toolbarContent);
 
-				toolbarBox = new mBox({
-					title: 'Toolbar',
-					content: toolbarContent,
-					width: 100,
-					height: 200,
-					draggable: true,
-					target: 'main',
-					addClass: { 'title': 'paneltitle' },
-					position: {
-						x: ['left', 'outside'],
-						y: ['center'],
-					},
-					offset: {
-						x: -10,
-						y: -5,
-					},
-					closeOnEsc: false,
-					closeOnClick: false,
-					closeOnBodyClick: false,
-					closeOnMouseleave: false,
-					openOnInit: true,
-					zIndex: 7000,
-					id: 'toolbarBox'
-				});
-
+				// show the tile and object selector
 				// TODO? would be *super* cool to use this for our selector: http://mcpants.github.io/jquery.shapeshift/
 				var selectorTabs = new Element('div', { id: 'selectorTabs' });
 				var tabsList = new Element('ul', { 'class': 'tabs' });
-				tabsList.grab(new Element('li', { html: 'Tiles' }));
-				tabsList.grab(new Element('li', { html: 'Objects' }));
+				tabsList.grab(new Element('li', { text: 'Tiles' }));
+				tabsList.grab(new Element('li', { text: 'Objects' }));
 				var contentsList = new Element('ul', { 'class': 'contents' });
 				contentsList.grab(new Element('li', { id: 'tileSelect' }));
 				contentsList.grab(new Element('li', { id: 'objectSelect' }));
@@ -270,24 +407,24 @@ function loaded() {
 				tabs = new TinyTab(tabsList.getChildren(), contentsList.getChildren());
 
 				// buttons for objects
-				var prevImgBtn = null;
 				for (var i = 0; i < globals.objectIds.length; i++) {
 					var id = globals.objectIds[i];
+					var type = app.game.getObjectTypeInstance(id);
 					var objectBtn = new Element('input', {
 						type: 'image',
-						src: 'images/objects/' + id + '.png',
+						src: type.image.src,
 						'class': 'imgBtn tile',
 						events: {
 							click: function() {
-								this.addClass('selected');
-								if (prevImgBtn && prevImgBtn != this) prevImgBtn.removeClass('selected');
+								this.addClass('selectedBtn');
+								if (prevImgBtn && prevImgBtn != this) prevImgBtn.removeClass('selectedBtn');
 								prevImgBtn = this;
-								// update the game state
-								app.game.setCurrentObjectType(this['objectId']);
+								// update the app state
+								app.setActionMode(App.ActionMode.PLACE, this['objectType']);
 							}
 						}
 					});
-					objectBtn['objectId'] = id, //TODO this is hacky
+					objectBtn['objectType'] = type, //TODO this is hacky
 					objectBtn.inject('objectSelect');
 					new mBox.Tooltip({
 						content: ('Object "'+id+'"'),
@@ -298,21 +435,22 @@ function loaded() {
 				// buttons for tiles
 				for (var i = 0; i < globals.tileIds.length; i++) {
 					var id = globals.tileIds[i];
+					var type = app.game.getTileTypeInstance(id);
 					var tileBtn = new Element('input', {
 						type: 'image',
-						src: 'images/tiles/' + id + '.png',
+						src: type.image.src,
 						'class': 'imgBtn object',
 						events: {
 							click: function() {
-								this.addClass('selected');
-								if (prevImgBtn && prevImgBtn != this) prevImgBtn.removeClass('selected');
+								this.addClass('selectedBtn');
+								if (prevImgBtn && prevImgBtn != this) prevImgBtn.removeClass('selectedBtn');
 								prevImgBtn = this;
-								// update the game state
-								app.game.setCurrentTileType(this['tileId']);
+								// update the app state
+								app.setActionMode(App.ActionMode.PLACE, this['tileType']);
 							}
 						}
 					});
-					tileBtn['tileId'] = id, //TODO this is hacky
+					tileBtn['tileType'] = type, //TODO this is hacky
 					tileBtn.inject('tileSelect');
 					new mBox.Tooltip({
 						content: ('Tile "'+id+'"'),
@@ -322,38 +460,18 @@ function loaded() {
 				}
 			}
 
-			// show the textbox and log
-			var textlog = new Element('div', {
-				style: 'margin: 0 auto; width: 460px; overflow-y: scroll; height: 100px; border: 1px solid gray; padding: 10px; font-size: 0.8em',
-				id: 'textlog'
-			});
-			textlog.inject('middle');
-			var textbox = new Element('input', {
-				value: '',
-				disabled: 'disabled',
-				placeholder: 'Enter a message or action for your turn',
-				style: 'display: block; margin: 10px auto; width: 480px;',
-				id: 'textbox'
-			});
-			textbox.inject('middle');
-
 			// show the 'end turn button'
 			endBtn = new Element('button', {
-				html: 'End turn',
+				text: 'End turn',
 				'class': 'btn red',
 				disabled: 'disabled',
-				events: {
-					click: function() {
-						app.game.stateChanges['textbox'] = textbox.get('value');
-						app.endTurn();
-					}
-				},
+				events: { click: app.endTurn },
 				id: 'endturn'
 			});
 			endBtn.inject('bottom');
 
 			var tutorialBtn = new Element('button', {
-				html: 'Tutorial',
+				text: 'Tutorial',
 				'class': 'btn lime',
 				events: {
 					click: (isCreator ? startCreatorIntro : startPlayerIntro)

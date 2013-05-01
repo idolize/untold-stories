@@ -6,7 +6,7 @@
  */
 var Game = new Class({
 	Implements: Events,
-	Binds: ['beginTurn', 'gameLoop', '_mouseDownHandler', '_mouseMoveHandler', '_mouseUpHandler'], // see: http://mootools.net/docs/more/Class/Class.Binds
+	Binds: ['beginTurn', 'gameLoop', 'addTextbox', 'removeTextbox', 'addAction', 'removeAction'], // see: http://mootools.net/docs/more/Class/Class.Binds
 
 	heroImageUrl: 'images/hero/hero.png',
 	heroSpeed: 256,
@@ -22,13 +22,10 @@ var Game = new Class({
 	stateChanges: null,
 	objectTypeMap: null,
 	tileTypeMap: null,
-	currentTileType: null,
-	currentObjectType: null,
-	isMouseDown: null,
-	isPlacingObject: null,
-	lastClickBoardX: -1,
-	lastClickBoardY: -1,
-	textFromOtherPlayer: null,
+	textBoxes: null,
+	textBoxesContainer: null,
+	numTextboxesByMe: null,
+	actionBox: null,
 
 	/**
 	 * @constructor
@@ -44,9 +41,8 @@ var Game = new Class({
 		this.active = false;
 		this.objectTypeMap = {};
 		this.tileTypeMap = {};
-		this.isMouseDown = false;
-		this.isPlacingObject = false;
-		this.textFromOtherPlayer = '';
+		this.textBoxes = {};
+		this.numTextboxesByMe = 0;
 
 		// create the stage
 		this.stage = new createjs.Stage(canvas);
@@ -65,6 +61,8 @@ var Game = new Class({
 		// create the hero and add it to the display list
 		this.hero = new Hero(this.heroImageUrl, 66, 72, this.heroSpeed, 150, 150);
 		this.stage.addChild(this.hero.bitmap);
+		this.textBoxesContainer = new createjs.Container();
+		this.stage.addChild(this.textBoxesContainer);
 		// store these function callbacks to make them easier to remove later
 		this._keyDownHandler = function(event) {
 			this.hero.keyDown(event.key);
@@ -92,8 +90,6 @@ var Game = new Class({
 			var tree1Type = new ObjectType('tree1', false);
 			this.tileTypeMap['grass1'] = grass1Type;
 			this.objectTypeMap['tree1'] = tree1Type;
-			this.currentTileType = grass1Type;
-			this.currentObjectType = tree1Type;
 
 			this.beginTurn(this.stateChanges);
 		} else {
@@ -103,80 +99,100 @@ var Game = new Class({
 		createjs.Ticker.addEventListener('tick', this.gameLoop);
 	},
 
-	// "private" function
-	_mouseDownHandler: function(event) {
-		// decide where to put it
-		var x = event.page.x - this.stage.canvas.getPosition().x;
-		var y = event.page.y - this.stage.canvas.getPosition().y;
-		x = Math.floor(x / this.tileSize);
-		y = Math.floor(y / this.tileSize);
-		//console.log('INFO: mouse clicked at: ' + x + ', ' + y + (event.rightClick ? ' right click' : ''));
-		if (this.isPlacingObject) {
-			this.objectBoard.setObject(x, y, this.currentObjectType);
-			if (!this.stateChanges['objsChanged']) this.stateChanges['objsChanged'] = {};
-			// map on x,y to only store the last change at that location
-			this.stateChanges['objsChanged'][x + ',' + y] = {
-				id: this.currentObjectType.id,
-				x: x,
-				y: y,
-				isPassable: this.currentObjectType.isPassable
-			};
+	placeObject: function(objectType, x, y) {
+		console.log('Game.js: placeObject called with pos=('+x+','+y+') and objectType.id='+objectType.id);
+		this.objectBoard.setObject(x, y, objectType);
+		if (!this.stateChanges['objsChanged']) this.stateChanges['objsChanged'] = {};
+		// map on x,y to only store the last change at that location
+		this.stateChanges['objsChanged'][x + ',' + y] = {
+			id: objectType.id,
+			x: x,
+			y: y,
+			isPassable: objectType.isPassable
+		};
+	},
+
+	placeTile: function(tileType, x, y) {
+		console.log('Game.js: placeTile called with pos=('+x+','+y+') and tileType.id='+tileType.id);
+		this.tileBoard.setTile(x, y, tileType);
+		if (!this.stateChanges['tilesChanged']) this.stateChanges['tilesChanged'] = {};
+		// map on x,y to only store the last change at that location
+		this.stateChanges['tilesChanged'][x + ',' + y] = {
+			id: tileType.id,
+			x: x,
+			y: y,
+			isPassable: tileType.isPassable
+		};
+	},
+
+	moveHero: function(newX, newY) {
+		this.hero.x = newX;
+		this.hero.y = newY;
+		this.stateChanges['heroPosX'] = this.hero.x;
+		this.stateChanges['heroPosY'] = this.hero.y;
+
+		// TODO move associated textbox too if need be
+	},
+
+	deleteObject: function(x, y) {
+		this.objectBoard.deleteObject(x, y);
+		// check if this is a message that has been committed yet or not
+		if (this.stateChanges['objectsAdded'] && this.stateChanges['objectsAdded'][x + ',' + y]) {
+			// just clear out the state changes instead of sending both an 'add' and 'delete' message for the same object
+			delete this.stateChanges['objectsAdded'][x + ',' + y];
 		} else {
-			this.tileBoard.setTile(x, y, this.currentTileType);
-			if (!this.stateChanges['tilesChanged']) this.stateChanges['tilesChanged'] = {};
-			// map on x,y to only store the last change at that location
-			this.stateChanges['tilesChanged'][x + ',' + y] = {
-				id: this.currentTileType.id,
-				x: x,
-				y: y,
-				isPassable: this.currentTileType.isPassable
-			};
+			if (!this.stateChanges['objectsDeleted']) this.stateChanges['objectsDeleted'] = {};
+			this.stateChanges['objectsDeleted'][x + ',' + y] = true;
 		}
-		this.isMouseDown = true;
-		this.lastClickBoardX = x;
-		this.lastClickBoardY = y;
 	},
 
-	// "private" function
-	_mouseUpHandler: function(event) {
-		this.isMouseDown = false;
+	addTextbox: function(element, text, x, y, onlyLocal) {
+		console.log('Game.js: adding textbox at ('+x+','+y+')');
+
+		var textbox = new TextBox(element, text, x, y, false);
+		this.textBoxes[x + ',' + y] = textbox;
+		this.textBoxesContainer.addChild(textbox.domElement);
+
+		if (!onlyLocal) {
+			if (!this.stateChanges['textboxesAdded']) this.stateChanges['textboxesAdded'] = {};
+			this.stateChanges['textboxesAdded'][x + ',' + y] = { text: text, x: x, y: y };
+			this.numTextboxesByMe += 1;
+		}
 	},
 
-	// "private" function
-	_mouseMoveHandler: function(event) {
-		// decide where to put it
-		if (this.isMouseDown) {
-			var x = event.page.x - this.stage.canvas.getPosition().x;
-			var y = event.page.y - this.stage.canvas.getPosition().y;
-			x = Math.floor(x / this.tileSize);
-			y = Math.floor(y / this.tileSize);
-			if (x != this.lastClickBoardX || y != this.lastClickBoardY) {
-				//console.log('INFO: mouse clicked at: ' + x + ', ' + y + (event.rightClick ? ' right click' : ''));
-				if (this.isPlacingObject) {
-					this.objectBoard.setObject(x, y, this.currentObjectType);
-					if (!this.stateChanges['objsChanged']) this.stateChanges['objsChanged'] = {};
-					// map on x,y to only store the last change at that location
-					this.stateChanges['objsChanged'][x + ',' + y] = {
-						id: this.currentObjectType.id,
-						x: x,
-						y: y,
-						isPassable: this.currentObjectType.isPassable
-					};
-				} else {
-					this.tileBoard.setTile(x, y, this.currentTileType);
-					if (!this.stateChanges['tilesChanged']) this.stateChanges['tilesChanged'] = {};
-					// map on x,y to only store the last change at that location
-					this.stateChanges['tilesChanged'][x + ',' + y] = {
-						id: this.currentTileType.id,
-						x: x,
-						y: y,
-						isPassable: this.currentTileType.isPassable
-					};
-				}
-				this.lastClickBoardX = x;
-				this.lastClickBoardY = y;
-				this.lastClickWasTile = !event.shift;
-			}
+	/**
+	 * Only called during the same turn to remove a textbox the player/creator decides they don't want anymore.
+	 * Not needed between turns because textboxes automatically clear.
+	 * @param  {integer} x The x coordinate of the textbox being removed.
+	 * @param  {integer} y The y coordinate of the textbox being removed.
+	 */
+	removeTextbox: function(x, y) {
+		this.textBoxesContainer.removeChild(this.textBoxes[x + ',' + y].domElement);
+		this.textBoxes[x + ',' + y].domElement.htmlElement.destroy();
+		delete this.textBoxes[x + ',' + y];
+		if (this.stateChanges['textboxesAdded'] && this.stateChanges['textboxesAdded'][x + ',' + y]) {
+			delete this.stateChanges['textboxesAdded'][x + ',' + y];
+			if (Object.keys(this.stateChanges['textboxesAdded']).length == 0) delete this.stateChanges['textboxesAdded'];
+		}
+	},
+
+	addAction: function(element, text, x, y, onlyLocal) {
+		console.log('Game.js: adding actionnn at ('+x+','+y+')');
+
+		this.actionBox = new TextBox(element, text, x, y, true);
+		this.stage.addChild(this.actionBox.domElement);
+
+		if (!onlyLocal) {
+			this.stateChanges['actionAdded'] = { text: text, x: x, y: y };
+		}
+	},
+
+	removeAction: function(x, y) {
+		this.removeChild(actionBox.domElement);
+		this.actionBox.domElement.htmlElement.destroy();
+		this.actionBox = null;
+		if (this.stateChanges['actionAdded']) {
+			delete this.stateChanges['actionAdded'];
 		}
 	},
 
@@ -193,18 +209,6 @@ var Game = new Class({
 		window.removeEvent('keyup', this._keyUpHandler);
 	},
 
-	// "private" function
-	_addMouseListener: function() {
-		this.stage.canvas.addEvent('mousedown', this._mouseDownHandler);
-		this.stage.canvas.addEvent('mousemove', this._mouseMoveHandler);
-		window.addEvent('mouseup', this._mouseUpHandler);
-	},
-
-	// "private" function
-	_removeMouseListener: function() {
-		this.stage.canvas.removeEvent('mousedown', this._mouseDownHandler);
-	},
-
 	/**
 	 * Updates the state of the game and all game objects based on a set of changes.
 	 * @param {Object} changes The new game state changes.
@@ -213,6 +217,15 @@ var Game = new Class({
 		// if scene cleared
 		if (changes['cleared']) {
 			this.clearScreen(false);
+		}
+		if (changes['textboxesAdded']) {
+			var textAdded = changes['textboxesAdded'];
+			Object.each(textAdded, function(textbox, key) {
+				this.fireEvent('textboxNeedsConstructing', textbox);
+			}, this);
+		}
+		if (changes['actionAdded']) {
+			this.fireEvent('actionNeedsConstructing', changes['actionAdded']);
 		}
 		// update objects
 		if (changes['objsChanged']) {
@@ -269,12 +282,23 @@ var Game = new Class({
 			// reset record of changes for this turn
 			this.stateChanges = {};
 
+			// clear any existing textboxes
+			Object.each(this.textBoxes, function(textbox, key) {
+				// destroy the DOM node
+				textbox.domElement.htmlElement.destroy();
+			}, this);
+			this.textBoxesContainer.removeAllChildren();
+			this.textBoxes = {};
+			// clear action
+			if (this.actionBox) {
+				this.actionBox.domElement.htmlElement.destroy();
+				this.stage.removeChild(this.actionBox.domElement);
+				this.actionBox = null;
+			}
+
 			// (re)initialize the state
 			this.applyStateChanges(changes);
 
-			if (this.isCreator) {
-				this._addMouseListener();
-			}
 			this._addKeyboardListeners(); // allow both player and creator to move the hero with keyboard
 			this.fireEvent('turnStarted', changes);
 		}
@@ -286,9 +310,6 @@ var Game = new Class({
 	 */
 	endTurn: function() {
 		if (this.active) {
-			if (this.isCreator) {
-				this._removeMouseListener();
-			}
 			this._removeKeyboardListeners();
 			// turn is now over
 			console.log('INFO: Turn ended');
@@ -358,26 +379,6 @@ var Game = new Class({
 			this.objectTypeMap[objectId] = entry;
 		}
 		return entry;
-	},
-
-	/**
-	 * Sets the current tile type to the type associated with the given id so that the user now places the new type.
-	 * Also switches out of placing objects mode to placing tiles mode.
-	 * @param {String} tileId the new tile type id.
-	 */
-	setCurrentTileType: function(tileId) {
-		this.currentTileType = this.getTileTypeInstance(tileId);
-		this.isPlacingObject = false;
-	},
-
-	/**
-	 * Sets the current object type to the type associated with the given id so that the user now places the new type.
-	 * Also switches to placing objects mode.
-	 * @param {String} objectId The new object type id.
-	 */
-	setCurrentObjectType: function(objectId) {
-		this.currentObjectType = this.getObjectTypeInstance(objectId);
-		this.isPlacingObject = true;
 	},
 
 	/**

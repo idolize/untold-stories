@@ -47,11 +47,6 @@ ul.contents li{
 	margin: 10px
 }
 
-ul.contents .selected {
-	background-color: #333;
-	filter: alpha(opacity=40); opacity: 0.4; 
-}
-
 .imgBtn {
 	margin: 2px;
 	border: 1px solid #ddd;

@@ -29,6 +29,7 @@
 	<script type="text/javascript" src="js/client.js"></script>
 	<script type="text/javascript" src="js/tutorial.js"></script>
 	<script type="text/javascript" src="js/classes/App.js"></script>
+	<script type="text/javascript" src="js/classes/MouseHandler.js"></script>
 	<script type="text/javascript" src="js/classes/Game.js"></script>
 	<script type="text/javascript" src="js/classes/TileBoard.js"></script>
 	<script type="text/javascript" src="js/classes/TileType.js"></script>
@@ -37,13 +38,14 @@
 	<script type="text/javascript" src="js/classes/ObjectType.js"></script>
 	<script type="text/javascript" src="js/classes/BoardObject.js"></script>
 	<script type="text/javascript" src="js/classes/Hero.js"></script>
+	<script type="text/javascript" src="js/classes/TextBox.js"></script>
 
 
 	<!-- DOM -->
 	<div id="main" class="wrapper">
 		<h1 id="logo">Tabula Rasa</h1>
 		<div id="infobar"><div id="leftinfo">&ndash;&ndash;</div><div id="rightinfo">&ndash;&ndash;</div></div>
-		<div class="canvaswrap">
+		<div class="canvaswrap"><div id="textcontainer"></div>
 			<canvas id="gamecanvas" width="480" height="416"></canvas>
 		</div>
 		<div id="initial">

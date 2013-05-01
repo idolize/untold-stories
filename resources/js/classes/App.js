@@ -5,15 +5,19 @@
  */
 var App = new Class({
 	Implements: Events,
-	Binds: ['onTurnStarted', 'endTurn', 'onOtherPlayerDisconnected'], // see: http://mootools.net/docs/more/Class/Class.Binds
+	Binds: ['onTurnStarted', 'endTurn', 'onOtherPlayerDisconnected', 'triggerPlace', 'triggerText', 'triggerAction'], // see: http://mootools.net/docs/more/Class/Class.Binds
 
 	socket: null,
 	game: null,
 	canvas: null,
 	tileSize: 32, // tile size (either width or height b/c square) in pixels - update if image size changes
+	actionMode: null,
+	selectedObjOrTile: null,
+	mouseHandler: null,
 
 	initialize: function(canvas) {
 		this.canvas = canvas;
+		this.mouseHandler = new MouseHandler(this.canvas, this.tileSize);
 	},
 
 	/**
@@ -55,6 +59,7 @@ var App = new Class({
 			this.fireEvent('gameStarted', this.game);
 			this.game.addEvent('turnStarted', this.onTurnStarted);
 			this.game.start();
+			this.mouseHandler.startListening();
 			// make the socket listen for 'yourTurn' events
 			this.socket.on('yourTurn', this.game.beginTurn);
 			// make the socket listen for 'otherPlayerDisconnected' events
@@ -72,6 +77,43 @@ var App = new Class({
 		}.bind(this);
 		this.socket.once('joinFailed', onFail);
 		this.socket.once('ready', onReady);
+	},
+
+	triggerPlace: function(pos) {
+		if (instanceOf(this.selectedObjOrTile, TileType)) {
+			this.game.placeTile(this.selectedObjOrTile, pos.x, pos.y);
+		} else {
+			this.game.placeObject(this.selectedObjOrTile, pos.x, pos.y);
+		}
+	},
+
+	triggerText: function(pos) {
+		this.fireEvent('textboxCreateRequest', pos);
+	},
+
+	triggerAction: function(pos) {
+		console.log('App.js: triggerAction called');
+		this.fireEvent('actionCreateRequest', pos);
+	},
+
+	setActionMode: function(mode, objectOrTileType) {
+		this.mouseHandler.removeEvents();
+		switch (mode) {
+			case App.ActionMode.PLACE:
+				this.selectedObjOrTile = objectOrTileType;
+				// listen for mouse events
+				this.mouseHandler.addEvent('clickBoard', this.triggerPlace);
+				this.mouseHandler.addEvent('clickHoldBoard', this.triggerPlace);
+				break;
+			case App.ActionMode.TEXT:
+				this.mouseHandler.addEvent('clickCanvas', this.triggerText);
+				break;
+			case App.ActionMode.ACTION:
+				this.mouseHandler.addEvent('clickCanvas', this.triggerAction);
+				break;
+			default:
+				throw 'Unexpected action mode passed to App.setActionMode';
+		}
 	},
 
 	/**
@@ -104,6 +146,8 @@ var App = new Class({
 	 * Immediately destroys the app.
 	 */
 	destroy: function() {
+		// stop the mouse handler
+		this.mouseHandler.stopListening();
 		// remove all event listeners registered to this app
 		this.removeEvents();
 		// disconnect the socket
@@ -115,3 +159,6 @@ var App = new Class({
 		}
 	}
 });
+
+/** Enum used to indicate the current 'mode'. */
+App.ActionMode = { PLACE: 1, EDIT: 2, DELETE: 3, MOVE: 4, TEXT: 5, ACTION: 6 };

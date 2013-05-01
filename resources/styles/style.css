@@ -113,3 +113,29 @@ canvas#gamecanvas {
 .startprompt {
 	font-size: 150%;
 }
+
+.textbox {
+	padding: 2px;
+	margin: 0;
+	color: #000;
+	z-index: 8000;
+	background-color: white;
+	border: 1px solid black;
+	font-size: 0.8em;
+	max-width: 150px;
+	max-height: 100px;
+	overflow-y: scroll;
+}
+
+.action {
+	border-color: #afffab;
+	background-color: #067a00;
+	color: white;
+	font-weight: bold;
+	overflow: hidden;
+}
+
+.toolbarbtn:active, .selectedBtn {
+	filter: alpha(opacity=40); opacity: 0.4;
+	background-color: #333;
+}
