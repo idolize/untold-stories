@@ -95,7 +95,6 @@ var App = new Class({
 	},
 
     triggerDelete: function(pos) {
-        console.log('App.js: triggerDelete called');
         this.game.deleteObjectByGlobalCoords(pos.x,pos.y);
     },
 

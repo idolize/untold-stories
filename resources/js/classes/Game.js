@@ -145,6 +145,7 @@ var Game = new Class({
 	deleteObject: function(x, y) {
 		if (!this.active) throw 'Game method called while not in active turn';
 		this.objectBoard.deleteObject(x, y);
+		console.log('INFO: Deleted object at: ', x, ',', y);
 		// check if this is a message that has been committed yet or not
         if (this.stateChanges['objsChagned'] && this.stateChanges['objsChagned'][x + ',' + y]) {
             this.stateChanges['objsChagned'][x + ',' + y].id = null;
@@ -249,7 +250,6 @@ var Game = new Class({
 			var objsChanged = changes['objsChanged'];
 			Object.each(objsChanged, function(obj, key) {
 				if (obj.id == null) { // delete the object
-					console.log('INFO: Deleted object at: ', obj.x, ',', obj.y);
 					this.objectBoard.deleteObject(obj.x, obj.y);
 				} else { // add a new object
 					// see if any new images need to be downloaded
