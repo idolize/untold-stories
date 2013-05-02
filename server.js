@@ -88,14 +88,12 @@ var GameServer = new Class({
 		if (!this.player) {
 			// set reference
 			this.player = player;
-			// store the 'isCreator' value in the socket context itself to make it easier to determine
-			player['isCreator'] = false;
 			// notify any listeners
 			this.emit('playerJoined');
 			if (this.creator) {
 				// both sides have joined
 				this.inProgress = true;
-				this.emit('ready');
+				this.emit('started');
 			}
 			return true;
 		} else {
@@ -106,14 +104,12 @@ var GameServer = new Class({
 		if (!this.creator) {
 			// set reference
 			this.creator = creator;
-			// store the 'isCreator' value in the socket context itself to make it easier to determine
-			creator['isCreator'] = true;
 			// notify any listeners
 			this.emit('creatorJoined');
 			if (this.player) {
 				// both sides have joined
 				this.inProgress = true;
-				this.emit('ready');
+				this.emit('started');
 			}
 			return true;
 		} else {
@@ -121,13 +117,11 @@ var GameServer = new Class({
 		}
 	},
 	removePlayer: function(player) {
-		delete player['isCreator'];
 		// player slot is now free
 		this.player = null;
 		this.inProgress = false;
 	},
 	removeCreator: function(creator) {
-		delete creator['isCreator'];
 		// creator slot is now free
 		this.creator = null;
 		this.inProgress = false;
@@ -138,7 +132,6 @@ var GameServer = new Class({
 var gameServer = new GameServer();
 
 io.sockets.on('connection', function (socket) {
-
 	// some client is attempting to join the game
 	socket.on('join', function(obj) {
 		var success;
@@ -147,38 +140,37 @@ io.sockets.on('connection', function (socket) {
 		} else {
 			success = gameServer.attemptJoinPlayer(socket);
 		}
-		if (!success) {
+
+		if (success) { // lobby joined but game not started yet
+			var otherSocket = null;
+			// register to the 'ready' event of gameServer
+			var onGameStarted = function() {
+				otherSocket = obj.isCreator ? gameServer.player : gameServer.creator;
+				socket.emit('ready');
+				// now the game is in progress so we listen for turn events
+				socket.on('turnEnded', function(changes) {
+					// TODO store the number of turns and other game stats here
+					otherSocket.emit('yourTurn', changes);
+				});
+			};
+			if (gameServer.inProgress) onGameStarted(); // we were the last player needed
+			else gameServer.once('started', onGameStarted); // still need one more player
+			// register for disconnected event of this client's socket
+			socket.on('disconnect', function() {
+				// if game is in progress send an error to the other player
+				if (gameServer.inProgress) otherSocket.emit('otherPlayerDisconnected');
+				gameServer.removeListener('started', onGameStarted);
+				if (obj.isCreator) {
+					gameServer.removeCreator(socket);
+				} else {
+					gameServer.removePlayer(socket);
+				}
+			});
+		}
+		else {
 			socket.emit('joinFailed', {msg: ('There is already a ' + (obj.isCreator ? 'creator' : 'player') + ' in the game.')});
 		}
 	});
-
-	// register to the event we emitted in the gameServer
-	gameServer.on('ready', function() {
-		// tell all connected clients that the game server is ready
-		io.sockets.emit('ready');
-	});
-
-	socket.on('turnEnded', function(changes) {
-		// TODO store the number of turns, etc. here
-		// send the event to the other player but no other connected clients
-		var otherSocket = socket['isCreator'] ? gameServer.player : gameServer.creator;
-		otherSocket.emit('yourTurn', changes);
-	});
-
-	// some client disconnected
-	socket.on('disconnect', function() {
-		if (socket['isCreator'] === true) {
-			// if game is in progress send an error to the other player
-			if (gameServer.inProgress) gameServer.player.emit('otherPlayerDisconnected');
-			gameServer.removeCreator(socket);
-		} else if (socket['isCreator'] === false) {
-			// if game is in progress send an error to the other player
-			if (gameServer.inProgress) gameServer.creator.emit('otherPlayerDisconnected');
-			gameServer.removePlayer(socket);
-		}
-		// otherwise this was a disconnect from a client who was never actually in the game
-	});
-
 });
 
 // start the server
