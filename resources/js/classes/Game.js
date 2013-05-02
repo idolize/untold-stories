@@ -317,6 +317,7 @@ var Game = new Class({
 			this.applyStateChanges(changes);
 
 			this._addKeyboardListeners(); // allow both player and creator to move the hero with keyboard
+            this.numTextboxesByMe = 0;
 			this.fireEvent('turnStarted', changes);
 		}
 	},
