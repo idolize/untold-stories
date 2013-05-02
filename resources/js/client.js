@@ -205,11 +205,11 @@ function loaded() {
 				title: 'Enter your text',
 				closeOnBodyClick: false,
 				position: { x: ['left', 'inside'], y: ['top', 'inside'] },
-				fixed: false,
 				fade: false,
 				onOpen: function() {
 					// position at the cursor
 					this.setPosition(canvas, this.options.position, { x: this['textboxPos'].x, y: this['textboxPos'].y });
+					setTimeout(function() { document.id('textboxContent').focus(); }, 10); // focus the textarea
 				},
 				buttons: [
 					{title: 'Cancel'},
@@ -250,7 +250,6 @@ function loaded() {
 								textboxPrompt['textboxPos'] = pos;
 								textboxPrompt['isAction'] = false;
 								textboxPrompt.open();
-								document.id('textboxContent').focus();
 							}
 						});
 					}
@@ -284,7 +283,6 @@ function loaded() {
 									textboxPrompt['textboxPos'] = pos;
 									textboxPrompt['isAction'] = true;
 									textboxPrompt.open();
-									document.id('textboxContent').focus();
 								}
 							});
 						}
