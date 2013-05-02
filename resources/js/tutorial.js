@@ -48,7 +48,17 @@ function startPlayerIntro() {
 			element: document.getElementById('gamecanvas'),
 			intro: 'This is the game world scene you will be playing in. Use the arrow keys to move the hero around the scene.',
 			position: 'bottom'
-		}
+		},
+        {
+            element: document.getElementById('textboxButton'),
+            intro: 'Use this button to insert dialog.  You can only insert one dialog box per turn so use it wisely.',
+            position: 'bottom'
+        },
+        {
+            element: document.getElementById('actionButton'),
+            intro: 'Use this button to insert an action.  An action is a text box that describes what your character is doing.  You can only place one action per turn, so use it wisely.',
+            position: 'bottom'
+        },
 		]
 	});
 	intro.start();

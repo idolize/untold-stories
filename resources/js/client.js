@@ -241,6 +241,7 @@ function loaded() {
 			toolbarBtns['textboxBtn'] = new Element('input', {
 				type: 'image',
 				'class': 'toolbarbtn',
+                id: 'textboxButton',
 				src: '../images/tools/textbox.png',
 				events: {
 					click: function() {
@@ -274,6 +275,7 @@ function loaded() {
 				toolbarBtns['actionBtn'] = new Element('input', {
 					type: 'image',
 					'class': 'toolbarbtn',
+                    id: 'actionButton',
 					src: '../images/tools/action.png',
 					events: {
 						click: function() {
