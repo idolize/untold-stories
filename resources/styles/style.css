@@ -66,8 +66,13 @@ div.wrapper {
 	margin: 20px auto 10px auto;
 }
 
-.wrapper .canvaswrap.active:hover {
+.wrapper .canvaswrap.active {
 	cursor: crosshair;
+}
+
+.wrapper .done {
+	cursor: default !important;
+	opacity: 0.5;
 }
 
 canvas#gamecanvas {

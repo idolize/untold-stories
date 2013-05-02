@@ -22,9 +22,9 @@ var Game = new Class({
 	stateChanges: null,
 	objectTypeMap: null,
 	tileTypeMap: null,
-	textBoxes: null,
-	textBoxesContainer: null,
-	numTextboxesByMe: null,
+	creatorTextboxes: null,
+	playerTextbox: null,
+	textboxesContainer: null,
 	actionBox: null,
 
 	/**
@@ -41,8 +41,7 @@ var Game = new Class({
 		this.active = false;
 		this.objectTypeMap = {};
 		this.tileTypeMap = {};
-		this.textBoxes = {};
-		this.numTextboxesByMe = 0;
+		this.creatorTextboxes = {};
 
 		// create the stage
 		this.stage = new createjs.Stage(canvas);
@@ -61,8 +60,8 @@ var Game = new Class({
 		// create the hero and add it to the display list
 		this.hero = new Hero(this.heroImageUrl, 66, 72, this.heroSpeed, 150, 150);
 		this.stage.addChild(this.hero.bitmap);
-		this.textBoxesContainer = new createjs.Container();
-		this.stage.addChild(this.textBoxesContainer);
+		this.textboxesContainer = new createjs.Container();
+		this.stage.addChild(this.textboxesContainer);
 		// store these function callbacks to make them easier to remove later
 		this._keyDownHandler = function(event) {
 			this.hero.keyDown(event.key);
@@ -99,79 +98,136 @@ var Game = new Class({
 		createjs.Ticker.addEventListener('tick', this.gameLoop);
 	},
 
-	placeObject: function(objectType, x, y) {
+	/**
+	 * Adds an object to the game board or replaces an existing object if placed at the same location as
+	 * an existing object.
+	 * @param  {ObjectType} objectType The type of object to place.
+	 * @param  {integer} x          The x board coordinate of where to place the object.
+	 * @param  {integer} y          The y board coordinate of where to place the object.
+	 * @param  {Boolean} [onlyLocal]  Only locally for this turn (used to apply changes from another client).
+	 */
+	placeObject: function(objectType, x, y, onlyLocal) {
 		if (!this.active) throw 'Game method called while not in active turn';
 		this.objectBoard.setObject(x, y, objectType);
-		if (!this.stateChanges['objsChanged']) this.stateChanges['objsChanged'] = {};
-		// map on x,y to only store the last change at that location
-		this.stateChanges['objsChanged'][x + ',' + y] = {
-			id: objectType.id,
-			x: x,
-			y: y,
-			isPassable: objectType.isPassable
-		};
+		if (!onlyLocal) {
+			if (!this.stateChanges['objsChanged']) this.stateChanges['objsChanged'] = {};
+			// map on x,y to only store the last change at that location
+			this.stateChanges['objsChanged'][x + ',' + y] = {
+				id: objectType.id,
+				x: x,
+				y: y,
+				isPassable: objectType.isPassable
+			};
+		}
 	},
 
-	placeTile: function(tileType, x, y) {
+	/**
+	 * Adds an tile to the game board or replaces an existing tile if placed at the same location as
+	 * an existing tile.
+	 * @param  {TileType} tileType The type of tile to place.
+	 * @param  {integer} x          The x board coordinate of where to place the tile.
+	 * @param  {integer} y          The y board coordinate of where to place the tile.
+	 * @param  {Boolean} [onlyLocal]  Only locally for this turn (used to apply changes from another client).
+	 */
+	placeTile: function(tileType, x, y, onlyLocal) {
 		if (!this.active) throw 'Game method called while not in active turn';
 		this.tileBoard.setTile(x, y, tileType);
-		if (!this.stateChanges['tilesChanged']) this.stateChanges['tilesChanged'] = {};
-		// map on x,y to only store the last change at that location
-		this.stateChanges['tilesChanged'][x + ',' + y] = {
-			id: tileType.id,
-			x: x,
-			y: y,
-			isPassable: tileType.isPassable
-		};
+		if (!onlyLocal) {
+			if (!this.stateChanges['tilesChanged']) this.stateChanges['tilesChanged'] = {};
+			// map on x,y to only store the last change at that location
+			this.stateChanges['tilesChanged'][x + ',' + y] = {
+				id: tileType.id,
+				x: x,
+				y: y,
+				isPassable: tileType.isPassable
+			};
+		}
 	},
 
-	moveHero: function(newX, newY) {
+	/**
+	 * Moves the hero to a new (global) location.
+	 * @param  {integer} newX      The new cavas x coordinate of the hero.
+	 * @param  {integer} newY      The new canvas y coordinate of the hero.
+	 * @param  {Boolean} [onlyLocal]  Only locally for this turn (used to apply changes from another client).
+	 */
+	moveHero: function(newX, newY, onlyLocal) {
 		if (!this.active) throw 'Game method called while not in active turn';
 		this.hero.x = newX;
 		this.hero.y = newY;
-		this.stateChanges['heroPosX'] = this.hero.x;
-		this.stateChanges['heroPosY'] = this.hero.y;
-
-		// TODO move associated textbox too if need be
+		if (!onlyLocal) {
+			this.stateChanges['heroPosX'] = this.hero.x;
+			this.stateChanges['heroPosY'] = this.hero.y;
+		}
 	},
 
-    deleteObjectByGlobalCoords: function(x,y) {
-        var coords = this.objectBoard.getBoardCoordinatesOfObjectAtGlobalPosition(x,y);
-        if (coords) {
-            this.deleteObject(coords.x, coords.y);
-        }
-    },
+	/**
+	 * Deletes an object using global (canvas) coordinates rather than local (board) coordinates.
+	 * The coordinates can be anywhere on the object. Note that this method always records the change
+	 * in the state changes.
+	 * @param  {integer} x The global x coorindate of the desired deletion.
+	 * @param  {integer} y The global y coordinate of the desired deletion.
+	 * @return {Boolean}   If an object was actually deleted.
+	 */
+	deleteObjectByGlobalCoords: function(x, y) {
+		var coords = this.objectBoard.getBoardCoordinatesOfObjectAtGlobalPosition(x,y);
+		if (coords) {
+			this.deleteObject(coords.x, coords.y, false);
+			return true;
+		} else return false;
+	},
 
-	deleteObject: function(x, y) {
+	/**
+	 * Deleted an object at the given board location.
+	 * @param  {integer} x         The board-local x coordinate of the object to delte.
+	 * @param  {integer} y         The board-local y coordinate of the object to delete.
+	 * @param  {Boolean} [onlyLocal]  Only locally for this turn (used to apply changes from another client).
+	 */
+	deleteObject: function(x, y, onlyLocal) {
 		if (!this.active) throw 'Game method called while not in active turn';
 		this.objectBoard.deleteObject(x, y);
 		console.log('INFO: Deleted object at: ', x, ',', y);
-		// check if this is a message that has been committed yet or not
-        if (this.stateChanges['objsChagned'] && this.stateChanges['objsChagned'][x + ',' + y]) {
-            this.stateChanges['objsChagned'][x + ',' + y].id = null;
-        } else {
-            if (!this.stateChanges['objsChanged']) this.stateChanges['objsChanged'] = {};
-            this.stateChanges['objsChanged'][x + ',' + y] = {
-                id: null,
-                x: x,
-                y: y,
-                isPassable: true
-            };
-        }
+		if (!onlyLocal) {
+			// check if this is a message that has been committed yet or not
+			if (this.stateChanges['objsChagned'] && this.stateChanges['objsChagned'][x + ',' + y]) {
+				this.stateChanges['objsChagned'][x + ',' + y].id = null;
+			} else {
+				if (!this.stateChanges['objsChanged']) this.stateChanges['objsChanged'] = {};
+				this.stateChanges['objsChanged'][x + ',' + y] = {
+					id: null,
+					x: x,
+					y: y,
+					isPassable: true
+				};
+			}
+		}
 	},
 
-	addTextbox: function(element, text, x, y, onlyLocal) {
+	/**
+	 * Adds a textbox to the game. If the Player is calling this method after they have already placed their textbox
+	 * then it is moved rather than adding a new textbox.
+	 * @param {DOMElement}  element    The DOM element used to represent this text box.
+	 * @param {String}  text       The text content of the text box.
+	 * @param {integer}  x          The global (canvas) x coordinate of the text box.
+	 * @param {[type]}  y          The global (canvas) y coordinate of the text box.
+	 * @param {Boolean} isCreators If this textbox belongs to the creator or not.
+	 * @param {Boolean}  [onlyLocal]  Only locally for this turn (used to apply changes from another client).
+	 */
+	addTextbox: function(element, text, x, y, isCreators, onlyLocal) {
 		if (!onlyLocal && !this.active) throw 'Game method called while not in active turn';
+		if (!isCreators && this.playerTextbox) return; // TODO move existing box
 
 		var textbox = new TextBox(element, text, x, y, false);
-		this.textBoxes[x + ',' + y] = textbox;
-		this.textBoxesContainer.addChild(textbox.domElement);
+		this.textboxesContainer.addChild(textbox.domElement);
+		if (isCreators) {
+			this.creatorTextboxes[x + ',' + y] = textbox;
+		} else {
+			this.playerTextbox = textbox;
+		}
 		this.stage.update();
 
 		if (!onlyLocal) {
 			if (!this.stateChanges['textboxesAdded']) this.stateChanges['textboxesAdded'] = {};
 			this.stateChanges['textboxesAdded'][x + ',' + y] = { text: text, x: x, y: y };
-			this.numTextboxesByMe += 1;
 		}
 	},
 
@@ -180,40 +236,103 @@ var Game = new Class({
 	 * Not needed between turns because textboxes automatically clear.
 	 * @param  {integer} x The x coordinate of the textbox being removed.
 	 * @param  {integer} y The y coordinate of the textbox being removed.
+	 * @param {Boolean} isCreators If this textbox belongs to the creator or not.
+	 * @param {Boolean}  [onlyLocal]  Only locally for this turn (used to apply changes from another client).
 	 */
-	removeTextbox: function(x, y) {
+	removeTextbox: function(x, y, isCreators, onlyLocal) {
 		if (!this.active) throw 'Game method called while not in active turn';
-		this.textBoxesContainer.removeChild(this.textBoxes[x + ',' + y].domElement);
-		this.textBoxes[x + ',' + y].domElement.htmlElement.destroy();
-		delete this.textBoxes[x + ',' + y];
-		if (this.stateChanges['textboxesAdded'] && this.stateChanges['textboxesAdded'][x + ',' + y]) {
-			delete this.stateChanges['textboxesAdded'][x + ',' + y];
-			if (Object.keys(this.stateChanges['textboxesAdded']).length == 0) delete this.stateChanges['textboxesAdded'];
+		var textbox;
+		if (isCreators) {
+			textbox = this.creatorTextboxes[x + ',' + y];
+			delete this.creatorTextboxes[x + ',' + y];
+		} else {
+			textbox = this.playerTextbox;
+			this.playerTextbox = null;
+		}
+		this.textboxesContainer.removeChild(textbox.domElement);
+		textbox.domElement.htmlElement.destroy();
+		if (!onlyLocal) {
+			if (this.stateChanges['textboxesAdded'] && this.stateChanges['textboxesAdded'][x + ',' + y]) {
+				delete this.stateChanges['textboxesAdded'][x + ',' + y];
+				if (Object.keys(this.stateChanges['textboxesAdded']).length == 0) delete this.stateChanges['textboxesAdded'];
+			}
 		}
 	},
 
-	addAction: function(element, text, x, y, onlyLocal) {
+	/**
+	 * Places an action at the given location if an action does not currently exist.
+	 * If an action already exists then it is moved to the new location.
+	 * @param {DOMElement}  element    The DOM element used to represent this action box.
+	 * @param {String}  text       The action content of the action box.
+	 * @param {integer}  x          The global (canvas) x coordinate of the action box.
+	 * @param {[type]}  y          The global (canvas) y coordinate of the action box.
+	 * @param {Boolean}  [onlyLocal]  Only locally for this turn (used to apply changes from another client).
+	 */
+	placeAction: function(element, text, x, y, onlyLocal) {
 		if (!this.active) throw 'Game method called while not in active turn';
+		if (this.actionBox) return; // TODO move existing box
 
 		this.actionBox = new TextBox(element, text, x, y, true);
 		this.stage.addChild(this.actionBox.domElement);
 		this.stage.update();
 
 		if (!onlyLocal) {
-			this.stateChanges['actionAdded'] = { text: text, x: x, y: y };
+			this.stateChanges['actionPlaced'] = { text: text, x: x, y: y };
 		}
 	},
 
-	removeAction: function(x, y) {
+	/**
+	 * Removes the player action if it exists. This method is only needed/used by the Player
+	 * to delete an action placed in the same turn.
+	 */
+	removeAction: function() {
 		if (!this.active) throw 'Game method called while not in active turn';
-		this.removeChild(actionBox.domElement);
+		this.textboxesContainer.removeChild(actionBox.domElement);
 		this.actionBox.domElement.htmlElement.destroy();
 		this.actionBox = null;
-		if (this.stateChanges['actionAdded']) {
-			delete this.stateChanges['actionAdded'];
+		if (this.stateChanges['actionPlaced']) {
+			delete this.stateChanges['actionPlaced'];
 		}
 	},
 
+	/**
+	 * Clears any existing textboxes and action created by player and creator.
+	 * These changes are only local and do not get saved in the state changes or sent to the other client on turn
+	 * end.
+	 */
+	clearTextboxes: function() {
+		Object.each(this.creatorTextboxes, function(textbox, key) {
+			textbox.domElement.htmlElement.destroy();
+		}, this);
+		this.textboxesContainer.removeAllChildren();
+		this.creatorTextboxes = {};
+		if (this.playerTextbox) {
+			this.playerTextbox.domElement.htmlElement.destroy();
+			this.stage.removeChild(this.playerTextbox.domElement);
+			this.playerTextbox = null;
+		}
+		if (this.actionBox) {
+			this.actionBox.domElement.htmlElement.destroy();
+			this.stage.removeChild(this.actionBox.domElement);
+			this.actionBox = null;
+		}
+	},
+
+	/**
+	 * Clears all objects and tiles from the screen.
+	 * @param {boolean} [onlyLocal] Only clear the screen locally for this turn (used to apply changes from another client).
+	 */
+	clearScreen: function(onlyLocal) {
+		this.tileBoard.clearBoard();
+		this.objectBoard.clearBoard();
+		if (!onlyLocal) {
+			this.stateChanges['cleared'] = true;
+			this.stateChanges['tilesChanged'] = {};
+			this.stateChanges['objsChanged'] = {};
+		}
+	},
+
+	// "private" function
 	_addKeyboardListeners: function() {
 		// add keyboard listeners for player
 		window.addEvent('keydown', this._keyDownHandler);
@@ -234,31 +353,26 @@ var Game = new Class({
 	applyStateChanges: function(changes) {
 		// if scene cleared
 		if (changes['cleared']) {
-			this.clearScreen(false);
+			this.clearScreen(true);
 		}
 		if (changes['textboxesAdded']) {
 			var textAdded = changes['textboxesAdded'];
 			Object.each(textAdded, function(textbox, key) {
-				this.fireEvent('textboxNeedsConstructing', textbox);
+				this.fireEvent('constructTextboxFromOtherClient', textbox);
 			}, this);
 		}
-		if (changes['actionAdded']) {
-			this.fireEvent('actionNeedsConstructing', changes['actionAdded']);
+		if (changes['actionPlaced']) {
+			this.fireEvent('constructActionFromOtherClient', changes['actionPlaced']);
 		}
 		// update objects
 		if (changes['objsChanged']) {
 			var objsChanged = changes['objsChanged'];
 			Object.each(objsChanged, function(obj, key) {
 				if (obj.id == null) { // delete the object
-					this.objectBoard.deleteObject(obj.x, obj.y);
-				} else { // add a new object
-					// see if any new images need to be downloaded
-					if (!this.objectTypeMap[obj.id]) {
-						// fetch the image and store it in the map for later
-						this.objectTypeMap[obj.id] = new ObjectType(obj.id, obj.isPassable);
-					}
+					this.deleteObject(obj.x, obj.y, true);
+				} else {
 					// add new object to the board
-					this.objectBoard.setObject(obj.x, obj.y, this.objectTypeMap[obj.id]);
+					this.placeObject(this.getObjectTypeInstance(obj.id), obj.x, obj.y, true);
 				}
 			}, this);
 		}
@@ -267,19 +381,9 @@ var Game = new Class({
 		if (changes['tilesChanged']) {
 			var tilesChanged = changes['tilesChanged'];
 			Object.each(tilesChanged, function(tile, key) {
-				// see if any new images need to be downloaded
-				if (!this.tileTypeMap[tile.id]) {
-					// fetch the image and store it in the map for later
-					this.tileTypeMap[tile.id] = new TileType(tile.id, tile.isPassable);
-				}
 				// set new tiles on the board
-				this.tileBoard.setTile(tile.x, tile.y, this.tileTypeMap[tile.id]);
+				this.placeTile(this.getTileTypeInstance(tile.id), tile.x, tile.y, true);
 			}, this);
-		}
-		if (changes['textbox']) {
-			this.textFromOtherPlayer = changes['textbox'];
-		} else {
-			this.textFromOtherPlayer = '';
 		}
 
 		// update the hero position
@@ -299,19 +403,8 @@ var Game = new Class({
 			// reset record of changes for this turn
 			this.stateChanges = {};
 
-			// clear any existing textboxes
-			Object.each(this.textBoxes, function(textbox, key) {
-				// destroy the DOM node
-				textbox.domElement.htmlElement.destroy();
-			}, this);
-			this.textBoxesContainer.removeAllChildren();
-			this.textBoxes = {};
-			// clear action
-			if (this.actionBox) {
-				this.actionBox.domElement.htmlElement.destroy();
-				this.stage.removeChild(this.actionBox.domElement);
-				this.actionBox = null;
-			}
+			// clear the textboxes/action from the last turn
+			this.clearTextboxes();
 
 			// (re)initialize the state
 			this.applyStateChanges(changes);
@@ -397,19 +490,5 @@ var Game = new Class({
 			this.objectTypeMap[objectId] = entry;
 		}
 		return entry;
-	},
-
-	/**
-	 * Clears all objects and tiles from the screen.
-	 * @param {boolean} clearChanges if true, set the clear flag in the changes and clear the current changes.
-	 */
-	clearScreen: function(clearChanges) {
-		this.tileBoard.clearBoard();
-		this.objectBoard.clearBoard();
-		if (clearChanges) {
-			this.stateChanges['cleared'] = true;
-			this.stateChanges['tilesChanged'] = {};
-			this.stateChanges['objsChanged'] = {};
-		}
-	},
+	}
 });
