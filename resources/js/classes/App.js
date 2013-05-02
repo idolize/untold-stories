@@ -5,7 +5,7 @@
  */
 var App = new Class({
 	Implements: Events,
-	Binds: ['onTurnStarted', 'endTurn', 'onOtherPlayerDisconnected', 'triggerPlace', 'triggerText', 'triggerAction'], // see: http://mootools.net/docs/more/Class/Class.Binds
+	Binds: ['onTurnStarted', 'endTurn', 'onOtherPlayerDisconnected', 'triggerPlace', 'triggerText', 'triggerAction', 'triggerDelete'], // see: http://mootools.net/docs/more/Class/Class.Binds
 
 	socket: null,
 	game: null,
@@ -94,6 +94,11 @@ var App = new Class({
 		this.fireEvent('actionCreateRequest', pos);
 	},
 
+    triggerDelete: function(pos) {
+        console.log('App.js: triggerDelete called');
+        this.game.deleteObjectByGlobalCoords(pos.x,pos.y);
+    },
+
 	setActionMode: function(mode, objectOrTileType) {
 		this.mouseHandler.removeEvents();
 		switch (mode) {
@@ -109,6 +114,9 @@ var App = new Class({
 			case App.ActionMode.ACTION:
 				this.mouseHandler.addEvent('clickCanvas', this.triggerAction);
 				break;
+            case App.ActionMode.DELETE:
+                this.mouseHandler.addEvent('clickCanvas', this.triggerDelete);
+                break;
 			default:
 				throw 'Unexpected action mode passed to App.setActionMode';
 		}

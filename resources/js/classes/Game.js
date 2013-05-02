@@ -135,24 +135,34 @@ var Game = new Class({
 		// TODO move associated textbox too if need be
 	},
 
+    deleteObjectByGlobalCoords: function(x,y) {
+        var coords = this.objectBoard.getBoardCoordinatesOfObjectAtGlobalPosition(x,y);
+        if (coords) {
+            this.deleteObject(coords.x, coords.y);
+        }
+    },
+
 	deleteObject: function(x, y) {
 		if (!this.active) throw 'Game method called while not in active turn';
 		this.objectBoard.deleteObject(x, y);
 		// check if this is a message that has been committed yet or not
-		if (this.stateChanges['objectsAdded'] && this.stateChanges['objectsAdded'][x + ',' + y]) {
-			// just clear out the state changes instead of sending both an 'add' and 'delete' message for the same object
-			delete this.stateChanges['objectsAdded'][x + ',' + y];
-		} else {
-			if (!this.stateChanges['objectsDeleted']) this.stateChanges['objectsDeleted'] = {};
-			this.stateChanges['objectsDeleted'][x + ',' + y] = true;
-		}
+        if (this.stateChanges['objsChagned'] && this.stateChanges['objsChagned'][x + ',' + y]) {
+            this.stateChanges['objsChagned'][x + ',' + y].id = null;
+        } else {
+            if (!this.stateChanges['objsChanged']) this.stateChanges['objsChanged'] = {};
+            this.stateChanges['objsChanged'][x + ',' + y] = {
+                id: null,
+                x: x,
+                y: y,
+                isPassable: true
+            };
+        }
 	},
 
 	addTextbox: function(element, text, x, y, onlyLocal) {
 		if (!onlyLocal && !this.active) throw 'Game method called while not in active turn';
 
 		var textbox = new TextBox(element, text, x, y, false);
-		element.style.display = 'block';
 		this.textBoxes[x + ',' + y] = textbox;
 		this.textBoxesContainer.addChild(textbox.domElement);
 		this.stage.update();
@@ -239,7 +249,7 @@ var Game = new Class({
 			var objsChanged = changes['objsChanged'];
 			Object.each(objsChanged, function(obj, key) {
 				if (obj.id == null) { // delete the object
-					//console.log('INFO: Deleted object at: ', obj.x, ',', obj.y);
+					console.log('INFO: Deleted object at: ', obj.x, ',', obj.y);
 					this.objectBoard.deleteObject(obj.x, obj.y);
 				} else { // add a new object
 					// see if any new images need to be downloaded
