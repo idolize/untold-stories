@@ -133,13 +133,6 @@ function loaded() {
 			leftInfo.textContent = (game.isCreator ? 'Creator' : 'Player');
 			rightInfo.textContent = 'Waiting';
 
-			// set the starting action mode of the app
-			if (isCreator) {
-				app.setActionMode(App.ActionMode.PLACE, this.game.getTileTypeInstance('grass2'));
-			} else {
-				app.setActionMode(App.ActionMode.TEXT);
-			}
-
 			var constructTextbox = function(text, isAction) {
 				var element = new Element('p', {
 					'class': 'textbox' + (isAction? ' action' : ''),
@@ -237,7 +230,6 @@ function loaded() {
 					}
 				]
 			});
-			globals['aaaa'] = textboxPrompt;
 			toolbarBtns['textboxBtn'] = new Element('input', {
 				type: 'image',
 				'class': 'toolbarbtn',
@@ -304,6 +296,9 @@ function loaded() {
 					attach: toolbarBtns['actionBtn']
 				});
 				toolbarBtns['actionBtn'].inject(toolbarContent);
+
+				// initially use the action button for the Player
+				toolbarBtns['actionBtn'].fireEvent('click');
 			}
 
 			toolbarBox = new mBox({
@@ -471,6 +466,7 @@ function loaded() {
 						theme: 'Black',
 						attach: tileBtn
 					});
+					if (i == 0) tileBtn.fireEvent('click'); // initially use the first tile for the Creator
 				}
 			}
 
