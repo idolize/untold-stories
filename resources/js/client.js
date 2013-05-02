@@ -180,7 +180,7 @@ function loaded() {
 				}
 			});
 			new mBox.Tooltip({
-				content: 'Delete '+(isCreator ? 'an object or textbox' : 'textbox or action'),
+				content: 'Delete '+(isCreator ? 'an object or textbox (textbox deletion not implemented yet)' : 'textbox or action'),
 				theme: 'Black',
 				attach: toolbarBtns['deleteBtn']
 			});
