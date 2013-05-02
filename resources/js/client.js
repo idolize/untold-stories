@@ -428,19 +428,15 @@ function loaded() {
 				for (var i = 0; i < globals.objectIds.length; i++) {
 					var id = globals.objectIds[i];
 					var type = app.game.getObjectTypeInstance(id);
-					var objectBtn = new Element('input', {
-						type: 'image',
-						src: type.image.src,
-						'class': 'imgBtn tile',
-						events: {
-							click: function() {
-								this.addClass('selectedBtn');
-								if (prevImgBtn && prevImgBtn != this) prevImgBtn.removeClass('selectedBtn');
-								prevImgBtn = this;
-								// update the app state
-								app.setActionMode(App.ActionMode.PLACE, this['objectType']);
-							}
-						}
+					var objectBtn = type.image;
+					objectBtn.addClass('imgBtn');
+					objectBtn.addClass('object');
+					objectBtn.addEvent('click', function() {
+						this.addClass('selectedBtn');
+						if (prevImgBtn && prevImgBtn != this) prevImgBtn.removeClass('selectedBtn');
+						prevImgBtn = this;
+						// update the app state
+						app.setActionMode(App.ActionMode.PLACE, this['objectType']);
 					});
 					objectBtn['objectType'] = type, //TODO this is hacky
 					objectBtn.inject('objectSelect');
@@ -455,19 +451,15 @@ function loaded() {
 				for (var i = 0; i < globals.tileIds.length; i++) {
 					var id = globals.tileIds[i];
 					var type = app.game.getTileTypeInstance(id);
-					var tileBtn = new Element('input', {
-						type: 'image',
-						src: type.image.src,
-						'class': 'imgBtn object',
-						events: {
-							click: function() {
-								this.addClass('selectedBtn');
-								if (prevImgBtn && prevImgBtn != this) prevImgBtn.removeClass('selectedBtn');
-								prevImgBtn = this;
-								// update the app state
-								app.setActionMode(App.ActionMode.PLACE, this['tileType']);
-							}
-						}
+					var tileBtn = type.image;
+					tileBtn.addClass('imgBtn');
+					tileBtn.addClass('tile');
+					tileBtn.addEvent('click', function() {
+						this.addClass('selectedBtn');
+						if (prevImgBtn && prevImgBtn != this) prevImgBtn.removeClass('selectedBtn');
+						prevImgBtn = this;
+						// update the app state
+						app.setActionMode(App.ActionMode.PLACE, this['tileType']);
 					});
 					tileBtn['tileType'] = type, //TODO this is hacky
 					tileBtn.inject('tileSelect');

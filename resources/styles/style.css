@@ -144,11 +144,12 @@ canvas#gamecanvas {
 	background-color: #333;
 }
 
-input[type="image"] {
-	cursor: hand;
+.imgBtn:hover, .toolbarbtn:hover {
+	cursor: pointer;
 }
 
-input[type="image"][disabled], input[type="image"][disabled]:hover, input[type="image"][disabled]:active {
+.imgBtn[disabled], .imgBtn[disabled]:hover, .imgBtn[disabled]:active,
+.toolbarbtn[disabled], .toolbarbtn[disabled]:hover, .toolbarbtn[disabled]:active  {
 	background-color: transparent;
 	cursor: default;
 	opacity: 0.4;
