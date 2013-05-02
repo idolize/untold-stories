@@ -168,13 +168,13 @@ function loaded() {
 				src: '../images/tools/delete.png',
 				events: {
 					click: function() {
-						this.addClass('selectedBtn');
-						if (prevImgBtn && prevImgBtn != this) prevImgBtn.removeClass('selectedBtn');
-						prevImgBtn = this;
                         if (isCreator) {
+                        	this.addClass('selectedBtn');
+							if (prevImgBtn && prevImgBtn != this) prevImgBtn.removeClass('selectedBtn');
+							prevImgBtn = this;
                             app.setActionMode(App.ActionMode.DELETE);
                         } else {
-						    showNotice('info', 'TODO: Implement delete textbox functionality'); //TODO
+						    showNotice('info', 'This feature has not been implemented yet'); //TODO
                         }
 					}
 				}
