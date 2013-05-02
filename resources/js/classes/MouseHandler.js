@@ -35,12 +35,12 @@ var MouseHandler = new Class({
 	_mouseDownHandler: function(event) {
 		this.canvasPos.x = event.page.x - this.canvasTopLeft.x;
 		this.canvasPos.y = event.page.y - this.canvasTopLeft.y;
-		this.fireEvent('clickCanvas', this.canvasPos); // alert listeners of the global pos
+		this.fireEvent('clickCanvas', Object.clone(this.canvasPos)); // alert listeners of the global pos
 
 		// convert to board coordinates
 		this.boardPos.x = Math.floor(this.canvasPos.x / this.tileSize);
 		this.boardPos.y = Math.floor(this.canvasPos.y / this.tileSize);
-		this.fireEvent('clickBoard', this.boardPos); // alert listeners of the local board pos
+		this.fireEvent('clickBoard', Object.clone(this.boardPos)); // alert listeners of the local board pos
 
 		this.isMouseDown = true;
 	},

@@ -100,7 +100,7 @@ var Game = new Class({
 	},
 
 	placeObject: function(objectType, x, y) {
-		console.log('Game.js: placeObject called with pos=('+x+','+y+') and objectType.id='+objectType.id);
+		if (!this.active) throw 'Game method called while not in active turn';
 		this.objectBoard.setObject(x, y, objectType);
 		if (!this.stateChanges['objsChanged']) this.stateChanges['objsChanged'] = {};
 		// map on x,y to only store the last change at that location
@@ -113,7 +113,7 @@ var Game = new Class({
 	},
 
 	placeTile: function(tileType, x, y) {
-		console.log('Game.js: placeTile called with pos=('+x+','+y+') and tileType.id='+tileType.id);
+		if (!this.active) throw 'Game method called while not in active turn';
 		this.tileBoard.setTile(x, y, tileType);
 		if (!this.stateChanges['tilesChanged']) this.stateChanges['tilesChanged'] = {};
 		// map on x,y to only store the last change at that location
@@ -126,6 +126,7 @@ var Game = new Class({
 	},
 
 	moveHero: function(newX, newY) {
+		if (!this.active) throw 'Game method called while not in active turn';
 		this.hero.x = newX;
 		this.hero.y = newY;
 		this.stateChanges['heroPosX'] = this.hero.x;
@@ -135,6 +136,7 @@ var Game = new Class({
 	},
 
 	deleteObject: function(x, y) {
+		if (!this.active) throw 'Game method called while not in active turn';
 		this.objectBoard.deleteObject(x, y);
 		// check if this is a message that has been committed yet or not
 		if (this.stateChanges['objectsAdded'] && this.stateChanges['objectsAdded'][x + ',' + y]) {
@@ -147,11 +149,13 @@ var Game = new Class({
 	},
 
 	addTextbox: function(element, text, x, y, onlyLocal) {
-		console.log('Game.js: adding textbox at ('+x+','+y+')');
+		if (!onlyLocal && !this.active) throw 'Game method called while not in active turn';
 
 		var textbox = new TextBox(element, text, x, y, false);
+		element.style.display = 'block';
 		this.textBoxes[x + ',' + y] = textbox;
 		this.textBoxesContainer.addChild(textbox.domElement);
+		this.stage.update();
 
 		if (!onlyLocal) {
 			if (!this.stateChanges['textboxesAdded']) this.stateChanges['textboxesAdded'] = {};
@@ -167,6 +171,7 @@ var Game = new Class({
 	 * @param  {integer} y The y coordinate of the textbox being removed.
 	 */
 	removeTextbox: function(x, y) {
+		if (!this.active) throw 'Game method called while not in active turn';
 		this.textBoxesContainer.removeChild(this.textBoxes[x + ',' + y].domElement);
 		this.textBoxes[x + ',' + y].domElement.htmlElement.destroy();
 		delete this.textBoxes[x + ',' + y];
@@ -177,10 +182,11 @@ var Game = new Class({
 	},
 
 	addAction: function(element, text, x, y, onlyLocal) {
-		console.log('Game.js: adding actionnn at ('+x+','+y+')');
+		if (!this.active) throw 'Game method called while not in active turn';
 
 		this.actionBox = new TextBox(element, text, x, y, true);
 		this.stage.addChild(this.actionBox.domElement);
+		this.stage.update();
 
 		if (!onlyLocal) {
 			this.stateChanges['actionAdded'] = { text: text, x: x, y: y };
@@ -188,6 +194,7 @@ var Game = new Class({
 	},
 
 	removeAction: function(x, y) {
+		if (!this.active) throw 'Game method called while not in active turn';
 		this.removeChild(actionBox.domElement);
 		this.actionBox.domElement.htmlElement.destroy();
 		this.actionBox = null;

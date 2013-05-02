@@ -59,7 +59,6 @@ var App = new Class({
 			this.fireEvent('gameStarted', this.game);
 			this.game.addEvent('turnStarted', this.onTurnStarted);
 			this.game.start();
-			this.mouseHandler.startListening();
 			// make the socket listen for 'yourTurn' events
 			this.socket.on('yourTurn', this.game.beginTurn);
 			// make the socket listen for 'otherPlayerDisconnected' events
@@ -92,7 +91,6 @@ var App = new Class({
 	},
 
 	triggerAction: function(pos) {
-		console.log('App.js: triggerAction called');
 		this.fireEvent('actionCreateRequest', pos);
 	},
 
@@ -121,6 +119,7 @@ var App = new Class({
 	 * @param  {Object} changes The new state changes received for this turn.
 	 */
 	onTurnStarted: function(changes) {
+		this.mouseHandler.startListening();
 		this.fireEvent('turnStarted');
 	},
 
@@ -137,6 +136,7 @@ var App = new Class({
 	 * Ends the current turn in the game and broadcasts the message to the server.
 	 */
 	endTurn: function() {
+		this.mouseHandler.stopListening();
 		var turnChanges = this.game.endTurn();
 		this.socket.emit('turnEnded', turnChanges);
 		this.fireEvent('turnEnded');

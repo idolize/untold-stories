@@ -66,6 +66,10 @@ div.wrapper {
 	margin: 20px auto 10px auto;
 }
 
+.wrapper .canvaswrap.active:hover {
+	cursor: crosshair;
+}
+
 canvas#gamecanvas {
 	border: 1px solid gray;
 	width: 480px;
@@ -136,6 +140,16 @@ canvas#gamecanvas {
 }
 
 .toolbarbtn:active, .selectedBtn {
-	filter: alpha(opacity=40); opacity: 0.4;
+	opacity: 0.4;
 	background-color: #333;
+}
+
+input[type="image"] {
+	cursor: hand;
+}
+
+input[type="image"][disabled], input[type="image"][disabled]:hover, input[type="image"][disabled]:active {
+	background-color: transparent;
+	cursor: default;
+	opacity: 0.4;
 }

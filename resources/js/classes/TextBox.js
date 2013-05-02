@@ -11,5 +11,6 @@ var TextBox = new Class({
 		this.domElement.x = x;
 		this.domElement.y = y;
 		this.isAction = isAction || false;
+		this.domElement.htmlElement.style.display = 'block'; // begin rendering
 	},
 });
