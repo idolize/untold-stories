@@ -6,7 +6,6 @@ function loaded() {
 	var canvas = document.id('gamecanvas');
 	var leftInfo = document.id('leftinfo');
 	var rightInfo = document.id('rightinfo');
-	var tabs;
 	var topRight = {
 		y: 'top',
 		x: 'right'
@@ -53,24 +52,18 @@ function loaded() {
 		content: 'Act as the player, controlling the hero and interacting with whatever happens along this crazy story.',
 		theme: 'Black',
 		width: 150,
-		position: {
-			x: 'left',
-			y: 'center'
-		},
+		position: { x: 'left', y: 'center' },
 		attach: 'startPlayerBtn'
 	});
 	new mBox.Tooltip({
 		content: 'Act as the creator, creating the entire game world piece by piece. You are the core storyteller of the game.',
 		theme: 'Black',
 		width: 150,
-		position: {
-			x: 'right',
-			y: 'center'
-		},
+		position: { x: 'right', y: 'center' },
 		attach: 'startCreatorBtn'
 	});	
-
 	document.id('play').erase('disabled');
+	
 	// create the app
 	var app = new App(canvas);
 
