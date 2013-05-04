@@ -55,6 +55,7 @@ var ToolbarButton = new Class({
 
 	destroy: function() {
 		this.tooltip.destroy();
+		this.element.removeEvents();
 		this.element.destroy();
 		if (this.confirmBox) this.confirmBox.destroy();
 	}

@@ -38,10 +38,6 @@ var ToolbarPanel = new Class({
 		});
 
 		this._createAndAddButtons(isCreator);
-
-		//TODO
-		// initially use the action button for the Player
-		//toolbarBtns['actionBtn'].fireEvent('click');
 	},
 
 	_createAndAddButtons: function(isCreator) {
@@ -110,8 +106,12 @@ var ToolbarPanel = new Class({
 	},
 
 	clearSelectedBtn: function() {
-		if (this.prevSelectedBtn && this.prevSelectedBtn != toolbarBtn) this.prevSelectedBtn.element.removeClass('selectedBtn');
+		if (this.prevSelectedBtn) this.prevSelectedBtn.element.removeClass('selectedBtn');
 		this.prevSelectedBtn = null;
+	},
+
+	clickBtn: function(btnName) {
+		this.toolbarBtns[btnName].fireEvent('click');
 	},
 
 	disableBtn: function(btnName) {
@@ -126,6 +126,12 @@ var ToolbarPanel = new Class({
 		delete this.disabledBtns[btnName];
 	},
 
+	enableAllBtns: function() {
+		Object.each(this.disabledBtns, function(btn, btnName) {
+			btn.element.erase('disabled');
+		});
+		this.disabledBtns = {};
+	},
 
 	show: function() {
 		this.panel.open();

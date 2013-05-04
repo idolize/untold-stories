@@ -84,14 +84,11 @@ function loaded() {
 		showWaiting(true);
 
 		var endBtn, creatorHelpBtn, playerHelpBtn; // relevant DOM
-		var toolbar, selectorBox;
+		var toolbar, selector; // panels
 
 		function activatePanels(active) {
-			// Object.each(toolbarBtns, function(btn, btnName) {
-			// 	if (active) btn.erase('disabled');
-			// 	else btn.set('disabled', 'disabled');
-			// });
 			toolbar.setEnabled(active);
+			if (isCreator) selector.setEnabled(active);
 		}
 
 		// setup callbacks for our custom events
@@ -230,13 +227,21 @@ function loaded() {
 			}
 			toolbar.show();
 
-/*
+
 			// show the selector
 			if (isCreator) {
-				selector = new SelectorPanel();
+				// retrieve all available tile and object types
+				var tileTypes = globals.tileIds.map(function(id){ return app.game.getTileTypeInstance(id); });
+				var objectTypes = globals.objectIds.map(function(id){ return app.game.getObjectTypeInstance(id); });
 
-				///........
-
+				// create the selector
+				selector = new SelectorPanel(tileTypes, objectTypes);
+				var imgBtnClicked = function(imgBtn) {
+					app.setActionMode(App.ActionMode.PLACE, imgBtn.type);
+				};
+				selector.addEvent('tileBtnClicked', imgBtnClicked);
+				selector.addEvent('objBtnClicked', imgBtnClicked);
+				selector.show();
 
 				// if the selection changes in one panel make sure it clears any selection in the other
 				selector.addEvent('selectionChanged', function(newBtn) {
@@ -246,94 +251,9 @@ function loaded() {
 					selector.clearSelectedBtn();
 				});
 			}
-*/
 
-			if (isCreator) {
-				var prevImgBtn = null;
-				// show the tile and object selector
-				// TODO? would be *super* cool to use this for our selector: http://mcpants.github.io/jquery.shapeshift/
-				var selectorTabs = new Element('div', { id: 'selectorTabs' });
-				var tabsList = new Element('ul', { 'class': 'tabs' });
-				tabsList.grab(new Element('li', { text: 'Tiles' }));
-				tabsList.grab(new Element('li', { text: 'Objects' }));
-				var contentsList = new Element('ul', { 'class': 'contents' });
-				contentsList.grab(new Element('li', { id: 'tileSelect' }));
-				contentsList.grab(new Element('li', { id: 'objectSelect' }));
-				selectorTabs.grab(tabsList);
-				selectorTabs.grab(contentsList);
-				selectorBox = new mBox({
-					title: 'Tiles and Objects',
-					content: selectorTabs,
-					width: 200,
-					draggable: true,
-					target: 'main',
-					addClass: {
-						'title': 'paneltitle'
-					},
-					position: {
-						x: ['right', 'outside'],
-						y: ['center'],
-					},
-					offset: {
-						x: 10,
-						y: -5,
-					},
-					closeOnEsc: false,
-					closeOnClick: false,
-					closeOnBodyClick: false,
-					closeOnMouseleave: false,
-					openOnInit: true,
-					zIndex: 7000,
-					id: 'selectorBox'
-				});
-				tabs = new TinyTab(tabsList.getChildren(), contentsList.getChildren());
-
-				// buttons for objects
-				for (var i = 0; i < globals.objectIds.length; i++) {
-					var id = globals.objectIds[i];
-					var type = app.game.getObjectTypeInstance(id);
-					var objectBtn = type.image;
-					objectBtn.addClass('imgBtn');
-					objectBtn.addClass('object');
-					objectBtn.addEvent('click', function() {
-						this.addClass('selectedBtn');
-						if (prevImgBtn && prevImgBtn != this) prevImgBtn.removeClass('selectedBtn');
-						prevImgBtn = this;
-						// update the app state
-						app.setActionMode(App.ActionMode.PLACE, this['objectType']);
-					});
-					objectBtn['objectType'] = type, //TODO this is hacky
-					objectBtn.inject('objectSelect');
-					new mBox.Tooltip({
-						content: ('Object "'+id+'"'),
-						theme: 'Black',
-						attach: objectBtn
-					});
-				}
-				// buttons for tiles
-				for (var i = 0; i < globals.tileIds.length; i++) {
-					var id = globals.tileIds[i];
-					var type = app.game.getTileTypeInstance(id);
-					var tileBtn = type.image;
-					tileBtn.addClass('imgBtn');
-					tileBtn.addClass('tile');
-					tileBtn.addEvent('click', function() {
-						this.addClass('selectedBtn');
-						if (prevImgBtn && prevImgBtn != this) prevImgBtn.removeClass('selectedBtn');
-						prevImgBtn = this;
-						// update the app state
-						app.setActionMode(App.ActionMode.PLACE, this['tileType']);
-					});
-					tileBtn['tileType'] = type, //TODO this is hacky
-					tileBtn.inject('tileSelect');
-					new mBox.Tooltip({
-						content: ('Tile "'+id+'"'),
-						theme: 'Black',
-						attach: tileBtn
-					});
-					if (i == 0) tileBtn.fireEvent('click'); // initially use the first tile for the Creator
-				}
-			}
+			// select the initial tool for each player
+			toolbar.clickBtn('textbox');
 
 			// show the 'end turn button'
 			endBtn = new Element('button', {
