@@ -73,6 +73,7 @@ var ToolbarPanel = new Class({
 			}.bind(this));
 
 			var clearBtnName = 'clear';
+			// require a prompt to be accepted for this button before the click event is fired
 			this.toolbarBtns[clearBtnName] = new ToolbarButton(clearBtnName, 'Clear the world', 'Clearing the screen deletes all tiles and objects that have been placed. Are you sure?');
 			this.toolbarBtns[clearBtnName].addEvent('click', function() {
 				this.fireEvent(clearBtnName+'Clicked');

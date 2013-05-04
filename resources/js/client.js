@@ -209,18 +209,14 @@ function loaded() {
 			if (isCreator) {
 				// edit button clicked
 				toolbar.addEvent('editClicked', function() {
-					if (isCreator) {
-						app.setActionMode(App.ActionMode.DELETE);
-					} else {
-						showNotice('info', 'This feature has not been implemented yet'); //TODO
-					}
+					showNotice('info', 'This feature has not been implemented yet'); //TODO
 				});
-				// clear button clicked
+				// clear button clicked and confirmed
 				toolbar.addEvent('clearClicked', function() {
 					app.game.clearScreen();
 				});
 			} else {
-				// inser action button clicked
+				// insert action button clicked
 				toolbar.addEvent('actionClicked', function() {
 					app.setActionMode(App.ActionMode.ACTION);
 				});
@@ -277,7 +273,7 @@ function loaded() {
 			});
 			tutorialBtn.inject('bottom');
 
-			activatePanels(false); // initially disable the toolbar
+			activatePanels(false); // initially disable everything until a turn starts
 
 			// now listen for turn events
 			app.addEvent('turnStarted', onTurnStarted);
