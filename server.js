@@ -3,7 +3,6 @@ var prodPort = process.env.OPENSHIFT_INTERNAL_PORT;
 var prodIp = process.env.OPENSHIFT_INTERNAL_IP;
 var devPort = 8888;
 
-require('mootools');
 var express = require('express');
 var http = require('http');
 var app = express();
@@ -65,111 +64,14 @@ app.get('/tileeditor.html', function (req, res) {
     res.sendfile(__dirname + '/tileeditor.html');
 });
 
-
-/**
- * Any game logic the server needs to know about (should be relatively minimal).
- * @type {Class}
- */
-var GameServer = new Class({
-	Implements: [process.EventEmitter], //node.js event framework- faster than MooTools Events on server
-
-	player: null,
-	creator: null,
-	inProgress: null,
-
-	initialize: function() {
-		this.reset();
-	},
-	reset: function() {
-		this.player = this.creator = null;
-		this.inProgress = false;
-	},
-	attemptJoinPlayer: function(player) {
-		if (!this.player) {
-			// set reference
-			this.player = player;
-			// notify any listeners
-			this.emit('playerJoined');
-			if (this.creator) {
-				// both sides have joined
-				this.inProgress = true;
-				this.emit('started');
-			}
-			return true;
-		} else {
-			return false;
-		}
-	},
-	attemptJoinCreator: function(creator) {
-		if (!this.creator) {
-			// set reference
-			this.creator = creator;
-			// notify any listeners
-			this.emit('creatorJoined');
-			if (this.player) {
-				// both sides have joined
-				this.inProgress = true;
-				this.emit('started');
-			}
-			return true;
-		} else {
-			return false;
-		}
-	},
-	removePlayer: function(player) {
-		// player slot is now free
-		this.player = null;
-		this.inProgress = false;
-	},
-	removeCreator: function(creator) {
-		// creator slot is now free
-		this.creator = null;
-		this.inProgress = false;
-	}
-});
-
-
-var gameServer = new GameServer();
-
+var gameServer = require('gameserver');
 io.sockets.on('connection', function (socket) {
-	// some client is attempting to join the game
-	socket.on('join', function(obj) {
-		var success;
-		if (obj.isCreator) {
-			success = gameServer.attemptJoinCreator(socket);
-		} else {
-			success = gameServer.attemptJoinPlayer(socket);
-		}
-
-		if (success) { // lobby joined but game not started yet
-			var otherSocket = null;
-			// register to the 'ready' event of gameServer
-			var onGameStarted = function() {
-				otherSocket = obj.isCreator ? gameServer.player : gameServer.creator;
-				socket.emit('ready');
-				// now the game is in progress so we listen for turn events
-				socket.on('turnEnded', function(changes) {
-					// TODO store the number of turns and other game stats here
-					otherSocket.emit('yourTurn', changes);
-				});
-			};
-			if (gameServer.inProgress) onGameStarted(); // we were the last player needed
-			else gameServer.once('started', onGameStarted); // still need one more player
-			// register for disconnected event of this client's socket
-			socket.on('disconnect', function() {
-				// if game is in progress send an error to the other player
-				if (gameServer.inProgress) otherSocket.emit('otherPlayerDisconnected');
-				gameServer.removeListener('started', onGameStarted);
-				if (obj.isCreator) {
-					gameServer.removeCreator(socket);
-				} else {
-					gameServer.removePlayer(socket);
-				}
-			});
-		}
-		else {
-			socket.emit('joinFailed', {msg: ('There is already a ' + (obj.isCreator ? 'creator' : 'player') + ' in the game.')});
-		}
+	// all further socket communication/management is handled by the game server
+	socket.on('matchmakeMe', function(obj) {
+		gameServer.findOpenRoom(socket, obj.username, obj.isCreator);
+	});
+	socket.on('joinOther', function(obj) {
+		gameServer.joinRoom(socket, obj.username, obj.isCreator, obj.otherPlayerUsername);
 	});
 });
 
