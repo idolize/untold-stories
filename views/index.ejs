@@ -6,6 +6,7 @@
 	<link rel="stylesheet" type="text/css" href="styles/style.css" />
 	<link rel="stylesheet" type="text/css" href="styles/buttons.css" />
 	<link rel="stylesheet" type="text/css" href="styles/creatorui.css" />
+	<link rel="stylesheet" type="text/css" href="styles/bigradiocheckbox.css" />
 	<link rel="stylesheet" type="text/css" href="styles/external/mBoxCore.css" />
 	<link rel="stylesheet" type="text/css" href="styles/external/mBoxModal.css" />
 	<link rel="stylesheet" type="text/css" href="styles/external/mBoxNotice.css" />
@@ -23,6 +24,7 @@
 	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/mootools/1.4.5/mootools-yui-compressed.js"></script>
 	<script type="text/javascript" src="js/external/mootools-more-1.4.0.1.js"></script>
 	<script type="text/javascript" src="js/external/mBox.All.min.js"></script>
+	<script type="text/javascript" src="js/external/mForm.Core.js"></script>
 	<script type="text/javascript" src="js/external/MUX.Loaders.min.js"></script>
 	<script type="text/javascript" src="js/external/tinytab.js" ></script>
 	<script type="text/javascript" src="js/external/intro.js"></script>
@@ -65,6 +67,32 @@
 			<li><a href="#">Credits</a></li>
 			<li>Tabula Rasa &copy; 2013</li>
 		</ul>
+	</div>
+	<div id="joinprompt" style="display: none;">
+		<form id="joinform">
+			<div class="section">
+				<p>Who do you want to play as?</p>
+				<div class="radioholder">
+					<div class="radioline">
+						<input type="radio" name="playertype" id="playerradio" class="regular-radio big-radio" value="player" checked />
+						<label for="playerradio"></label><label for="playerradio" class="radiolabel" data-tooltip="Act as the player, controlling the hero and interacting with whatever happens along this crazy story.">Player</label>
+					</div>
+					<div class="radioline">
+						<input type="radio" name="playertype" id="creatorradio" class="regular-radio big-radio" value="creator" />
+						<label for="creatorradio"></label><label for="creatorradio" class="radiolabel" data-tooltip="Act as the creator, creating the entire game world piece by piece. You are the core storyteller of the game.">Creator</label>
+					</div>
+					<!-- TODO: Add 'Either' option -->
+				</div>
+			</div>
+			<div class="section">
+				<p>What is your name?</p>
+				<input type="text" id="username" placeholder="Your username" data-required data-tooltip="Enter any username you wish to use" />
+			</div>
+			<div class="section">
+				<p>Are you joining someone in particular (private game)?</p>
+				<input type="text" id="otherusername" placeholder="Other username (optional)" data-tooltip="Enter the username of the other player you want to play with (or leave blank for matchmaking). If you enter a username here you will wait until that player joins you, at which point the game will start automatically." />
+			</div>
+		</form>
 	</div>
 </body>
 </html>

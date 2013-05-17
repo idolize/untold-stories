@@ -144,6 +144,34 @@ canvas#gamecanvas {
 	overflow: hidden;
 }
 
+#joinprompt .section {
+	padding-bottom: 13px;
+}
+
+#joinprompt .section p {
+	font-size: 1.15em;
+	color: #555;
+}
+
+#joinprompt .radioholder {
+	width: inherit;
+}
+
+#joinprompt .radioline {
+	display: inline-block;
+	position: relative;
+	width: 150px;
+}
+
+#joinprompt .radiolabel {
+	padding: 0 8px;
+	font-size: 20px;
+	line-height: 40px;
+	color: #606060;
+	position: absolute;
+	top: 0;
+}
+
 .toolbarbtn:active, .selectedBtn {
 	opacity: 0.4;
 	background-color: #333;

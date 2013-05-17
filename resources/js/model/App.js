@@ -40,18 +40,33 @@ var App = new Class({
 		}.bind(this));
 	},
 
+	playWithOtherPlayer: function(isCreator, username, otherPlayerUsername) {
+		console.log('app emit "joinOther"');
+		this.socket.emit('joinOther', {
+			isCreator: isCreator,
+			username: username,
+			otherPlayerUsername: otherPlayerUsername
+		});
+		this._beginJoin(isCreator);
+	},
+
+	playMatchmaking: function(isCreator, username) {
+		console.log('app emit "matchmakeMe"');
+		this.socket.emit('matchmakeMe', {
+			isCreator: isCreator,
+			username: username
+		});
+		this._beginJoin(isCreator);
+	},
+
 	/**
 	 * Attempts to join the game.
 	 * Fires either a 'joinFailed' or 'gameStarted' event depending on the result.
 	 * @param {Boolean} isCreator Attempting to join as the creator or not.
+	 * @param {String} username Username of the current player.
 	 */
-	join: function(isCreator) {
+	_beginJoin: function(isCreator, username) {
 		this.game = new Game(this.canvas, this.tileSize, isCreator);
-		this.socket.emit('join', {
-			isCreator: this.game.isCreator,
-			//TODO pass a username for this person?
-			name: (this.game.isCreator ? 'creator' : 'player')
-		});
 		var onReady = function() {
 			// no longer need to listen for 'joinFailed' messages
 			this.socket.removeListener('joinFailed', onFail);

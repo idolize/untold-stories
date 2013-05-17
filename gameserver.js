@@ -1,7 +1,7 @@
 (function() {
     'use strict';
 
-	var moo = require('mootools');
+	require('mootools');
 	var async = require('async');
 
 	/**
@@ -9,7 +9,7 @@
 	 * Does not 'know' about the actual sockets -- could be any object really.
 	 * @type {Class}
 	 */
-	var GameRoom = new moo.Class({
+	var GameRoom = new Class({
 		Implements: [process.EventEmitter], //node.js event framework- faster than MooTools Events on server
 
 		roomName: null,
@@ -47,7 +47,7 @@
 						this.inProgress = true;
 						this.emit('started');
 					}
-				});
+				}.bind(this));
 				return true;
 			} else {
 				return false;
@@ -60,7 +60,7 @@
 			this.inProgress = false;
 			async.nextTick(function() {
 				this.emit('ended');
-			});
+			}.bind(this));
 		}
 	});
 
@@ -79,30 +79,24 @@
 	exports.findOpenRoom = function(socket, username, isCreator) {
 		// check if an existing open room exists waiting on a player of our type and join that
 		var existingRoom = null;
-		for (var gameRoom in this.publicRooms) {
+		for (var gameRoomName in exports.publicRooms) {
+			var gameRoom = exports.publicRooms[gameRoomName];
 			// join first room that satisfies our criteria (other player is !isCreator)
 			var otherPlayerType = isCreator ? 'player' : 'creator';
 			if (gameRoom[otherPlayerType]) { // make sure we join a game created by someone of the opposite type
-				var success = gameRoom.attemptJoin(socket, username, isCreator);
-
-				if (success) {
-					delete this.publicRooms[gameRoom.roomName]; // de-list the room
-					delete this.gameRooms[gameRoom.roomName];
-					// remap the room with its new name
-					gameRoom.roomName = this.getRoomNameFromUsernames(username, gameRoom[otherPlayerType]['username']);
-					this.gameRooms[gameRoom.roomName] = gameRoom;
-					// this is now a "private" unlisted game
-					existingRoom = gameRoom;
-				} else {
-					// should never happen unless synchronization issue!
-					throw 'Matchmaking failed (room selected was full)';
-				}
+				delete exports.publicRooms[gameRoom.roomName]; // de-list the room
+				delete exports.gameRooms[gameRoom.roomName];
+				// remap the room with its new name
+				gameRoom.roomName = exports.getRoomNameFromUsernames(username, gameRoom[otherPlayerType]['username']);
+				exports.gameRooms[gameRoom.roomName] = gameRoom;
+				// this is now a "private" unlisted game
+				existingRoom = gameRoom;
 			}
 		}
 		// if no other rooms exist, create a new one
 		if (!existingRoom) {
 			existingRoom = new GameRoom('_public-'+username); // arbitrary, temporary room name
-			this.publicRooms[existingRoom.roomName] = existingRoom;
+			exports.publicRooms[existingRoom.roomName] = existingRoom;
 		}
 
 		// now join the room
@@ -117,12 +111,12 @@
 	 * @param  {String}  otherPlayerUsername Username of the other player in the game.
 	 */
 	exports.joinRoom = function(socket, username, isCreator, otherPlayerUsername) {
-		var roomName = this.getRoomNameFromUsernames(username, otherPlayerUsername);
-		var gameRoom = this.gameRooms[roomName];
+		var roomName = exports.getRoomNameFromUsernames(username, otherPlayerUsername);
+		var gameRoom = exports.gameRooms[roomName];
 		if (!gameRoom) {
 			// create the room if it doesn't exist already
 			gameRoom = new GameRoom(roomName);
-			this.gameRooms[roomName] = gameRoom;
+			exports.gameRooms[roomName] = gameRoom;
 		}
 		joinKnownRoom(gameRoom, socket, username, isCreator);
 	};
@@ -173,12 +167,12 @@
 				gameRoom.removeListener('started', onGameStarted);
 				gameRoom.leave(socket, isCreator);
 				// TODO allow rejoining of games where only one player leaves mid-game
-				delete this.gameRooms[gameRoom.roomName];
-				delete this.publicRooms[gameRoom.roomName];
+				delete exports.gameRooms[gameRoom.roomName];
+				delete exports.publicRooms[gameRoom.roomName];
 			});
 		}
 		else {
-			socket.emit('joinFailed', {msg: ('There is already a ' + (obj.isCreator ? 'creator' : 'player') + ' in the game.')});
+			socket.emit('joinFailed', {msg: ('There is already a ' + (isCreator ? 'creator' : 'player') + ' in the game.')});
 		}
 	}
 }());

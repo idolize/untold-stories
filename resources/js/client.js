@@ -1,5 +1,8 @@
+var app; // global variable used purely for debugging from the browser console - do not depend on global reference outside of this file
+
 /**
- * Perform all DOM manipulation in this top level function (by listening to events from app or app.game).
+ * Starting point of the application; called when all DOM has loaded.
+ * Perform DOM manipulation in this top level function (by listening to events from app or app.game).
  * @see  <a href="http://mootools.net/docs/core/Element/Element">MooTools Element class</a> for DOM tools.
  */
 function loaded() {
@@ -28,51 +31,54 @@ function loaded() {
 	// create join game dialog
 	var joinModal = new mBox.Modal({
 		title: 'Join a game',
-		content: '<p class="startprompt">How do you want to play the game?</p>',
+		content: 'joinprompt',
 		target: 'gamecanvas',
 		buttons: [{
-			title: 'Player',
-			id: 'startPlayerBtn',
+			title: 'Start',
+			id: 'startBtn',
 			event: function() {
-				this.close();
-				beginGame(false);
-			}
-		}, {
-			title: 'Creator',
-			id: 'startCreatorBtn',
-			event: function() {
-				this.close();
-				beginGame(true);
+				// validate everything first
+				if (!form.validateElement(document.id('username'))) {
+					showNotice('notice', 'You must enter a valid username');
+					return;
+				}
+				if (!form.validateElement(document.id('otherusername'))) {
+					showNotice('notice', 'Other player\'s username is invalid');
+					return;
+				}
+				this.close(); // close modal
+				var isCreator = document.id('joinform').getElement('input[name=playertype]:checked').get('value') == 'creator';
+				var username = document.id('username').get('value');
+				var otherPlayerUsername = document.id('otherusername').get('value');
+				if (otherPlayerUsername == '') otherPlayerUsername = undefined;
+				beginGame(isCreator, username, otherPlayerUsername); // start game
 			}
 		}],
 		attach: 'play' // attach this dialog to the play button's onClick handler
 	});
-	// add tooltips for the buttons
+
+	// create any tooltips in the HTML
 	new mBox.Tooltip({
-		content: 'Act as the player, controlling the hero and interacting with whatever happens along this crazy story.',
+		setContent: 'data-tooltip',
 		theme: 'Black',
-		width: 150,
-		position: { x: 'left', y: 'center' },
-		attach: 'startPlayerBtn'
+		width: 200,
+		attach: $$('*[data-tooltip]')
 	});
-	new mBox.Tooltip({
-		content: 'Act as the creator, creating the entire game world piece by piece. You are the core storyteller of the game.',
-		theme: 'Black',
-		width: 150,
-		position: { x: 'right', y: 'center' },
-		attach: 'startCreatorBtn'
-	});	
+
 	document.id('play').erase('disabled');
 	
 	// create the app
-	var app = new App(canvas);
+	app = new App(canvas);
 
 
 
 	/**
 	 * Sets everything in motion for the entire application and game.
+	 * @param {Boolean} isCreator If the player wishes to be a Creator or not.
+	 * @param {String} username The player's desired username.
+	 * @param {String} [otherPlayerUsername] The (optional) username of another player to play with.
 	 */
-	function beginGame(isCreator) {
+	function beginGame(isCreator, username, otherPlayerUsername) {
 		// show waiting animation
 		showWaiting(true);
 
@@ -279,7 +285,13 @@ function loaded() {
 			app.addEvent('joinFailed', onJoinFailed);
 			app.addEvent('gameStarted', onGameStarted);
 			// ok to begin attempt to join the server
-			app.join(isCreator);
+			if (otherPlayerUsername) {
+				// private game
+				app.playWithOtherPlayer(isCreator, username, otherPlayerUsername);
+			} else {
+				// matchamking
+				app.playMatchmaking(isCreator, username);
+			}
 		});
 		app.addEvent('connectFailed', onConnectFailed);
 		app.addEvent('disconnected', onDisconnected);

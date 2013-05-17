@@ -64,7 +64,8 @@ app.get('/tileeditor.html', function (req, res) {
     res.sendfile(__dirname + '/tileeditor.html');
 });
 
-var gameServer = require('gameserver');
+var gameServer = require('./gameserver');
+
 io.sockets.on('connection', function (socket) {
 	// all further socket communication/management is handled by the game server
 	socket.on('matchmakeMe', function(obj) {
