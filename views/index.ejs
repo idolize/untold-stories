@@ -53,7 +53,7 @@
 			window.addEvent('domready', function() {
 				// start game automatically
 				var isCreator = <%= autojoin == 'creator' %>;
-				beginGame(isCreator, '<%= autojoin %>'); // just use 'player' or 'creator' as username and start matchamking
+				beginGame(isCreator, '<%= autojoin.toUpperCase() %>'); // just use 'PLAYER' or 'CREATOR' as username and start matchamking
 			});
 		</script>
 	<% } %>
@@ -61,7 +61,14 @@
 	<!-- DOM -->
 	<div id="main" class="wrapper">
 		<h1 id="logo">Tabula Rasa</h1>
-		<div id="infobar"><div id="leftinfo">&ndash;&ndash;</div><div id="rightinfo">&ndash;&ndash;</div></div>
+		<div id="infobar">
+			<div id="leftinfo">
+				<p id="myname">&ndash; &ndash;</p><p class="details"><span id="mytype"></span><span class="status" id="mystatus"></span></p>
+			</div>
+			<div id="rightinfo">
+				<p id="othername">&ndash; &ndash;</p><p class="details"><span class="status" id="otherstatus"></span><span id="othertype"></span></p>
+			</div>
+		</div>
 		<div class="canvaswrap"><div id="textcontainer"></div>
 			<canvas id="gamecanvas" width="480" height="416"></canvas>
 		</div>
@@ -96,11 +103,11 @@
 			</div>
 			<div class="section">
 				<p>What is your name?</p>
-				<input type="text" id="username" placeholder="Your username" data-required data-validate="/^\w[\w\d\-]+$/" data-tooltip="Enter any username you wish to use" />
+				<input type="text" id="username" placeholder="Your username" data-required data-validate="/^\w[\w\d\-]{1,11}$/" data-tooltip="Enter any username you wish to use" />
 			</div>
 			<div class="section">
 				<p>Are you joining someone in particular (private game)?</p>
-				<input type="text" id="otherusername" placeholder="Other username (optional)" data-validate="/^\w[\w\d\-]+$/" data-tooltip="Enter the username of the other player you want to play with (or leave blank for matchmaking). If you enter a username here you will wait until that player joins you, at which point the game will start automatically." />
+				<input type="text" id="otherusername" placeholder="Other username (optional)" data-validate="/^\w[\w\d\-]{1,11}$/" data-tooltip="Enter the username of the other player you want to play with (or leave blank for matchmaking). If you enter a username here you will wait until that player joins you, at which point the game will start automatically." />
 			</div>
 		</form>
 	</div>

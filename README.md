@@ -29,9 +29,13 @@ And then open your web browser to [the localhost page](http://localhost:8888).
 ### Dependecies with npm
 If the dependencies of the project change you can fix your local install by running `npm prune -l` and then reinstalling all of the dependencies or just the new ones.
 
+Testing
+---------------------
+
+In order to make testing easier, special URLs exist ([/player](http://localhost:8888/player) and [/creator](http://localhost:8888/creator)) to automatically join a matchamking game without having to type in a username, select Creator or Player, etc. each time. These URLs can be bookmarked and reloaded to easily join a game for testing purposes. Note these these URLs are not accessible in a production environment.
+
 ### Debugging client
 It is recommended for debugging that you use [Firebug](http://getfirebug.com/) (although the Chrome development console will work almost as well).
-
 
 Directories
 ---------------------

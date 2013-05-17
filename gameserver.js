@@ -153,7 +153,7 @@
 			// register to the 'ready' event of gameServer
 			var onGameStarted = function() {
 				otherSocket = isCreator ? gameRoom.player : gameRoom.creator;
-				socket.emit('ready');
+				socket.emit('ready', otherSocket['username']);
 				// now the game is in progress so we listen for turn events
 				socket.on('turnEnded', function(changes) {
 					// store the number of turns and other game stats here

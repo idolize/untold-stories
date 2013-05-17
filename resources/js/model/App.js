@@ -41,7 +41,6 @@ var App = new Class({
 	},
 
 	playWithOtherPlayer: function(isCreator, username, otherPlayerUsername) {
-		console.log('app emit "joinOther"');
 		this.socket.emit('joinOther', {
 			isCreator: isCreator,
 			username: username,
@@ -51,7 +50,6 @@ var App = new Class({
 	},
 
 	playMatchmaking: function(isCreator, username) {
-		console.log('app emit "matchmakeMe"');
 		this.socket.emit('matchmakeMe', {
 			isCreator: isCreator,
 			username: username
@@ -66,11 +64,12 @@ var App = new Class({
 	 * @param {String} username Username of the current player.
 	 */
 	_beginJoin: function(isCreator, username) {
-		this.game = new Game(this.canvas, this.tileSize, isCreator);
-		var onReady = function() {
+		var onReady = function(otherPlayerUsername) {
+			console.log('otherPlayerUsername',otherPlayerUsername);
 			// no longer need to listen for 'joinFailed' messages
 			this.socket.removeListener('joinFailed', onFail);
 			// start the game and notify any listeners
+			this.game = new Game(this.canvas, this.tileSize, isCreator, username, otherPlayerUsername);
 			this.fireEvent('gameStarted', this.game);
 			this.game.addEvent('turnStarted', this.onTurnStarted);
 			this.game.start();

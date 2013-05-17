@@ -10,6 +10,8 @@ var Game = new Class({
 
 	heroImageUrl: 'images/hero/hero.png',
 	heroSpeed: 256,
+	username: null,
+	otherPlayerUsername: null,
 	active: null,
 	isCreator: null,
 	stage: null,
@@ -32,12 +34,16 @@ var Game = new Class({
 	 * @param  {HTMLCanvasElement}  canvas    Canvas to draw game on.
 	 * @param  {integer} tileSize The size of each tile (width and height are the same) in pixels. Should be a multiple of the canvas size.
 	 * @param  {Boolean} isCreator Is this game played by the creator?
+	 * @param  {String} username The username of the player playing this game instance.
+	 * @param  {String} otherPlayerUsername The username of the other player in the game.
 	 */
-	initialize: function(canvas, tileSize, isCreator) {
+	initialize: function(canvas, tileSize, isCreator, username, otherPlayerUsername) {
 		this.width = canvas.width;
 		this.height = canvas.height;
 		this.tileSize = tileSize;
 		this.isCreator = isCreator;
+		this.username = username;
+		this.otherPlayerUsername = otherPlayerUsername;
 		this.active = false;
 		this.objectTypeMap = {};
 		this.tileTypeMap = {};

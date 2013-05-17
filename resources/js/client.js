@@ -3,13 +3,13 @@ var beginGame; // function initialized only once DOM is ready
 
 /**
  * Starting point of the application; called when all DOM has loaded.
- * Perform DOM manipulation in this top level function (by listening to events from app or app.game).
+ * Perform DOM manipulation in this top level function (by listening to events from App or Game).
  * @see  <a href="http://mootools.net/docs/core/Element/Element">MooTools Element class</a> for DOM tools.
  */
 function loaded() {
 	var canvas = document.id('gamecanvas');
-	var leftInfo = document.id('leftinfo');
-	var rightInfo = document.id('rightinfo');
+	var myStatus = document.id('mystatus');
+	var otherPlayerStatus = document.id('otherstatus');
 	var topRight = {
 		y: 'top',
 		x: 'right'
@@ -97,14 +97,14 @@ function loaded() {
 			activatePanels(true);
 			canvas.getParent().addClass('active');
 			showNotice('info', 'Your turn has started');
-			rightInfo.textContent = 'Active';
+			changeDisplayStatus(true);
 		}
 
 		function onTurnEnded() {
 			endBtn.set('disabled', 'disabled');
 			activatePanels(false);
 			canvas.getParent().removeClass('active');
-			rightInfo.textContent = 'Waiting';
+			changeDisplayStatus(false);
 		}
 
 		function onConnectFailed() {
@@ -141,9 +141,12 @@ function loaded() {
 			// remove the play button
 			document.id('play').dispose();
 
-			showNotice('info', ('Game started. You are the ' + (game.isCreator ? 'creator' : 'player') + '.'));
-			leftInfo.textContent = (game.isCreator ? 'Creator' : 'Player');
-			rightInfo.textContent = 'Waiting';
+			if (!isCreator) showNotice('info', 'Game started. The Creator ('+ game.otherPlayerUsername +') is now taking their turn.');
+			document.id('myname').textContent = username;
+			document.id('othername').textContent = game.otherPlayerUsername;
+			document.id('mytype').textContent = isCreator ? 'Creator' : 'Player';
+			document.id('othertype').textContent = isCreator ? 'Player' : 'Creator';
+			changeDisplayStatus(false);
 
 			// handle all requests to create textboxes and actions
 			var constructTextbox = function(text, isAction) {
@@ -155,36 +158,36 @@ function loaded() {
 				element.inject('textcontainer');
 				return element;
 			};
-			app.game.addEvent('constructTextboxFromOtherClient', function(textbox) {
+			game.addEvent('constructTextboxFromOtherClient', function(textbox) {
 				var element = constructTextbox(textbox.text, false);
-				app.game.addTextbox(element, textbox.text, textbox.x, textbox.y, !isCreator, true);
+				game.addTextbox(element, textbox.text, textbox.x, textbox.y, !isCreator, true);
 			});
-			app.game.addEvent('constructActionFromOtherClient', function(textbox) {
+			game.addEvent('constructActionFromOtherClient', function(textbox) {
 				var element = constructTextbox(textbox.text, true);
-				app.game.placeAction(element, textbox.text, textbox.x, textbox.y, true);
+				game.placeAction(element, textbox.text, textbox.x, textbox.y, true);
 			});
 			var textboxPrompt = new TextboxPrompt(canvas);
 			app.addEvent('textboxCreateRequest', function(pos) {
-				if (!isCreator && app.game.playerTextbox != null) {
+				if (!isCreator && game.playerTextbox != null) {
 					// this is a player attempting to place a second textbox
 					// TODO move the current textbox to the new location or disable the button
 					showNotice('info', 'The player can only have one textbox per turn');
 				} else {
 					textboxPrompt.openPrompt(pos, false, function(text) {
 						var textNode = constructTextbox(text, false);
-						app.game.addTextbox(textNode, text, pos.x, pos.y, isCreator);
+						game.addTextbox(textNode, text, pos.x, pos.y, isCreator);
 					});
 				}
 			});
 			app.addEvent('actionCreateRequest', function(pos) {
-				if (!isCreator && app.game.actionBox != null) {
+				if (!isCreator && game.actionBox != null) {
 					// this is a player attempting to place a second textbox
 					// TODO move the current textbox to the new location or disable the button
 					showNotice('info', 'The player can only have one action per turn');
 				} else {
 					textboxPrompt.openPrompt(pos, true, function(text) {
 						var textNode = constructTextbox(text, true);
-						app.game.placeAction(textNode, text, pos.x, pos.y);
+						game.placeAction(textNode, text, pos.x, pos.y);
 					});
 				}
 			});
@@ -213,7 +216,7 @@ function loaded() {
 				});
 				// clear button clicked and confirmed
 				toolbar.addEvent('clearClicked', function() {
-					app.game.clearScreen();
+					game.clearScreen();
 				});
 			} else {
 				// insert action button clicked
@@ -227,8 +230,8 @@ function loaded() {
 			// show the selector
 			if (isCreator) {
 				// retrieve all available tile and object types
-				var tileTypes = globals.tileIds.map(function(id){ return app.game.getTileTypeInstance(id); });
-				var objectTypes = globals.objectIds.map(function(id){ return app.game.getObjectTypeInstance(id); });
+				var tileTypes = globals.tileIds.map(function(id){ return game.getTileTypeInstance(id); });
+				var objectTypes = globals.objectIds.map(function(id){ return game.getObjectTypeInstance(id); });
 
 				// create the selector
 				selector = new SelectorPanel(tileTypes, objectTypes);
@@ -334,6 +337,22 @@ function loaded() {
 	 */
 	function disableCanvas() {
 		canvas.getParent().addClass('done');
+	}
+
+	/**
+	 * Changes the status text for both players in the game.
+	 * @param {Boolean} active If it is the current player's turn or not.
+	 */
+	function changeDisplayStatus(active) {
+		myStatus.setStyle('display', 'inline');
+		otherPlayerStatus.setStyle('display', 'inline');
+		if (active) {
+			myStatus.textContent = 'Active';
+			otherPlayerStatus.textContent = 'Waiting';
+		} else {
+			myStatus.textContent = 'Waiting';
+			otherPlayerStatus.textContent = 'Active';
+		}
 	}
 }
 window.addEvent('domready', loaded); // call when everything has loaded

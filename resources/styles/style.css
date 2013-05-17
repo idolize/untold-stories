@@ -40,14 +40,42 @@ div.wrapper {
 	font-family: sans-serif;
 	font-weight: bold;
 	font-size: 1.25em;
-	height: 35px;
+	height: 40px;
 	position: relative;
 }
 
 .wrapper #infobar #leftinfo, .wrapper #infobar #rightinfo {
 	position: absolute;
-	width: 40%;
-	line-height: 35px;
+	width: 45%;
+}
+
+.wrapper #infobar #leftinfo p, .wrapper #infobar #rightinfo p {
+	line-height: 25px;
+	padding: 0;
+	margin: 0;
+	font-size: 20px;
+}
+
+.wrapper #infobar #leftinfo p.details, .wrapper #infobar #rightinfo p.details {
+	font-size: 10px;
+	line-height: 15px;
+	color: #ddd;
+}
+
+.wrapper #infobar #leftinfo p.details #mytype, .wrapper #infobar #rightinfo p.details #otherstatus {
+	margin-right: 10px;
+}
+
+.wrapper #infobar .details .status {
+	display: none;
+}
+
+.wrapper #infobar .details .status:before {
+	content: "(";
+}
+
+.wrapper #infobar .details .status:after {
+	content: ")";
 }
 
 .wrapper #infobar #leftinfo {
