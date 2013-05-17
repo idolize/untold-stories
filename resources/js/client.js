@@ -1,4 +1,5 @@
 var app; // global variable used purely for debugging from the browser console - do not depend on global reference outside of this file
+var beginGame; // function initialized only once DOM is ready
 
 /**
  * Starting point of the application; called when all DOM has loaded.
@@ -47,10 +48,10 @@ function loaded() {
 					return;
 				}
 				this.close(); // close modal
-				var isCreator = document.id('joinform').getElement('input[name=playertype]:checked').get('value') == 'creator';
+				var isCreator = document.id('joinform').getElement('input[name=playertype]:checked').get('value') === 'creator';
 				var username = document.id('username').get('value');
 				var otherPlayerUsername = document.id('otherusername').get('value');
-				if (otherPlayerUsername == '') otherPlayerUsername = undefined;
+				if (otherPlayerUsername === '') otherPlayerUsername = undefined;
 				beginGame(isCreator, username, otherPlayerUsername); // start game
 			}
 		}],
@@ -78,7 +79,7 @@ function loaded() {
 	 * @param {String} username The player's desired username.
 	 * @param {String} [otherPlayerUsername] The (optional) username of another player to play with.
 	 */
-	function beginGame(isCreator, username, otherPlayerUsername) {
+	beginGame = function(isCreator, username, otherPlayerUsername) {
 		// show waiting animation
 		showWaiting(true);
 

@@ -1,4 +1,4 @@
-var isProduction = process.env.NODE_ENV == 'production';
+var isProduction = process.env.NODE_ENV === 'production';
 var prodPort = process.env.OPENSHIFT_INTERNAL_PORT;
 var prodIp = process.env.OPENSHIFT_INTERNAL_IP;
 var devPort = 8888;
@@ -36,6 +36,14 @@ io.configure('development', function() {
 app.get('/', function (req, res) {
 	res.render('index');
 });
+if (!isProduction) {
+	app.get('/player', function (req, res) {
+		res.render('index', { autojoin: 'player' });
+	});
+	app.get('/creator', function (req, res) {
+		res.render('index', { autojoin: 'creator' });
+	});
+}
 var path = require('path');
 var fs = require('fs');
 // send globals to the client when requested
@@ -48,7 +56,7 @@ app.get('/js/globals.js', function(req, res) {
 		return path.basename(fullPath, '.png');
 	}
 	var onlyPngs = function(id) {
-		return path.extname(id) == '.png';
+		return path.extname(id) === '.png';
 	}
 
     var globals = {

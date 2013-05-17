@@ -47,6 +47,16 @@
 	<script type="text/javascript" src="js/model/Hero.js"></script>
 	<script type="text/javascript" src="js/model/TextBox.js"></script>
 
+	<% if (typeof(autojoin) !== 'undefined') { %>
+		<!-- only used in development environment -->
+		<script type="text/javascript">
+			window.addEvent('domready', function() {
+				// start game automatically
+				var isCreator = <%= autojoin == 'creator' %>;
+				beginGame(isCreator, '<%= autojoin %>'); // just use 'player' or 'creator' as username and start matchamking
+			});
+		</script>
+	<% } %>
 
 	<!-- DOM -->
 	<div id="main" class="wrapper">

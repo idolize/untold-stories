@@ -81,16 +81,19 @@
 		var existingRoom = null;
 		for (var gameRoomName in exports.publicRooms) {
 			var gameRoom = exports.publicRooms[gameRoomName];
-			// join first room that satisfies our criteria (other player is !isCreator)
+			// join first room that satisfies our criteria
 			var otherPlayerType = isCreator ? 'player' : 'creator';
 			if (gameRoom[otherPlayerType]) { // make sure we join a game created by someone of the opposite type
-				delete exports.publicRooms[gameRoom.roomName]; // de-list the room
-				delete exports.gameRooms[gameRoom.roomName];
-				// remap the room with its new name
-				gameRoom.roomName = exports.getRoomNameFromUsernames(username, gameRoom[otherPlayerType]['username']);
-				exports.gameRooms[gameRoom.roomName] = gameRoom;
-				// this is now a "private" unlisted game
-				existingRoom = gameRoom;
+				var newRoomName = exports.getRoomNameFromUsernames(username, gameRoom[otherPlayerType]['username']);
+				if (!exports.gameRooms[newRoomName]) { // make sure we are not already playing a game with this person
+					delete exports.publicRooms[gameRoom.roomName]; // de-list the room
+					delete exports.gameRooms[gameRoom.roomName];
+					// remap the room with its new name
+					gameRoom.roomName = newRoomName;
+					exports.gameRooms[gameRoom.roomName] = gameRoom;
+					// this is now a "private" unlisted game
+					existingRoom = gameRoom;
+				}
 			}
 		}
 		// if no other rooms exist, create a new one
