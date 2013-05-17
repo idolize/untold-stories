@@ -3,7 +3,6 @@ var MouseHandler = new Class({
 	Binds: ['_mouseDownHandler', '_mouseMoveHandler', '_mouseUpHandler'],
 
 	canvas: null,
-	canvasTopLeft: null,
 	tileSize: null,
 	isMouseDown: null,
 	canvasPos: null,
@@ -11,7 +10,6 @@ var MouseHandler = new Class({
 
 	initialize: function(canvas, tileSize) {
 		this.canvas = canvas;
-		this.canvasTopLeft = this.canvas.getPosition();
 		this.tileSize = tileSize;
 		this.isMouseDown = false;
 		this.boardPos = { x: -1, y: -1 };
@@ -33,8 +31,9 @@ var MouseHandler = new Class({
 	},
 
 	_mouseDownHandler: function(event) {
-		this.canvasPos.x = event.page.x - this.canvasTopLeft.x;
-		this.canvasPos.y = event.page.y - this.canvasTopLeft.y;
+		var canvasTopLeft = this.canvas.getPosition();
+		this.canvasPos.x = event.page.x - canvasTopLeft.x;
+		this.canvasPos.y = event.page.y - canvasTopLeft.y;
 		this.fireEvent('clickCanvas', Object.clone(this.canvasPos)); // alert listeners of the global pos
 
 		// convert to board coordinates
@@ -47,8 +46,9 @@ var MouseHandler = new Class({
 
 	_mouseMoveHandler: function(event) {
 		if (this.isMouseDown) {
-			var canvasPosX = event.page.x - this.canvasTopLeft.x;
-			var canvasPosY = event.page.y - this.canvasTopLeft.y;
+			var canvasTopLeft = this.canvas.getPosition();
+			var canvasPosX = event.page.x - canvasTopLeft.x;
+			var canvasPosY = event.page.y - canvasTopLeft.y;
 
 			if (canvasPosX != this.canvasPos.x || canvasPosY != this.canvasPos.y) {
 				this.canvasPos.x = canvasPosX;
