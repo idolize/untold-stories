@@ -86,11 +86,11 @@
 			</div>
 			<div class="section">
 				<p>What is your name?</p>
-				<input type="text" id="username" placeholder="Your username" data-required data-tooltip="Enter any username you wish to use" />
+				<input type="text" id="username" placeholder="Your username" data-required data-validate="/^\w[\w\d\-]+$/" data-tooltip="Enter any username you wish to use" />
 			</div>
 			<div class="section">
 				<p>Are you joining someone in particular (private game)?</p>
-				<input type="text" id="otherusername" placeholder="Other username (optional)" data-tooltip="Enter the username of the other player you want to play with (or leave blank for matchmaking). If you enter a username here you will wait until that player joins you, at which point the game will start automatically." />
+				<input type="text" id="otherusername" placeholder="Other username (optional)" data-validate="/^\w[\w\d\-]+$/" data-tooltip="Enter the username of the other player you want to play with (or leave blank for matchmaking). If you enter a username here you will wait until that player joins you, at which point the game will start automatically." />
 			</div>
 		</form>
 	</div>
