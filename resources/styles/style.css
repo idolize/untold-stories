@@ -172,6 +172,10 @@ canvas#gamecanvas {
 	top: 0;
 }
 
+#joinprompt input[type="text"] {
+	width: 250px;
+}
+
 .toolbarbtn:active, .selectedBtn {
 	opacity: 0.4;
 	background-color: #333;
