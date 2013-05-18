@@ -40,7 +40,7 @@ div.wrapper {
 	font-family: sans-serif;
 	font-weight: bold;
 	font-size: 1.25em;
-	height: 40px;
+	height: 45px;
 	position: relative;
 }
 
@@ -57,13 +57,13 @@ div.wrapper {
 }
 
 .wrapper #infobar #leftinfo p.details, .wrapper #infobar #rightinfo p.details {
-	font-size: 10px;
-	line-height: 15px;
+	font-size: 15px;
+	line-height: 20px;
 	color: #ddd;
 }
 
 .wrapper #infobar #leftinfo p.details #mytype, .wrapper #infobar #rightinfo p.details #otherstatus {
-	margin-right: 10px;
+	margin-right: 8px;
 }
 
 .wrapper #infobar .details .status {

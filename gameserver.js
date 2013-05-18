@@ -67,7 +67,6 @@
 
 	exports.gameRooms = {};		// all rooms
 	exports.publicRooms = {};	// just public rooms
-	exports.players = {};		// all players
 
 	/**
 	 * Used for matchmaking. Joins an existing room if one with the required characteristics exists, and if not
