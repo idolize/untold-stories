@@ -78,10 +78,10 @@ var SelectorPanel = new Class({
 	},
 
 	setEnabled: function(enabled) {
-		Object.each(this.tileBtns, function(btn, btnName) {
+		Array.each(this.tileBtns, function(btn, index) {
 			btn.setEnabled(enabled);
 		});
-		Object.each(this.objBtns, function(btn, btnName) {
+		Array.each(this.objBtns, function(btn, index) {
 			btn.setEnabled(enabled);
 		});
 	},

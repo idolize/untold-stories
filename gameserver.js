@@ -92,6 +92,7 @@
 					exports.gameRooms[gameRoom.roomName] = gameRoom;
 					// this is now a "private" unlisted game
 					existingRoom = gameRoom;
+					break;
 				}
 			}
 		}

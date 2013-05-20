@@ -219,3 +219,7 @@ canvas#gamecanvas {
 	cursor: default;
 	opacity: 0.4;
 }
+
+.mBoxTitleContainer.mBoxDraggable {
+    cursor: move;
+}

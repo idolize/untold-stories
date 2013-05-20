@@ -55,7 +55,3 @@ ul.contents li{
 #toolbarBox input[type="image"]{
 	margin: 7px;
 }
-
-.mBoxTitleContainer.mBoxDraggable {
-    cursor: move;
-}

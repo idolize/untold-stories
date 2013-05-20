@@ -77,7 +77,7 @@ function loaded() {
 	 * Sets everything in motion for the entire application and game.
 	 * @param {Boolean} isCreator If the player wishes to be a Creator or not.
 	 * @param {String} username The player's desired username.
-	 * @param {String} [otherPlayerUsername] The (optional) username of another player to play with.
+	 * @param {String} [otherPlayerUsername] The (optional) username of another player to play with if starting a private game.
 	 */
 	beginGame = function(isCreator, username, otherPlayerUsername) {
 		// show waiting animation

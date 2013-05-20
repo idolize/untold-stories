@@ -13,4 +13,9 @@ var TextBox = new Class({
 		this.isAction = isAction || false;
 		this.domElement.htmlElement.style.display = 'block'; // begin rendering
 	},
+
+	// see: toElement section of http://mootools.net/blog/2010/03/19/a-better-way-to-use-elements/
+	toElement: function() {
+		return this.domElement;
+	}
 });

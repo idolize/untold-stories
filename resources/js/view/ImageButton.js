@@ -12,7 +12,10 @@ var ImageButton = new Class({
 			this.fireEvent('click', event);
 		}.bind(this);
 
-		this.element = type.image; // reuse the existing img tag
+		this.element = new Element('input', {
+			type: 'image',
+			src: type.image.src
+		});
 		this.element.addClass('imgBtn');
 		this.element.addClass('object');
 		this.element.addEvent('click', clickedFunc);
@@ -32,5 +35,9 @@ var ImageButton = new Class({
 		this.element.removeEvents();
 		this.element.destroy();
 		this.tooltip.destroy();
+	},
+
+	toElement: function() {
+		return this.element;
 	}
 });

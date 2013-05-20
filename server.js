@@ -68,9 +68,6 @@ app.get('/js/globals.js', function(req, res) {
     }
     res.send('var globals = ' + JSON.stringify(globals));
 });
-app.get('/tileeditor.html', function (req, res) {
-    res.sendfile(__dirname + '/tileeditor.html');
-});
 
 var gameServer = require('./gameserver');
 
