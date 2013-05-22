@@ -152,21 +152,24 @@ var Game = new Class({
 	 */
 	moveObject: function(boardObject, newX, newY) {
 		var oldCoords = { x: boardObject.objPosX, y: boardObject.objPosY };
-		if (this.stateChanges['objsChanged'] && this.stateChanges['objsChanged'][oldCoords.x + ',' + oldCoords.y]) {
-			// if this move is to an object placed this turn then re-map the change record
-			delete this.stateChanges['objsChanged'][oldCoords.x + ',' + oldCoords.y];
-		} else {
-			// delete the object at old location
-			if (!this.stateChanges['objsChanged']) this.stateChanges['objsChanged'] = {};
-			this.stateChanges['objsChanged'][oldCoords.x + ',' + oldCoords.y] = {
-				id: null,
-				x: oldCoords.x,
-				y: oldCoords.y
-			};
-		}
 		this.placeObject(boardObject, newX, newY);
-		// cleanup old location on board
-		this.objectBoard.deleteObject(oldCoords.x, oldCoords.y, true);
+		
+		if (oldCoords.x != newX || oldCoords.y != newY) {
+			if (this.stateChanges['objsChanged'] && this.stateChanges['objsChanged'][oldCoords.x + ',' + oldCoords.y]) {
+				// if this move is to an object placed this turn then re-map the change record
+				delete this.stateChanges['objsChanged'][oldCoords.x + ',' + oldCoords.y];
+			} else {
+				// delete the object at old location
+				if (!this.stateChanges['objsChanged']) this.stateChanges['objsChanged'] = {};
+				this.stateChanges['objsChanged'][oldCoords.x + ',' + oldCoords.y] = {
+					id: null,
+					x: oldCoords.x,
+					y: oldCoords.y
+				};
+			}
+			// cleanup old location on board
+			this.objectBoard.deleteObject(oldCoords.x, oldCoords.y, true);
+		}
 	},
 
 	/**
