@@ -8,27 +8,35 @@ var ImageButton = new Class({
 	initialize: function(type, isTile) {
 		this.type = type;
 
-		var clickedFunc = function(event) {
+		this._clickedFunc = function(event) {
 			this.fireEvent('click', event);
 		}.bind(this);
 
-		this.element = new Element('input', {
-			type: 'image',
-			src: type.image.src
-		});
+		// Note: Chrome seems to re-request the image every time the tab changes when using
+		// <input type="image"> so we must use an img tag instead to avoid this. This makes
+		// enabling/disabiling the button more compilcated, however, as we must manually
+		// style the button and disable/enable listeners.
+		this.element = new Element('img', { src: type.image.src }); // copy the image
 		this.element.addClass('imgBtn');
 		this.element.addClass('object');
-		this.element.addEvent('click', clickedFunc);
-		this.tooltip = new mBox.Tooltip({
-			content: ('"'+type.id+'"'),
-			theme: 'Black',
-			attach: this.element
-		});
+		this.setEnabled(true);
 	},
 
 	setEnabled: function(enabled) {
-		if (enabled) this.element.erase('disabled');
-		else this.element.set('disabled', 'disabled');
+		if (enabled) {
+			this.element.removeClass('disabled');
+			this.element.addEvent('click', this._clickedFunc);
+			this.tooltip = new mBox.Tooltip({
+				content: ('"'+this.type.id+'"'),
+				theme: 'Black',
+				attach: this.element
+			});
+		} else {
+			this.element.addClass('disabled');
+			this.element.removeEvent('click', this._clickedFunc);
+			this.tooltip.destroy();
+			this.element.removeEvents('mouseenter');
+		}
 	},
 
 	destroy: function() {

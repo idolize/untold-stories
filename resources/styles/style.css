@@ -208,16 +208,29 @@ canvas#gamecanvas {
 	width: 250px;
 }
 
+.paneltitle {
+	font: 2em bold arial,sans-serif;
+}
+
 .toolbarbtn:active, .selectedBtn {
 	opacity: 0.4;
 	background-color: #333;
+}
+
+.imgBtn {
+	margin: 2px;
+	border: 1px solid #ddd !important;
+}
+
+#toolbarBox input[type="image"]{
+	margin: 7px;
 }
 
 .imgBtn:hover, .toolbarbtn:hover {
 	cursor: pointer;
 }
 
-.imgBtn[disabled], .imgBtn[disabled]:hover, .imgBtn[disabled]:active,
+.imgBtn.disabled, .imgBtn.disabled:hover, .imgBtn.disabled:active,
 .toolbarbtn[disabled], .toolbarbtn[disabled]:hover, .toolbarbtn[disabled]:active  {
 	background-color: transparent;
 	cursor: default;
