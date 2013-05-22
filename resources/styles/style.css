@@ -98,6 +98,10 @@ div.wrapper {
 	cursor: crosshair;
 }
 
+.wrapper .canvaswrap.active.moving {
+	cursor: move !important;
+}
+
 .wrapper .done {
 	cursor: default !important;
 	opacity: 0.5;

@@ -96,6 +96,8 @@ function loaded() {
 			endBtn.erase('disabled');
 			activatePanels(true);
 			canvas.getParent().addClass('active');
+			if (app.actionMode === App.ActionMode.MOVE) canvas.getParent().addClass('moving');
+			if (isCreator) app.game.showGrid(true);
 			showNotice('info', 'Your turn has started');
 			changeDisplayStatus(true);
 		}
@@ -104,6 +106,8 @@ function loaded() {
 			endBtn.set('disabled', 'disabled');
 			activatePanels(false);
 			canvas.getParent().removeClass('active');
+			canvas.getParent().removeClass('moving');
+			if (isCreator) app.game.showGrid(false);
 			changeDisplayStatus(false);
 		}
 
@@ -248,9 +252,12 @@ function loaded() {
 
 				// if the selection changes in one panel make sure it clears any selection in the other
 				selector.addEvent('selectionChanged', function(newBtn) {
+					canvas.getParent().removeClass('moving');
 					toolbar.clearSelectedBtn();
 				});
 				toolbar.addEvent('selectionChanged', function(newBtn) {
+					if (newBtn.toolname === 'move') canvas.getParent().addClass('moving');
+					else canvas.getParent().removeClass('moving');
 					selector.clearSelectedBtn();
 				});
 			}

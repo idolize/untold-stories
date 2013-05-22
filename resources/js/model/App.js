@@ -159,7 +159,8 @@ var App = new Class({
 				break;
 			default:
 				throw 'Unexpected action mode passed to App.setActionMode';
-			}
+		}
+		this.actionMode = mode;
 	},
 
 	/**
@@ -208,5 +209,5 @@ var App = new Class({
 	}
 });
 
-/** Enum used to indicate the current 'mode'. */
+/** Enum used to indicate the current action mode. */
 App.ActionMode = { PLACE: 1, EDIT: 2, DELETE: 3, MOVE: 4, TEXT: 5, ACTION: 6 };

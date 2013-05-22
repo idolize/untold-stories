@@ -28,6 +28,7 @@ var Game = new Class({
 	playerTextbox: null,
 	textboxesContainer: null,
 	actionBox: null,
+	grid: null,
 
 	/**
 	 * @constructor
@@ -63,6 +64,8 @@ var Game = new Class({
 		// create the object board and add it to the display list
 		this.objectBoard = new ObjectBoard(numWide, numHigh, this.tileSize);
 		this.stage.addChild(this.objectBoard.container);
+		// create the grid
+		this.grid = new Grid(this.tileBoard);
 		// create the hero and add it to the display list
 		this.hero = new Hero(this.heroImageUrl, 66, 72, this.heroSpeed, 150, 150);
 		this.stage.addChild(this.hero.bitmap);
@@ -102,6 +105,11 @@ var Game = new Class({
 		}
 		// loop to keep updating at each tick of the clock
 		createjs.Ticker.addEventListener('tick', this.gameLoop);
+	},
+
+	showGrid: function(show) {
+		if (show) this.stage.addChildAt(this.grid.shape, 2);
+		else this.stage.removeChild(this.grid.shape);
 	},
 
 	/**
