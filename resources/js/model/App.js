@@ -5,7 +5,7 @@
  */
 var App = new Class({
 	Implements: Events,
-	Binds: ['onTurnStarted', 'endTurn', 'onOtherPlayerDisconnected', 'triggerPlace', 'triggerText', 'triggerAction', 'triggerDelete'], // see: http://mootools.net/docs/more/Class/Class.Binds
+	Binds: ['onTurnStarted', 'endTurn', 'onOtherPlayerDisconnected', 'triggerPlace', 'triggerText', 'triggerAction', 'triggerDelete', 'triggerMoveBegin'], // see: http://mootools.net/docs/more/Class/Class.Binds
 
 	socket: null,
 	game: null,
@@ -65,7 +65,6 @@ var App = new Class({
 	 */
 	_beginJoin: function(isCreator, username) {
 		var onReady = function(otherPlayerUsername) {
-			console.log('otherPlayerUsername',otherPlayerUsername);
 			// no longer need to listen for 'joinFailed' messages
 			this.socket.removeListener('joinFailed', onFail);
 			// start the game and notify any listeners
@@ -108,10 +107,35 @@ var App = new Class({
 		this.fireEvent('actionCreateRequest', pos);
 	},
 
-    triggerDelete: function(pos) {
-        this.game.deleteObjectByGlobalCoords(pos.x,pos.y);
-    },
+	triggerDelete: function(pos) {
+		this.game.deleteObjectByGlobalCoords(pos.x,pos.y);
+	},
 
+	triggerMoveBegin: function(pos) {
+		var selectedObj = this.game.objectBoard.getObjectAtGlobalPosition(pos.x, pos.y);
+		if (selectedObj) {
+			var moveDragFunc = function(pos) {
+				// preview the move location by moving around the bitmap
+				selectedObj.bitmap.x = pos.x;
+				selectedObj.bitmap.y = pos.y;
+			}.bind(this);
+			var moveEndedFunc = function(pos) {
+				// snap to the nearest tile
+				this.game.moveObject(selectedObj, pos.x, pos.y);
+				// move completed
+				this.mouseHandler.removeEvent('clickHoldCanvas', moveDragFunc);
+				this.mouseHandler.removeEvent('clickReleasedBoard', moveEndedFunc);
+			}.bind(this);
+			this.mouseHandler.addEvent('clickHoldCanvas', moveDragFunc);
+			this.mouseHandler.addEvent('clickReleasedBoard', moveEndedFunc);
+		}
+	},
+
+	/**
+	 * Sets the current tool or action for the interactions with the application.
+	 * @param  {App.ActionMode}      mode               Enum value for which action mode to use.
+	 * @param  {ObjectType|TileType} [objectOrTileType] The object or tile type to use if using the App.ActionMode.PLACE mode.
+	 */
 	setActionMode: function(mode, objectOrTileType) {
 		this.mouseHandler.removeEvents();
 		switch (mode) {
@@ -127,12 +151,15 @@ var App = new Class({
 			case App.ActionMode.ACTION:
 				this.mouseHandler.addEvent('clickCanvas', this.triggerAction);
 				break;
-            case App.ActionMode.DELETE:
-                this.mouseHandler.addEvent('clickCanvas', this.triggerDelete);
-                break;
+			case App.ActionMode.DELETE:
+				this.mouseHandler.addEvent('clickCanvas', this.triggerDelete);
+				break;
+			case App.ActionMode.MOVE:
+				this.mouseHandler.addEvent('clickCanvas', this.triggerMoveBegin);
+				break;
 			default:
 				throw 'Unexpected action mode passed to App.setActionMode';
-		}
+			}
 	},
 
 	/**

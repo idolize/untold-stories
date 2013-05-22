@@ -203,7 +203,11 @@ function loaded() {
 				}
 			});
 			toolbar.addEvent('moveClicked', function() {
-				showNotice('info', 'This feature has not been implemented yet'); //TODO
+				if (isCreator) {
+					app.setActionMode(App.ActionMode.MOVE);
+				} else {
+					showNotice('info', 'This feature has not been implemented yet'); //TODO
+				}
 			});
 
 			toolbar.addEvent('textboxClicked', function() {

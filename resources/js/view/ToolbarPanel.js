@@ -53,7 +53,8 @@ var ToolbarPanel = new Class({
 		var moveBtnName = 'move';
 		this.toolbarBtns[moveBtnName] = new ToolbarButton(moveBtnName, 'Move '+(isCreator ? 'an object or textbox' : 'textbox or action'));
 		this.toolbarBtns[moveBtnName].addEvent('click', function() {
-			//this.setSelectedBtn(this.toolbarBtns[moveBtnName]); // TODO select this once it gets implemented
+			if (isCreator) this.setSelectedBtn(this.toolbarBtns[moveBtnName]); // TODO select this for the player too once it gets implemented
+
 			this.fireEvent(moveBtnName+'Clicked');
 		}.bind(this));
 

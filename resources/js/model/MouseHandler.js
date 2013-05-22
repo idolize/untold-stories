@@ -2,6 +2,8 @@ var MouseHandler = new Class({
 	Implements: Events,
 	Binds: ['_mouseDownHandler', '_mouseMoveHandler', '_mouseUpHandler'],
 
+	//TODO use this instead http://www.createjs.com/tutorials/easeljs/Mouse%20Interaction/
+
 	canvas: null,
 	tileSize: null,
 	isMouseDown: null,
@@ -69,6 +71,13 @@ var MouseHandler = new Class({
 	},
 
 	_mouseUpHandler: function(event) {
+		var canvasTopLeft = this.canvas.getPosition();
+		this.canvasPos.x = event.page.x - canvasTopLeft.x;
+		this.canvasPos.y = event.page.y - canvasTopLeft.y;
+		this.boardPos.x = Math.floor(this.canvasPos.x / this.tileSize);
+		this.boardPos.y = Math.floor(this.canvasPos.y / this.tileSize);
 		this.isMouseDown = false;
+		this.fireEvent('clickReleasedCanvas', this.canvasPos);
+		this.fireEvent('clickReleasedBoard', this.boardPos);
 	}	
 });

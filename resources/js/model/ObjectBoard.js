@@ -41,35 +41,50 @@ var ObjectBoard = new Class({
 		return this.objects[y][x];
 	},
 
-    /**
-     * Gets the board coordinates of the object that is on top of the display list at
-     * canvas position (x,y)
-     *
-     * @param {integer} x canvas position on the x-axis
-     * @param {integer} y canvas position on the y-axis
-     *
-     * @return {Object} an object with x and y for the board coordinates of the object.
-     *                  If no object was under the mouse, returns null
-     */
-    getBoardCoordinatesOfObjectAtGlobalPosition: function(x,y) {
-        var entry = this.container.getObjectUnderPoint(x,y);
-        if (entry) {
-            var boardX = Math.floor(entry.x/this.tileSize);
-            var boardY = Math.floor(entry.y/this.tileSize);
-            return { x: boardX, y: boardY };
-        } else {
-            return null;
-        }
-    },
+	/**
+	 * Gets the object that is on top of the display list at canvas position (x,y).
+	 *
+	 * @param {integer} x Canvas position on the x-axis.
+	 * @param {integer} y Canvas position on the y-axis.
+	 *
+	 * @return {Object} An object with x and y for the board coordinates of the object.
+	 *                  If no object was under the mouse, returns null.
+	 */
+	getObjectAtGlobalPosition: function(x, y) {
+		var entry = this.container.getObjectUnderPoint(x, y);
+		if (entry) {
+			var coords = this.getBoardCoordinatesFromGlobalPosition(entry.x, entry.y);
+			var object = this.getObject(coords.x, coords.y);
+			if (!object) throw 'Error: unable to find expected object in objectBoard at coordinates: '+coords.x+','+coords.y;
+			return object;
+		} else {
+			return null;
+		}
+	},
+
+	/**
+	 * Converts global coordinates into board coordinates.
+	 * @param {integer} x canvas position on the x-axis
+	 * @param {integer} y canvas position on the y-axis
+	 * @return {Object} an object with x and y for the board coordinates of the object.
+	 *                  If no object was under the mouse, returns null
+	 */
+	getBoardCoordinatesFromGlobalPosition: function(x, y) {
+		var boardX = Math.floor(x/this.tileSize);
+		var boardY = Math.floor(y/this.tileSize);
+		return { x: boardX, y: boardY };
+	},
 
 	/**
 	 * Deletes an object from the board.
 	 * 
-	 * @param  {integer} x object position on the x-axis.
-	 * @param  {integer} y object position on the y-axis.
+	 * @param  {integer} x            object position on the x-axis.
+	 * @param  {integer} y            object position on the y-axis.
+	 * @param  {Boolean} [keepBitmap] If the bitmap object should remain on the container.
 	 */
-	deleteObject: function(x, y) {
-		this.setObjectWithExisting(x, y, null);
+	deleteObject: function(x, y, keepBitmap) {
+		if (keepBitmap) this.objects[y][x] = null;
+		else this.setObjectWithExisting(x, y, null);
 	},
 
 	/**
@@ -91,11 +106,12 @@ var ObjectBoard = new Class({
 	 * @param  {integer} x object position on the x-axis.
 	 * @param  {integer} y object position on the y-axis.
 	 * @param  {BoardObject} boardObject The object to set.
+	 * @param  {Boolean} [alreadyAdded] If the object has already been added to the display list.
 	 */
-	setObjectWithExisting: function(x, y, boardObject) {
+	setObjectWithExisting: function(x, y, boardObject, alreadyAdded) {
 		if (y >= this.numHigh || x >= this.numWide) return;
 		var oldObject = this.objects[y][x];
-		if (oldObject) {
+		if (oldObject && (!alreadyAdded || oldObject !== boardObject)) {
 			// remove the old bitmap from display list
 			this.container.removeChild(oldObject.bitmap);
 		}
@@ -108,7 +124,7 @@ var ObjectBoard = new Class({
 			boardObject.bitmap.x = this.tileSize * x;
 			boardObject.bitmap.y = this.tileSize * y;
 			// add the bitmap to the display list
-			this.container.addChild(boardObject.bitmap);
+			if (!alreadyAdded) this.container.addChild(boardObject.bitmap);
 		}
 	},
 

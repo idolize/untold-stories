@@ -105,16 +105,23 @@ var Game = new Class({
 	},
 
 	/**
-	 * Adds an object to the game board or replaces an existing object if placed at the same location as
-	 * an existing object.
-	 * @param  {ObjectType} objectType The type of object to place.
-	 * @param  {integer} x          The x board coordinate of where to place the object.
-	 * @param  {integer} y          The y board coordinate of where to place the object.
-	 * @param  {Boolean} [onlyLocal]  Only locally for this turn (used to apply changes from another client).
+	 * Adds a new object to the game board or moves an existing object to a new location. Replaces an existing object if
+	 * placed at the same location as an existing object.
+	 * @param  {ObjectType|BoardObject} object The object to move or the type of new object to place.
+	 * @param  {integer} x                     The x board coordinate of where to place the object.
+	 * @param  {integer} y                     The y board coordinate of where to place the object.
+	 * @param  {Boolean} [onlyLocal]           Only locally for this turn (used to apply changes from another client).
 	 */
-	placeObject: function(objectType, x, y, onlyLocal) {
+	placeObject: function(object, x, y, onlyLocal) {
 		if (!this.active) throw 'Game method called while not in active turn';
-		this.objectBoard.setObject(x, y, objectType);
+		var objectType;
+		if (instanceOf(object, ObjectType)) {
+			this.objectBoard.setObject(x, y, object);
+			objectType = object;
+		} else {
+			this.objectBoard.setObjectWithExisting(x, y, object, true);
+			objectType = object.objType;
+		}
 		if (!onlyLocal) {
 			if (!this.stateChanges['objsChanged']) this.stateChanges['objsChanged'] = {};
 			// map on x,y to only store the last change at that location
@@ -125,6 +132,33 @@ var Game = new Class({
 				isPassable: objectType.isPassable
 			};
 		}
+	},
+
+	/**
+	 * Used to reposition an object from one location to another.
+	 * Note: the change is recorded as a deletion and insertion at new location, so this function is not used
+	 * to reposition objects via the applyStateChanges method.
+	 * @param  {BoardObject} boardObject The object to move
+	 * @param  {integer}     newX        The new board position of the object.
+	 * @param  {integer}     newY        The new board position of the object.
+	 */
+	moveObject: function(boardObject, newX, newY) {
+		var oldCoords = { x: boardObject.objPosX, y: boardObject.objPosY };
+		if (this.stateChanges['objsChanged'] && this.stateChanges['objsChanged'][oldCoords.x + ',' + oldCoords.y]) {
+			// if this move is to an object placed this turn then re-map the change record
+			delete this.stateChanges['objsChanged'][oldCoords.x + ',' + oldCoords.y];
+		} else {
+			// delete the object at old location
+			if (!this.stateChanges['objsChanged']) this.stateChanges['objsChanged'] = {};
+			this.stateChanges['objsChanged'][oldCoords.x + ',' + oldCoords.y] = {
+				id: null,
+				x: oldCoords.x,
+				y: oldCoords.y
+			};
+		}
+		this.placeObject(boardObject, newX, newY);
+		// cleanup old location on board
+		this.objectBoard.deleteObject(oldCoords.x, oldCoords.y, true);
 	},
 
 	/**
@@ -175,9 +209,9 @@ var Game = new Class({
 	 * @return {Boolean}   If an object was actually deleted.
 	 */
 	deleteObjectByGlobalCoords: function(x, y) {
-		var coords = this.objectBoard.getBoardCoordinatesOfObjectAtGlobalPosition(x,y);
-		if (coords) {
-			this.deleteObject(coords.x, coords.y, false);
+		var boardObj = this.objectBoard.getObjectAtGlobalPosition(x, y);
+		if (boardObj) {
+			this.deleteObject(boardObj.objPosX, boardObj.objPosY, false);
 			return true;
 		} else return false;
 	},
@@ -201,8 +235,7 @@ var Game = new Class({
 				this.stateChanges['objsChanged'][x + ',' + y] = {
 					id: null,
 					x: x,
-					y: y,
-					isPassable: true
+					y: y
 				};
 			}
 		}
