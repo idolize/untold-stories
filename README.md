@@ -18,7 +18,7 @@ Note: OpenShift support for Websockets is still in preview mode. As such, it [re
 Installation
 ---------------------
 
-After checking out the code (and installing Node.js and npm) run the following command: `$ npm install -l`
+After checking out the code (and installing Node.js and npm) run the following command: `$ npm install`
 
 This will install all of the dependencies for the application based on the package.json file.
 
@@ -27,7 +27,7 @@ Next, simply run: `$ node server.js`
 And then open your web browser to [the localhost page](http://localhost:8888).
 
 ### Dependecies with npm
-If the dependencies of the project change you can fix your local install by running `npm prune -l` and then reinstalling all of the dependencies or just the new ones.
+If the dependencies of the project change you can fix your local install by running `$ npm prune` (to remove any unnessecary dependencies) and then `$ npm install` (to install new dependencies).
 
 Testing
 ---------------------
