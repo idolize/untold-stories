@@ -1,6 +1,6 @@
 var isProduction = process.env.NODE_ENV === 'production';
-var prodPort = process.env.OPENSHIFT_INTERNAL_PORT;
-var prodIp = process.env.OPENSHIFT_INTERNAL_IP;
+var prodPort = process.env.OPENSHIFT_NODEJS_PORT;
+var prodIp = process.env.OPENSHIFT_NODEJS_IP;
 var devPort = 8888;
 
 var express = require('express');
