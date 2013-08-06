@@ -1,15 +1,15 @@
-Tabula Rasa :: README
+Untold Stories :: README
 ====================
 
 Description
 ---------------------
 
-Tell your own story any way you want in a game where absolutely anything goes. ***TabulaRasa***: a multiplayer storytelling game.
+Tell your own story any way you want in a game where absolutely anything goes. ***Untold Stories***: a multiplayer storytelling game in your browser.
 
 Deployment
 ---------------------
 
-A version of the application is deployed on RedHat OpenShift at the following URL: [http://tabula-rasa.rhcloud.com](http://tabula-rasa.rhcloud.com/)
+A version of the application is deployed on RedHat OpenShift at the following URL: [http://untold-stories.rhcloud.com](http://untold-stories.rhcloud.com/)
 
 The application has different settings for a production environment than a development environment: for example the listening port may be different or the level of debug statements may be different. Rather than hardcode the environment in the application code (which would require maintaing multiple versions of the code), the environment variable `$NODE_ENV` is set to "production" or "development" accordingly (if it is not set then it defaults to development). This is a standard practice among NodeJS applications.
 
@@ -58,11 +58,13 @@ Remember: it is almost always the event listener's responsibility (not the event
 Classes and functions can/should be documented using the [JSDoc syntax](http://en.wikipedia.org/wiki/JSDoc). If you are using Sublime Text 2 then install the [DockBlockr plugin](https://tutsplus.com/lesson/docblockr/) to automatically generate these comments for you.
 
 
-Tilesets and Images
+Licenses & Attribution
 --------------------
 
-Tiles are 32 x 32 pixels in size, saved as PNG-32 images with transparency. A collection of free 16x16 tileset images [can be found on opengameart.org](http://opengameart.org/content/oga-16x16-jrpg-sprites-tiles): to use these images save the original, resize it to 200% (without using any antialiasing), convert all white pixels to transparent pixels, and then export the image as a PNG-32 image with transparency.
+Untold Stories is open source, liscensed under the [Creative Commons BY-NC-SA liscense](http://creativecommons.org/licenses/by-nc-sa/3.0/). The artwork assets in the game are licensed as follows:
 
+### Tileset images
+All of the 16x16 tileset images used [can be found on opengameart.org](http://opengameart.org/content/oga-16x16-jrpg-sprites-tiles). All credit for the original sprite images goes to [CharlesGabriel](http://opengameart.org/users/charlesgabriel), [MrBeast](http://opengameart.org/users/mrbeast), and [Daniel Siegmund](http://opengameart.org/content/16x16-pixel-art-dungeon-wall-and-cobblestone-floor-tiles), whose work is distributed under the [CC BY liscense](http://creativecommons.org/licenses/by/3.0/). The [forrest tiles](http://opengameart.org/content/forest-tiles) are in the [public domain](http://creativecommons.org/publicdomain/zero/1.0/).
 
 ### Toolbar Icons
 Toolbar icons are taken from the [Open Icon Library](http://openiconlibrary.sourceforge.net/) and are liscenced under the [CC BY-SA 3.0 liscence](http://creativecommons.org/licenses/by-sa/3.0/).

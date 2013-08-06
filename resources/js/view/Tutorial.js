@@ -42,7 +42,7 @@ var Tutorial = new Class({
 		return [
 		{
 			element: document.id('logo'),
-			intro: 'Welcome to Tabula Rasa! In this game you will be playing through a story created by another person. (Click next or use the arrow keys to proceed)'
+			intro: 'Welcome to Untold Stories! In this game you will be playing through a story created by another person. (Click next or use the arrow keys to proceed)'
 		},
 		{
 			element: document.id('infobar'),
