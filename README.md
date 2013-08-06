@@ -6,6 +6,11 @@ Description
 
 Tell your own story any way you want in a game where absolutely anything goes. ***Untold Stories***: a multiplayer storytelling game in your browser.
 
+Credits
+---------------------
+Untold Stories was developed by [Dave Idol](http://daveidol.com), Chris Hendel, and Shawn Waldon.
+
+
 Deployment
 ---------------------
 
@@ -61,10 +66,14 @@ Classes and functions can/should be documented using the [JSDoc syntax](http://e
 Licenses & Attribution
 --------------------
 
-Untold Stories is open source, liscensed under the [Creative Commons BY-NC-SA liscense](http://creativecommons.org/licenses/by-nc-sa/3.0/). The artwork assets in the game are licensed as follows:
+Untold Stories is open source, licensed under the [Creative Commons BY-NC-SA liscense](http://creativecommons.org/licenses/by-nc-sa/3.0/), except where otherwise noted.
+
+All other open source libraries used that are not directly part of Untold Stories are placed in an "external" directory.
+
+The artwork assets in the game are licensed as follows:
 
 ### Tileset images
-All of the 16x16 tileset images used [can be found on opengameart.org](http://opengameart.org/content/oga-16x16-jrpg-sprites-tiles). All credit for the original sprite images goes to [CharlesGabriel](http://opengameart.org/users/charlesgabriel), [MrBeast](http://opengameart.org/users/mrbeast), and [Daniel Siegmund](http://opengameart.org/content/16x16-pixel-art-dungeon-wall-and-cobblestone-floor-tiles), whose work is distributed under the [CC BY liscense](http://creativecommons.org/licenses/by/3.0/). The [forrest tiles](http://opengameart.org/content/forest-tiles) are in the [public domain](http://creativecommons.org/publicdomain/zero/1.0/).
+All of the 16x16 tileset images used [can be found on opengameart.org](http://opengameart.org/content/oga-16x16-jrpg-sprites-tiles). All credit for the original sprite images goes to [CharlesGabriel](http://opengameart.org/users/charlesgabriel), [MrBeast](http://opengameart.org/users/mrbeast), and [Daniel Siegmund](http://opengameart.org/content/16x16-pixel-art-dungeon-wall-and-cobblestone-floor-tiles), whose work is distributed under the [CC BY license](http://creativecommons.org/licenses/by/3.0/). The [forrest tiles](http://opengameart.org/content/forest-tiles) are in the [public domain](http://creativecommons.org/publicdomain/zero/1.0/).
 
 ### Toolbar Icons
-Toolbar icons are taken from the [Open Icon Library](http://openiconlibrary.sourceforge.net/) and are liscenced under the [CC BY-SA 3.0 liscence](http://creativecommons.org/licenses/by-sa/3.0/).
+Toolbar icons are taken from the [Open Icon Library](http://openiconlibrary.sourceforge.net/) and are liscenced under the [CC BY-SA 3.0 licence](http://creativecommons.org/licenses/by-sa/3.0/).
