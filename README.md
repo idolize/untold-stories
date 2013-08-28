@@ -1,5 +1,9 @@
 Untold Stories :: README
 ====================
+-----
+
+![ScreenShot](http://www.daveidol.com/images/projects/untoldstories.png)
+
 
 Description
 ---------------------
@@ -8,7 +12,7 @@ Tell your own story any way you want in a game where absolutely anything goes. *
 
 Credits
 ---------------------
-Untold Stories was developed by [Dave Idol](http://daveidol.com), Chris Hendel, and Shawn Waldon.
+Untold Stories was developed by [Dave Idol](http://daveidol.com), [Chris Hendel](http://chrishendel.com), and Shawn Waldon.
 
 
 Deployment
