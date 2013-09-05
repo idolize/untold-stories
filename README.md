@@ -20,7 +20,7 @@ Deployment
 
 A version of the application is deployed on RedHat OpenShift at the following URL: [http://untold-stories.rhcloud.com](http://untold-stories.rhcloud.com/)
 
-The application has different settings for a production environment than a development environment: for example the listening port may be different or the level of debug statements may be different. Rather than hardcode the environment in the application code (which would require maintaing multiple versions of the code), the environment variable `$NODE_ENV` is set to "production" or "development" accordingly (if it is not set then it defaults to development). This is a standard practice among NodeJS applications.
+The application has different settings for a production environment than a development environment: for example the listening port may be different or the level of debug statements may be different. Rather than hardcode the environment in the application code (which would require maintaining multiple versions of the code), the environment variable `$NODE_ENV` is set to "production" or "development" accordingly (if it is not set then it defaults to development). This is a standard practice among NodeJS applications.
 
 Note: OpenShift support for Websockets is still in preview mode. As such, it [requires that all websocket connections be created on port 8000](https://www.openshift.com/blogs/paas-websockets) rather than the normal web port.
 
@@ -35,13 +35,13 @@ Next, simply run: `$ node server.js`
 
 And then open your web browser to [the localhost page](http://localhost:8888).
 
-### Dependecies with npm
-If the dependencies of the project change you can fix your local install by running `$ npm prune` (to remove any unnessecary dependencies) and then `$ npm install` (to install new dependencies).
+### Dependencies with npm
+If the dependencies of the project change you can fix your local install by running `$ npm prune` (to remove any unnecessary dependencies) and then `$ npm install` (to install new dependencies).
 
 Testing
 ---------------------
 
-In order to make testing easier, special URLs exist ([/player](http://localhost:8888/player) and [/creator](http://localhost:8888/creator)) to automatically join a matchamking game without having to type in a username, select Creator or Player, etc. each time. These URLs can be bookmarked and reloaded to easily join a game for testing purposes. Note these these URLs are not accessible in a production environment.
+In order to make testing easier, special URLs exist ([/player](http://localhost:8888/player) and [/creator](http://localhost:8888/creator)) to automatically join a matchmaking game without having to type in a username, select Creator or Player, etc. each time. These URLs can be bookmarked and reloaded to easily join a game for testing purposes. Note these URLs are not accessible in a production environment.
 
 ### Debugging client
 It is recommended for debugging that you use [Firebug](http://getfirebug.com/) (although the Chrome development console will work almost as well).
@@ -70,7 +70,7 @@ Classes and functions can/should be documented using the [JSDoc syntax](http://e
 Licenses & Attribution
 --------------------
 
-Untold Stories is open source, licensed under the [Creative Commons BY-NC-SA liscense](http://creativecommons.org/licenses/by-nc-sa/3.0/), except where otherwise noted.
+Untold Stories is open source, licensed under the [Creative Commons BY-NC-SA license](http://creativecommons.org/licenses/by-nc-sa/3.0/), except where otherwise noted.
 
 All other open source libraries used that are not directly part of Untold Stories are placed in an "external" directory.
 
@@ -80,4 +80,4 @@ The artwork assets in the game are licensed as follows:
 All of the 16x16 tileset images used [can be found on opengameart.org](http://opengameart.org/content/oga-16x16-jrpg-sprites-tiles). All credit for the original sprite images goes to [CharlesGabriel](http://opengameart.org/users/charlesgabriel), [MrBeast](http://opengameart.org/users/mrbeast), and [Daniel Siegmund](http://opengameart.org/content/16x16-pixel-art-dungeon-wall-and-cobblestone-floor-tiles), whose work is distributed under the [CC BY license](http://creativecommons.org/licenses/by/3.0/). The [forrest tiles](http://opengameart.org/content/forest-tiles) are in the [public domain](http://creativecommons.org/publicdomain/zero/1.0/).
 
 ### Toolbar Icons
-Toolbar icons are taken from the [Open Icon Library](http://openiconlibrary.sourceforge.net/) and are liscenced under the [CC BY-SA 3.0 licence](http://creativecommons.org/licenses/by-sa/3.0/).
+Toolbar icons are taken from the [Open Icon Library](http://openiconlibrary.sourceforge.net/) and are licensed under the [CC BY-SA 3.0 license](http://creativecommons.org/licenses/by-sa/3.0/).
