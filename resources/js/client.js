@@ -83,12 +83,20 @@ function loaded() {
 		// show waiting animation
 		showWaiting(true);
 
-		var endBtn, creatorHelpBtn, playerHelpBtn; // relevant DOM
+		var endBtn, creatorHelpBtn, playerHelpBtn, notifyBtn; // relevant DOM
 		var toolbar, selector; // panels
 
 		function activatePanels(active) {
 			toolbar.setEnabled(active);
 			if (isCreator) selector.setEnabled(active);
+		}
+
+		function showTabNotification(show){
+			if(show){
+				document.title = "It's your turn! :: Untold Stories";
+			} else{
+				document.title = "Untold Stories";
+			}
 		}
 
 		// setup callbacks for our custom events
@@ -100,6 +108,7 @@ function loaded() {
 			if (isCreator) app.game.showGrid(true);
 			showNotice('info', 'Your turn has started');
 			changeDisplayStatus(true);
+			showTabNotification(true);
 		}
 
 		function onTurnEnded() {
@@ -109,6 +118,7 @@ function loaded() {
 			canvas.getParent().removeClass('moving');
 			if (isCreator) app.game.showGrid(false);
 			changeDisplayStatus(false);
+			showTabNotification(false);
 		}
 
 		function onConnectFailed() {
@@ -274,6 +284,33 @@ function loaded() {
 				id: 'endturn'
 			});
 			endBtn.inject('bottom');
+
+			// show the 'desktop notification button'
+			notifyBtn = new Element('button', {
+				text: 'Notify',
+				'class': 'btn',
+				event: function notify() {
+					var havePermission = window.webkitNotifications.checkPermission();
+					if (havePermission == 0) {
+						// 0 is PERMISSION_ALLOWED
+					    var notification = window.webkitNotifications.createNotification(
+					        'http://i.stack.imgur.com/dmHl0.png',
+					        'Chrome notification!',
+					        'Here is the notification text'
+					 	);
+
+					    notification.onclick = function () {
+					        window.open("http://stackoverflow.com/a/13328397/1269037");
+					        notification.close();
+					    }
+					    notification.show();
+					  } else {
+					        window.webkitNotifications.requestPermission();
+					  }
+					},
+				id: 'notify'
+			});
+			notifyBtn.inject('bottom');
 
 			var tutorial = new Tutorial(isCreator);
 
