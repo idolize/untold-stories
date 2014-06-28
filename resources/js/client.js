@@ -39,6 +39,7 @@ function loaded() {
 			id: 'startBtn',
 			event: function() {
 				// validate everything first
+				// TODO add some server-side validation here too
 				if (!form.validateElement(document.id('username'))) {
 					showNotice('notice', 'You must enter a valid username');
 					return;

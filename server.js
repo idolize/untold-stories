@@ -1,12 +1,14 @@
 var isProduction = process.env.NODE_ENV === 'production';
 var prodPort = process.env.OPENSHIFT_NODEJS_PORT;
 var prodIp = process.env.OPENSHIFT_NODEJS_IP;
-var devPort = 8888;
+var devPort = 8887;
 
 var express = require('express');
 var http = require('http');
+var socketio = require('socket.io');
 var app = express();
 var server = http.createServer(app);
+
 app.set('view engine', 'ejs');
 app.set('view options', {
 	layout: false
@@ -14,24 +16,18 @@ app.set('view options', {
 app.set('port', isProduction ? prodPort : devPort);
 app.use(app.router);
 app.use(express.static(__dirname + '/resources'));
-app.configure('production', function() {
-	// production-only settings for express
-});
-app.configure('development', function() {
-	app.use(express.errorHandler({
-		dumpExceptions: true, 
-		showStack: true
-	}));
-});
-var io = require('socket.io').listen(server);
-io.configure('production', function() {
-	io.enable('browser client etag');
-	io.set('log level', 1);
-	io.set('transports', ['websocket','xhr-polling','jsonp-polling']);
-});
-io.configure('development', function() {
-	io.set('transports', ['websocket']);
-});
+
+var socketOpts = {};
+if (isProduction) {
+	socketOpts.transports = ['websocket','xhr-polling','jsonp-polling'];
+} else {
+	socketOpts.transports = ['websocket'];
+  app.use(express.errorHandler({
+    dumpExceptions: true, 
+    showStack: true
+  }));
+}
+var io = socketio(server, socketOpts);
 // HTTP request for base page using express
 app.get('/', function (req, res) {
 	res.render('index');
@@ -71,15 +67,16 @@ app.get('/js/globals.js', function(req, res) {
 
 var gameServer = require('./gameserver');
 
-io.sockets.on('connection', function (socket) {
+io.on('connection', function (socket) {
 	// all further socket communication/management is handled by the game server
-	socket.on('matchmakeMe', function(obj) {
-		gameServer.findOpenRoom(socket, obj.username, obj.isCreator);
+	socket.on('matchmakeMe', function(args) {
+		gameServer.findOpenRoom(socket, args.username, args.isCreator);
 	});
-	socket.on('joinOther', function(obj) {
-		gameServer.joinRoom(socket, obj.username, obj.isCreator, obj.otherPlayerUsername);
+	socket.on('joinOther', function(args) {
+		gameServer.joinRoom(socket, args.username, args.isCreator, args.otherPlayerUsername);
 	});
 });
 
 // start the server
 server.listen(app.get('port'), isProduction ? prodIp : undefined);
+console.log("Server listening in " + (isProduction ? "production" : "development") + " mode on port " + app.get('port'));

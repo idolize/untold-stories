@@ -22,6 +22,7 @@ var ObjectType = new Class({
 		}
 		if (typeof image == 'string' || image instanceof String) {
 			// download the image
+			// TODO use proload.js and/or XHR2 to fetch the image in a better way
 			this.image = new Image();
 			this.image.src = image;
 		} else {
