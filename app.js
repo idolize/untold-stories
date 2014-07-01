@@ -4,6 +4,7 @@ var express = require('express');
 var http = require('http');
 var socketio = require('socket.io');
 var errorhandler = require('errorhandler');
+var browserify = require('browserify-middleware');
 
 var isProduction = process.env.NODE_ENV === 'production';
 var prodPort = process.env.OPENSHIFT_NODEJS_PORT;
@@ -18,7 +19,6 @@ app.set('view options', {
 	layout: false
 });
 app.set('port', isProduction ? prodPort : devPort);
-app.use(express.static(__dirname + '/resources'));
 
 var socketOpts = {};
 if (!isProduction) {
@@ -28,6 +28,10 @@ if (!isProduction) {
   }));
 }
 var io = socketio(server, socketOpts);
+
+
+app.use(express.static(__dirname + '/public'));
+app.use('/js', browserify('./client'));
 // HTTP request for base page using express
 app.get('/', function (req, res) {
 	res.render('index');
@@ -44,8 +48,8 @@ if (!isProduction) {
 // send globals to the client when requested
 app.get('/js/globals.js', function(req, res) {
     res.set('Content-Type', 'application/javascript');
-	var objectImgs = fs.readdirSync('resources/images/objects');
-	var tileImgs = fs.readdirSync('resources/images/tiles');
+	var objectImgs = fs.readdirSync('public/images/objects');
+	var tileImgs = fs.readdirSync('public/images/tiles');
 
 	var stripIdFromPath = function(fullPath) {
 		return path.basename(fullPath, '.png');

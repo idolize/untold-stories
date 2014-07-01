@@ -29,7 +29,7 @@ This will install all of the dependencies for the application based on the packa
 
 Next, simply run: `$ node server.js`
 
-And then open your web browser to [the localhost page](http://localhost:8888).
+And then open your web browser to [the localhost page](http://localhost:8887).
 
 ### Dependencies with npm
 If the dependencies of the project change you can fix your local install by running `$ npm prune` (to remove any unnecessary dependencies) and then `$ npm install` (to install new dependencies).
@@ -51,16 +51,9 @@ If you are new to debugging client-side JS it is recommended that you use [Fireb
 Directories
 ---------------------
 
-The `resources/` directory is used for any static files (files served to the client as-is). The client can reference these files without including the "resources" part of the URI (so `/resources/js/client.j` can be referenced as just `js/client.js` on the client).
+The `public/` directory is used for any static files (files served to the client as-is). The client can reference these files without including the "public" part of the URI (so `/public/images/img.jpg` can be referenced as just `images/img.jpg` on the client).
 
-Building
----------------------
-
-As Untold Stories does use some build-time tools such as Browserify, it is recommended to set up the build tool Gulp and use the included Gulp file to generate a build prior to running. This can be done with the following command:
-
-`gulp AAA`
-
-If you wish to automate the building and reloading process then you can also install nodemon (`npm install -g nodemon`) and XXX to auto-reload.
+The `client/` directory is used in conjunction with Browserify to generate a single JS bundle for the browser to load. This is done via the [browserify-middleware](https://github.com/ForbesLindesay/browserify-middleware) module.
 
 Style Guidelines
 --------------------

@@ -1,0 +1,104 @@
+.btn, .btn:visited {
+	background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(rgba(0, 0, 0, 0)), to(rgba(0, 0, 0, 0.3)));
+	background-image: -webkit-linear-gradient(top, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.3)); 
+	background-image: -moz-linear-gradient(top, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.3));
+	background-image: -ms-linear-gradient(top, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.3));
+	background-image: linear-gradient(top, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.3));
+	background-color: #aaa;
+	display: inline-block;
+	color: #fff  !important;
+	text-decoration: none !important;
+	font-weight: bold;
+	line-height: 1;
+	border: 1px solid rgba(0,0,0,0.25) !important;
+	position: relative;
+	cursor: pointer;
+	box-shadow: 0 1px 3px rgba(0,0,0,0.5) !important;
+	text-shadow: 0 -1px 1px rgba(0,0,0,0.25);
+	border-bottom: 1px solid rgba(0,0,0,0.5) !important;
+	border-radius: 5px;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+	padding: 5px 8px 6px !important;
+	font-size: 11px;
+	height: auto !important;
+}
+
+button[disabled].btn, input[type="button"][disabled].btn, input[type="submit"][disabled].btn {
+	padding: 5px 8px 6px !important;
+}
+
+.btn.inverse {
+	background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(rgba(0, 0, 0, 0.25)), to(rgba(0, 0, 0, 0.5)));
+	background-image: -webkit-linear-gradient(top, rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0.5)); 
+	background-image: -moz-linear-gradient(top, rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0.5));
+	background-image: -ms-linear-gradient(top, rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0.5));
+	background-image: linear-gradient(top, rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0.5));
+}
+
+.btn.round {
+	-moz-border-radius: 18px;
+	-webkit-border-radius: 18px;
+	border-bottom-left-radius: 18px 18px;
+	border-bottom-right-radius: 18px 18px;
+	border-top-left-radius: 18px 18px;
+	border-top-right-radius: 18px 18px;
+	padding: 6px 15px 8px;
+}
+
+.btn:hover {
+	background-color: #aaa;
+	background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(rgba(0, 0, 0, 0.25)), to(rgba(0, 0, 0, 0.5)));
+	background-image: -webkit-linear-gradient(top, rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0.5)); 
+	background-image: -moz-linear-gradient(top, rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0.5));
+	background-image: -ms-linear-gradient(top, rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0.5));
+	background-image: linear-gradient(top, rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0.5));
+	box-shadow: 0 1px 3px rgba(0,0,0,0.5) outset !important;
+}
+
+.btn.inverse:hover {
+	background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(rgba(0, 0, 0, 0)), to(rgba(0, 0, 0, 0.3)));
+	background-image: -webkit-linear-gradient(top, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.3)); 
+	background-image: -moz-linear-gradient(top, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.3));
+	background-image: -ms-linear-gradient(top, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.3));
+	background-image: linear-gradient(top, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.3));
+}
+
+.btn img {
+	margin:0;
+    padding:0 5px;
+    border:none;
+	display:inline;
+	vertical-align:middle;
+}
+
+.btn.img { 
+	padding: 4px 12px 2px 8px;
+}
+
+.btn.medium {
+	font-size: 13px;
+	padding: 8px 14px 9px !important;
+}
+.btn.medium.img { padding: 8px 14px 6px 9px; }
+
+.btn.large {
+	font-size: 15px;
+	padding: 11px 20px !important;
+}
+.btn.large.img { padding: 11px 20px 11px 15px; }
+
+.btn.blue,.btn.blue:hover{ background-color:#4444ff; }
+.btn.red,.btn.red:hover{ background-color:#e70000; }
+.btn.orange,.btn.orange:hover{ background-color:#ff7b5a; }
+.btn.yellow,.btn.yellow:hover{ background-color:#F8EA46; }
+.btn.babyblue,.btn.babyblue:hover{ background-color:#a9e2ff; }
+.btn.lime,.btn.lime:hover{ background-color:#ACE53E; }
+.btn.purple,.btn.purple:hover{ background-color:#B54BEB; }
+.btn.white,.btn.white:hover{ background-color:#fff; }
+.btn.green,.btn.green:hover{ background-color:#280; }
+.btn.brown,.btn.brown:hover{ background-color:#a60; }
+.btn.navy,.btn.navy:hover{ background-color:#369; }
+.btn.pink,.btn.pink:hover{ background-color:#FF3AFB; }
+.btn.blacktext { color:#000 !important; }
+
