@@ -1,11 +1,15 @@
+var path = require('path');
+var fs = require('fs');
+var express = require('express');
+var http = require('http');
+var socketio = require('socket.io');
+var errorhandler = require('errorhandler');
+
 var isProduction = process.env.NODE_ENV === 'production';
 var prodPort = process.env.OPENSHIFT_NODEJS_PORT;
 var prodIp = process.env.OPENSHIFT_NODEJS_IP;
 var devPort = 8887;
 
-var express = require('express');
-var http = require('http');
-var socketio = require('socket.io');
 var app = express();
 var server = http.createServer(app);
 
@@ -14,15 +18,11 @@ app.set('view options', {
 	layout: false
 });
 app.set('port', isProduction ? prodPort : devPort);
-app.use(app.router);
 app.use(express.static(__dirname + '/resources'));
 
 var socketOpts = {};
-if (isProduction) {
-	socketOpts.transports = ['websocket','xhr-polling','jsonp-polling'];
-} else {
-	socketOpts.transports = ['websocket'];
-  app.use(express.errorHandler({
+if (!isProduction) {
+  app.use(errorhandler({
     dumpExceptions: true, 
     showStack: true
   }));
@@ -40,8 +40,7 @@ if (!isProduction) {
 		res.render('index', { autojoin: 'creator' });
 	});
 }
-var path = require('path');
-var fs = require('fs');
+
 // send globals to the client when requested
 app.get('/js/globals.js', function(req, res) {
     res.set('Content-Type', 'application/javascript');

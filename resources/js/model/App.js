@@ -22,16 +22,16 @@ var App = new Class({
 
 	/**
 	 * Connects the client to the server.
-	 * @param  {String} [serverUrl] The URL of the server to connect to. The default value is 'http://localhost:8888'.
+	 * @param  {String} [serverUrl] The URL of the server to connect to. The default value is 'http://localhost:8887'.
 	 */
 	connect: function(serverUrl) {
-		serverUrl = serverUrl || 'http://localhost:8888';
-		this.socket = io.connect(serverUrl, {'force new connection':true}); // see https://github.com/LearnBoost/socket.io-client/issues/251
+		serverUrl = serverUrl || 'http://localhost:8887';
+    this.socket = io();
 		this.socket.once('error', function() {
 			console.log('ERROR: Unable to connect to socket');
 			this.fireEvent('connectFailed');
 		}.bind(this));
-		this.socket.once('reconnect_error', function() {
+		this.socket.once('reconnect_failed', function() {
 			console.log('ERROR: Reconnect to socket failed');
 			this.fireEvent('connectFailed');
 		}.bind(this));
