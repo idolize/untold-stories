@@ -1,24 +1,16 @@
+var easeljs = require('easeljs');
+
 /**
  * Represents an actual object on a board.
- * @type {Class}
+ *
+ * @constructor
+ * @param  {ObjectType} objType The type of this object.
+ * @param  {ObjectBoard} [objectBoard] The board this object is on.
  */
-var BoardObject = new Class({
-	objType: null,
-	bitmap: null,
-	objectBoard: null,
-	objPosX: null,
-	objPosY: null,
+function BoardObject(objType, objectBoard) {
+  this.objType = objType;
+  this.bitmap = new easeljs.Bitmap(objType.image);
+  if (objectBoard) this.objectBoard = objectBoard;
+}
 
-	/**
-	 * Constructor method.
-	 *
-	 * @constructor
-	 * @param  {ObjectType} objType The type of this object.
-	 * @param  {ObjectBoard} [objectBoard] The board this object is on.
-	 */
-	initialize: function(objType, objectBoard) {
-		this.objType = objType;
-		this.bitmap = new createjs.Bitmap(objType.image);
-		if (objectBoard) this.objectBoard = objectBoard;
-	}
-});
+module.exports = BoardObject;

@@ -18,26 +18,19 @@
 </head>
 <body>
 	<!-- Scripts -->
-	<script type="text/javascript" src="/socket.io/socket.io.js"></script><!-- loaded dynamically by Node -->
 	<script type="text/javascript" src="/js/globals.js"></script> <!-- generated dynamically by Node in server.js -->
-	<script type="text/javascript" src="http://code.createjs.com/createjs-2013.02.12.min.js"></script>
-	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/mootools/1.4.5/mootools-yui-compressed.js"></script>
+	<!-- <script type="text/javascript" src="js/external/createjs.js"></script> -->
+	<script type="text/javascript" src="js/external/mootools.js"></script>
 	<script type="text/javascript" src="js/external/mootools-more-1.4.0.1.js"></script>
 	<script type="text/javascript" src="js/external/mBox.All.min.js"></script> <!-- TODO port to jBox http://stephanwagner.me/jBox -->
 	<script type="text/javascript" src="js/external/mForm.Core.js"></script>
 	<script type="text/javascript" src="js/external/MUX.Loaders.min.js"></script>
 	<script type="text/javascript" src="js/external/tinytab.js" ></script>
-	<script type="text/javascript" src="js/external/intro.js"></script>
-	<script type="text/javascript" src="js/app.js"></script>
-
+	<script type="text/javascript" src="js/client.js"></script>
 	<% if (typeof(autojoin) !== 'undefined') { %>
 		<!-- only used in development environment -->
 		<script type="text/javascript">
-			window.addEvent('domready', function() {
-				// start game automatically
-				var isCreator = <%= autojoin == 'creator' %>;
-				beginGame(isCreator, '<%= autojoin.toUpperCase() %>'); // just use 'PLAYER' or 'CREATOR' as username and start matchamking
-			});
+			globals.autojoin = '<%= autojoin %>';
 		</script>
 	<% } %>
 
@@ -65,7 +58,7 @@
 		<ul class="items">
 			<li><a href="#">About</a></li>
 			<li><a href="#">Credits</a></li>
-			<li>Untold Stories &copy; 2013</li>
+			<li>Untold Stories &copy; 2014</li>
 		</ul>
 	</div>
 	<div id="joinprompt" style="display: none;">

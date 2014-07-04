@@ -1,24 +1,16 @@
+var easeljs = require('easeljs');
+
 /**
  * Represents an actual tile on a board.
- * @type {Class}
+ *
+ * @constructor
+ * @param  {TileType} tileType The type of this tile.
+ * @param  {Board} [board] The board this tile is on.
  */
-var BoardTile = new Class({
-	tileType: null,
-	bitmap: null,
-	board: null,
-	tilePosX: null,
-	tilePosY: null,
+function BoardTile(tileType, board) {
+  this.tileType = tileType;
+  this.bitmap = new easeljs.Bitmap(tileType.image);
+  if (board) this.board = board;
+}
 
-	/**
-	 * Constructor method.
-	 *
-	 * @constructor
-	 * @param  {TileType} tileType The type of this tile.
-	 * @param  {Board} [board] The board this tile is on.
-	 */
-	initialize: function(tileType, board) {
-		this.tileType = tileType;
-		this.bitmap = new createjs.Bitmap(tileType.image);
-		if (board) this.board = board;
-	}
-});
+module.exports = BoardTile;

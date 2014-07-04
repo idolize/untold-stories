@@ -1,13 +1,42 @@
 {
-	"name": "tabula-rasa",
-	"description": "Tell your own story any way you want in a game where absolutely anything goes",
-	"version": "0.0.2",
-	"dependencies": {
-		"express": "^4.4.5",
-		"ejs": "^1.0.0",
-		"socket.io": "^1.0.6",
-		"async": "^0.9.0",
-		"errorhandler": "^1.1.1"
-	},
-	"engine": "node >= 0.10.16"
+  "name": "untold-stories",
+  "description": "Tell your own story any way you want in a game where absolutely anything goes",
+  "version": "0.0.2",
+  "repository": "https://github.com/idolize/untold-stories",
+  "dependencies": {
+    "async": "^0.9.0",
+    "browserify-middleware": "^3.0.0",
+    "ejs": "^1.0.0",
+    "enum": "^0.2.6",
+    "errorhandler": "^1.1.1",
+    "express": "^4.4.5",
+    "intro.js": "^0.6.0",
+    "jquery": "*",
+    "socket.io": "^1.0.6",
+    "socket.io-client": "^1.0.6"
+  },
+  "engine": "node >= 0.10.16",
+  "devDependencies": {
+    "browserify": "~4.2.0",
+    "browserify-shim": "~3.6.0"
+  },
+  "browserify": {
+    "transform": [
+      "browserify-shim"
+    ]
+  },
+  "browser": {
+    "easeljs": "./bower_components/easeljs/lib/easeljs-NEXT.min.js",
+    "jBox": "./public/js/external/jBox.js"
+  },
+  "browserify-shim": {
+    "easeljs": "createjs",
+    "jQuery": "global:jQuery",
+    "jBox": {
+      "exports": "jBox",
+      "depends": [
+        "jquery:jQuery"
+      ]
+    }
+  }
 }
