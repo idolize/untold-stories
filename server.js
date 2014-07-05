@@ -7,8 +7,8 @@ var errorhandler = require('errorhandler');
 var browserify = require('browserify-middleware');
 
 var isProduction = process.env.NODE_ENV === 'production';
-var prodPort = process.env.OPENSHIFT_NODEJS_PORT;
-var prodIp = process.env.OPENSHIFT_NODEJS_IP;
+var prodPort = process.env.PORT;
+var prodIp = process.env.IP;
 var devPort = 8887;
 
 var app = express();
