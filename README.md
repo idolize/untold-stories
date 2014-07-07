@@ -1,6 +1,5 @@
 Untold Stories :: README
 ====================
------
 
 ![ScreenShot](http://www.daveidol.com/images/projects/untoldstories.png)
 

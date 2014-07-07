@@ -53,6 +53,6 @@ TextboxPrompt.prototype.openPrompt = function(pos, isAction, callback) {
   this.isAction = isAction;
   this.callback = callback;
 
-  this.on('added', this.callback);
+  this.once('added', this.callback);
   this.modal.open();
 };

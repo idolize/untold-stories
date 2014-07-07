@@ -11,7 +11,6 @@ var Tutorial = require('./view/Tutorial');
 $(loaded);
 
 function loaded() {
-  console.log('loaded');
   var canvas = $('#gamecanvas');
   var myStatus = $('#mystatus');
   var otherPlayerStatus = $('#otherstatus');
@@ -174,11 +173,11 @@ function loaded() {
       var constructTextbox = function(text, isAction) {
         var element = $('<p />', {
           'class': 'textbox' + (isAction? ' action' : ''),
-          style: { display: 'none' },
+          css: { display: 'none' },
           text: text
         });
-        element.appendTo('textcontainer');
-        return element;
+        element.appendTo('#textcontainer');
+        return element[0];
       };
       game.on('constructTextboxFromOtherClient', function(textbox) {
         var element = constructTextbox(textbox.text, false);
@@ -225,16 +224,18 @@ function loaded() {
         }
       });
       toolbar.on('moveClicked', function() {
-        if (isCreator) {
-          app.setActionMode(ActionMode.MOVE);
-        } else {
-          showNotice('info', 'This feature has not been implemented yet'); //TODO
-        }
+        canvas.parent().addClass('moving');
+        app.setActionMode(ActionMode.MOVE);
       });
 
       toolbar.on('textboxClicked', function() {
         app.setActionMode(ActionMode.TEXT);
       });
+
+      toolbar.on('selectionChanged', function(newBtn) {
+        if (newBtn.toolname !== 'move') canvas.parent().removeClass('moving');
+      });
+
       if (isCreator) {
         // edit button clicked
         toolbar.on('editClicked', function() {
@@ -274,8 +275,6 @@ function loaded() {
           toolbar.clearSelectedBtn();
         });
         toolbar.on('selectionChanged', function(newBtn) {
-          if (newBtn.toolname === 'move') canvas.parent().addClass('moving');
-          else canvas.parent().removeClass('moving');
           selector.clearSelectedBtn();
         });
       }

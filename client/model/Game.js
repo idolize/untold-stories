@@ -8,9 +8,9 @@ var TileBoard = require('./TileBoard');
 var ObjectBoard = require('./ObjectBoard');
 var TileType = require('./TileType');
 var ObjectType = require('./ObjectType');
+var TextBox = require('./TextBox');
 
 var heroImageUrl = 'images/hero/hero.png';
-var heroSpeed = 256;
 
 
 /**
@@ -54,17 +54,10 @@ function Game(stage, tileSize, isCreator, username, otherPlayerUsername) {
   // create the grid
   this.grid = new Grid(this.tileBoard);
   // create the hero and add it to the display list
-  this.hero = new Hero(heroImageUrl, 66, 72, this.heroSpeed, 150, 150);
+  this.hero = new Hero(heroImageUrl, 28, 32, 150, 150);
   this.stage.addChild(this.hero.bitmap);
   this.textboxesContainer = new easeljs.Container();
   this.stage.addChild(this.textboxesContainer);
-  // store these function callbacks to make them easier to remove later
-  this._keyDownHandler = function(event) {
-    this.hero.keyDown(event.key);
-  }.bind(this);
-  this._keyUpHandler = function(event) {
-    this.hero.keyUp(event.key);
-  }.bind(this);
 }
 util.inherits(Game, events.EventEmitter);
 module.exports = Game;
@@ -284,7 +277,7 @@ Game.prototype.removeTextbox = function(x, y, isCreators, onlyLocal) {
     this.playerTextbox = null;
   }
   this.textboxesContainer.removeChild(textbox.domElement);
-  textbox.domElement.htmlElement.destroy();
+  $(textbox.domElement.htmlElement).remove();
   if (!onlyLocal) {
     if (this.stateChanges['textboxesAdded'] && this.stateChanges['textboxesAdded'][x + ',' + y]) {
       delete this.stateChanges['textboxesAdded'][x + ',' + y];
@@ -322,7 +315,7 @@ Game.prototype.placeAction = function(element, text, x, y, onlyLocal) {
 Game.prototype.removeAction = function() {
   if (!this.active) throw 'Game method called while not in active turn';
   this.textboxesContainer.removeChild(actionBox.domElement);
-  this.actionBox.domElement.htmlElement.destroy();
+  $(this.actionBox.domElement.htmlElement).remove();
   this.actionBox = null;
   if (this.stateChanges['actionPlaced']) {
     delete this.stateChanges['actionPlaced'];
@@ -336,17 +329,17 @@ Game.prototype.removeAction = function() {
  */
 Game.prototype.clearTextboxes = function() {
   Object.each(this.creatorTextboxes, function(textbox, key) {
-    textbox.domElement.htmlElement.destroy();
+    $(textbox.domElement.htmlElement).remove();
   }, this);
   this.textboxesContainer.removeAllChildren();
   this.creatorTextboxes = {};
   if (this.playerTextbox) {
-    this.playerTextbox.domElement.htmlElement.destroy();
+    $(this.playerTextbox.domElement.htmlElement).remove();
     this.stage.removeChild(this.playerTextbox.domElement);
     this.playerTextbox = null;
   }
   if (this.actionBox) {
-    this.actionBox.domElement.htmlElement.destroy();
+    $(this.actionBox.domElement.htmlElement).remove();
     this.stage.removeChild(this.actionBox.domElement);
     this.actionBox = null;
   }
@@ -365,18 +358,6 @@ Game.prototype.clearScreen = function(onlyLocal) {
     this.stateChanges['objsChanged'] = {};
   }
 };
-
-function addKeyboardListeners() {
-  // add keyboard listeners for player
-  $(document).on('keydown', this._keyDownHandler);
-  $(document).on('keyup', this._keyUpHandler);
-}
-
-function removeKeyboardListeners() {
-  // remove keyboard listeners for player
-  $(document).off('keydown', this._keyDownHandler);
-  $(document).off('keyup', this._keyUpHandler);
-}
 
 /**
  * Updates the state of the game and all game objects based on a set of changes.
@@ -441,7 +422,6 @@ Game.prototype.beginTurn = function(changes) {
     // (re)initialize the state
     this.applyStateChanges(changes);
 
-    addKeyboardListeners(); // allow both player and creator to move the hero with keyboard
     this.numTextboxesByMe = 0;
     this.emit('turnStarted', changes);
   }
@@ -453,7 +433,6 @@ Game.prototype.beginTurn = function(changes) {
  */
 Game.prototype.endTurn = function() {
   if (this.active) {
-    removeKeyboardListeners();
     // turn is now over
     console.log('INFO: Turn ended');
     this.active = false;
@@ -481,11 +460,6 @@ Game.prototype.endGame = function() {
  */
 Game.prototype.gameLoop = function(event) {
   // update the game logic
-
-  this.hero.updateMove(event.delta); // time elapsed in ms since the last tick
-  // update the state changes record of this move
-  this.stateChanges['heroPosX'] = this.hero.x;
-  this.stateChanges['heroPosY'] = this.hero.y;
 
   // TODO collision checking goes here
 

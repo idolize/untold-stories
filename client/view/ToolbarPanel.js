@@ -51,8 +51,7 @@ function createAndAddButtons(isCreator) {
   var moveBtnName = 'move';
   this.toolbarBtns[moveBtnName] = new ToolbarButton(moveBtnName, 'Move '+(isCreator ? 'an object or textbox' : 'textbox or action'));
   this.toolbarBtns[moveBtnName].on('click', function() {
-    if (isCreator) this.setSelectedBtn(this.toolbarBtns[moveBtnName]); // TODO select this for the player too once it gets implemented
-
+    this.setSelectedBtn(this.toolbarBtns[moveBtnName]);
     this.emit(moveBtnName+'Clicked');
   }.bind(this));
 

@@ -123,6 +123,27 @@ function triggerDelete(pos) {
 }
 
 function triggerMoveBegin(pos) {
+  // handle hero move
+  var hero = this.game.hero;
+  var localPos = hero.bitmap.globalToLocal(pos.x, pos.y);
+  if (hero.bitmap.hitTest(localPos.x, localPos.y)) {
+    var heroMoveFunc = function(event) {
+      var newX = Math.round(event.stageX - (hero.width / 2));
+      var newY = Math.round(event.stageY - (hero.height / 2));
+      this.game.moveHero(newX, newY);
+    }.bind(this);
+    
+    var heroMoveEndedFunc = function(event) {
+      hero.bitmap.off('pressmove', heroMoveFunc);
+    };
+
+    hero.bitmap.addEventListener('pressmove', heroMoveFunc);
+    hero.bitmap.on('pressup', heroMoveEndedFunc, this, true); // see: http://www.createjs.com/Docs/EaselJS/classes/EventDispatcher.html#method_on
+    return;
+  }
+  if (!this.game.isCreator) return;
+
+  // handle non-hero objects
   var selectedObj = this.game.objectBoard.getObjectAtGlobalPosition(pos.x, pos.y);
   if (selectedObj) {
     var moveDragFunc = function(event) {
@@ -140,11 +161,10 @@ function triggerMoveBegin(pos) {
       this.game.moveObject(selectedObj, boardX, boardY);
       // move completed
       event.target.off('pressmove', moveDragFunc);
-      event.target.off('pressmove', moveEndedFunc);
-    }.bind(this);
+    };
 
-    selectedObj.bitmap.on('pressmove', moveDragFunc);
-    selectedObj.bitmap.on('pressup', moveEndedFunc);
+    selectedObj.bitmap.addEventListener('pressmove', moveDragFunc);
+    selectedObj.bitmap.on('pressup', moveEndedFunc, this, true);
   }
 }
 

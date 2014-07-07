@@ -2,6 +2,8 @@ var $ = require('jquery');
 var util = require('util');
 var events = require('events');
 
+var mouseDownHandlerBound, mouseUpHandlerBound, mouseMoveHandlerBound;
+
 function MouseHandler(stage, tileSize) {
   this.stage = stage;
   this.tileSize = tileSize;
@@ -12,16 +14,11 @@ function MouseHandler(stage, tileSize) {
 util.inherits(MouseHandler, events.EventEmitter);
 module.exports = MouseHandler;
 
-var mouseDownHandlerBound, mouseMoveHandlerBound, mouseUpHandlerBound;
-
 MouseHandler.prototype.startListening = function() {
   this.stage.enableDOMEvents(true);
-  mouseDownHandlerBound = mouseDownHandler.bind(this);
-  mouseMoveHandlerBound = mouseMoveHandler.bind(this);
-  mouseUpHandlerBound = mouseUpHandler.bind(this);
-  this.stage.on('stagemousedown', mouseDownHandlerBound);
-  this.stage.on('stagemouseup', mouseUpHandlerBound);
-  this.stage.on('stagemousemove', mouseMoveHandlerBound);
+  mouseDownHandlerBound = this.stage.on('stagemousedown', mouseDownHandler, this);
+  mouseUpHandlerBound = this.stage.on('stagemouseup', mouseUpHandler, this);
+  mouseMoveHandlerBound = this.stage.on('stagemousemove', mouseMoveHandler, this);
 };
 
 MouseHandler.prototype.stopListening = function() {
