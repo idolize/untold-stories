@@ -20,7 +20,7 @@ app.set('view options', {
 });
 app.set('port', isProduction ? prodPort : devPort);
 
-var socketOpts = {};
+var socketOpts = { transports: ['polling'] };
 if (!isProduction) {
   app.use(errorhandler({
     dumpExceptions: true, 
@@ -47,6 +47,9 @@ if (!isProduction) {
 app.get('/styles/external/introjs.css', function (req, res) {
   res.sendfile('./node_modules/intro.js/introjs.css');
 });
+app.get('/styles/external/bootstrap.css', function (req, res) {
+  res.sendfile('./bower_components/bootstrap/dist/css/bootstrap.min.css');
+});
 
 // send globals to the client when requested
 app.get('/js/globals.js', function(req, res) {
@@ -71,7 +74,7 @@ app.get('/js/globals.js', function(req, res) {
   res.send('var globals = ' + JSON.stringify(globals));
 });
 
-var gameServer = require('./gameserver');
+var gameServer = require('./server/gameserver');
 
 io.on('connection', function (socket) {
   // all further socket communication/management is handled by the game server

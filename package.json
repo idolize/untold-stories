@@ -3,6 +3,7 @@
   "description": "Tell your own story any way you want in a game where absolutely anything goes",
   "version": "0.0.2",
   "repository": "https://github.com/idolize/untold-stories",
+  "main": "./server/server.js",
   "dependencies": {
     "async": "^0.9.0",
     "browserify-middleware": "^3.0.0",
@@ -13,7 +14,8 @@
     "intro.js": "^0.9.0",
     "jquery": "*",
     "socket.io": "^1.0.6",
-    "socket.io-client": "^1.0.6"
+    "socket.io-client": "^1.0.6",
+    "uuid": "~1.4.1"
   },
   "engine": "node >= 0.10.16",
   "devDependencies": {
@@ -27,11 +29,18 @@
   },
   "browser": {
     "easeljs": "./bower_components/easeljs/lib/easeljs-NEXT.min.js",
-    "jBox": "./public/js/external/jBox.js"
+    "preloadjs": "./bower_components/PreloadJS/lib/preload-0.4.1.combined.js",
+    "jBox": "./public/js/external/jBox.js",
+    "bootstrap": "./bower_components/bootstrap/dist/js/bootstrap.js"
   },
   "browserify-shim": {
     "easeljs": "createjs",
-    "jQuery": "global:jQuery",
+    "preloadjs": "createjs",
+    "bootstrap": {
+      "depends": [
+        "jquery:jQuery"
+      ]
+    },
     "jBox": {
       "exports": "jBox",
       "depends": [

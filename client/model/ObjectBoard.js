@@ -9,12 +9,13 @@ var BoardObject = require('./BoardObject');
  * @param  {integer} numHigh Number of objects high.
  * @param  {integer} tileSize Since objects snap to the grid, the tile size for the grid is required (in pixels).
  * @param {ObjectType[][]} [objects] A pre-initialized 2D object array.
+ * @param  {Container} [container] An optional container to initialize with (defaults to a new container).
  */
-function ObjectBoard(numWide, numHigh, tileSize, objects) {
+function ObjectBoard(numWide, numHigh, tileSize, objects, container) {
   this.numWide = numWide;
   this.numHigh = numHigh;
   this.tileSize = tileSize;
-  this.container = new easeljs.Container();
+  this.container = container || new easeljs.Container();
   if (objects) {
     this.setAllObjects(objects);
   } else {
@@ -25,7 +26,6 @@ function ObjectBoard(numWide, numHigh, tileSize, objects) {
     }
   }
 }
-module.exports = ObjectBoard;
 
 /**
  * Gets the object from the board at the specified location.
@@ -77,7 +77,7 @@ ObjectBoard.prototype.getBoardCoordinatesFromGlobalPosition = function(x, y) {
  * 
  * @param  {integer} x            object position on the x-axis.
  * @param  {integer} y            object position on the y-axis.
- * @param  {Boolean} [keepBitmap] If the bitmap object should remain on the container.
+ * @param  {Boolean} [keepBitmap] If the bitmap object should remain on the container. Default false.
  */
 ObjectBoard.prototype.deleteObject = function(x, y, keepBitmap) {
   if (keepBitmap) this.objects[y][x] = null;
@@ -103,7 +103,7 @@ ObjectBoard.prototype.clearBoard = function() {
  * @param  {integer} x object position on the x-axis.
  * @param  {integer} y object position on the y-axis.
  * @param  {BoardObject} boardObject The object to set.
- * @param  {Boolean} [alreadyAdded] If the object has already been added to the display list.
+ * @param  {Boolean} [alreadyAdded] If the object has already been added to the display list. Default false.
  */
 ObjectBoard.prototype.setObjectWithExisting = function(x, y, boardObject, alreadyAdded) {
   if (y >= this.numHigh || x >= this.numWide) return;
@@ -116,8 +116,8 @@ ObjectBoard.prototype.setObjectWithExisting = function(x, y, boardObject, alread
   if (boardObject) {
     // update values inside the object
     boardObject.board = this;
-    boardObject.objPosX = x;
-    boardObject.objPosY = y;
+    boardObject.x = x;
+    boardObject.y = y;
     boardObject.bitmap.x = this.tileSize * x;
     boardObject.bitmap.y = this.tileSize * y;
     // add the bitmap to the display list
@@ -164,3 +164,37 @@ ObjectBoard.prototype.setAllObjects = function(objects) {
     }
   }
 };
+
+/**
+ * Creates a copy of the tile board.
+ * @return {TileBoard} A copy.
+ */
+ObjectBoard.prototype.clone = function() {
+  var clone = new ObjectBoard(this.numWide, this.numHigh, this.tileSize, null, this.container.clone(true));
+  for (var i = 0; i < this.width; i++) {
+    for (var j = 0; j < this.height; j++) {
+      var existingObj = this.objects[j][i];
+      if (existingObj) clone.objects[j][i] = existingObj;
+    }
+  }
+  return clone;
+};
+
+/**
+ * Restores the state of the board from a clone.
+ * @param  {TileBoard} clone The clone to restore from.
+ */
+ObjectBoard.prototype.restoreFromClone = function(clone) {
+  // make sure the sizes match
+  if (clone.numWide != this.numWide || clone.numHigh != this.numHigh) {
+    throw 'The numWide and numHigh attributes of the clone do not match';
+  }
+  if (clone.tileSize != this.tileSize) {
+    throw 'The tileSize attribute of the clone does not match';
+  }
+  this.container.removeAllChildren();
+  this.container = clone.container;
+  this.objects = clone.objects;
+};
+
+module.exports = ObjectBoard;

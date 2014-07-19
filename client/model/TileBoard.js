@@ -8,13 +8,14 @@ var BoardTile = require('./BoardTile');
  * @param  {integer} numWide Number of tiles wide.
  * @param  {integer} numHigh Number of tiles high.
  * @param  {integer} tileSize The size of a tile in pixels (width or height since tiles are square).
- * @param {TileType[][]} [tiles] A pre-initialized 2D tile array.
+ * @param  {TileType[][]} [tiles] A pre-initialized 2D tile array.
+ * @param  {Container} [container] An optional container to initialize with (defaults to a new container).
  */
-function TileBoard(numWide, numHigh, tileSize, tiles) {
+function TileBoard(numWide, numHigh, tileSize, tiles, container) {
   this.numWide = numWide;
   this.numHigh = numHigh;
   this.tileSize = tileSize;
-  this.container = new easeljs.Container();
+  this.container = container || new easeljs.Container();
   if (tiles) {
     this.setAllTiles(tiles);
   } else {
@@ -25,7 +26,6 @@ function TileBoard(numWide, numHigh, tileSize, tiles) {
     }
   }
 }
-module.exports = TileBoard;
 
 /**
  * Gets the tile from the board at the specified location.
@@ -71,8 +71,8 @@ TileBoard.prototype.setTileWithExisting = function(x, y, boardTile) {
   if (boardTile) {
     // update values inside the tile
     boardTile.board = this;
-    boardTile.tilePosX = x;
-    boardTile.tilePosY = y;
+    boardTile.x = x;
+    boardTile.y = y;
     boardTile.bitmap.x = this.tileSize * x;
     boardTile.bitmap.y = this.tileSize * y;
     // add the bitmap to the display list
@@ -105,7 +105,7 @@ TileBoard.prototype.setAllTiles = function(tiles) {
   // make sure the sizes match
   if (tiles.length != this.numHigh || tiles[0].length != this.numWide) {
     // Note: we only check the first row as an optimization
-    throw "Tiles array sizes do not match numWide and numHigh attributes";
+    throw 'Tiles array sizes do not match numWide and numHigh attributes';
   }
   // remove all children from display list
   this.container.removeAllChildren();
@@ -139,3 +139,37 @@ TileBoard.prototype.setAllTilesToOneType = function(tileType) {
     }
   }
 };
+
+/**
+ * Creates a copy of the tile board.
+ * @return {TileBoard} A copy.
+ */
+TileBoard.prototype.clone = function() {
+  var clone = new TileBoard(this.numWide, this.numHigh, this.tileSize, null, this.container.clone(true));
+  for (var i = 0; i < this.width; i++) {
+    for (var j = 0; j < this.height; j++) {
+      var existingTile = this.tiles[j][i];
+      if (existingTile) clone.tiles[j][i] = existingTile;
+    }
+  }
+  return clone;
+};
+
+/**
+ * Restores the state of the board from a clone.
+ * @param  {TileBoard} clone The clone to restore from.
+ */
+TileBoard.prototype.restoreFromClone = function(clone) {
+  // make sure the sizes match
+  if (clone.numWide != this.numWide || clone.numHigh != this.numHigh) {
+    throw 'The numWide and numHigh attributes of the clone do not match';
+  }
+  if (clone.tileSize != this.tileSize) {
+    throw 'The tileSize attribute of the clone does not match';
+  }
+  this.container.removeAllChildren();
+  this.container = clone.container;
+  this.tiles = clone.tiles;
+};
+
+module.exports = TileBoard;

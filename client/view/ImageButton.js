@@ -1,7 +1,9 @@
+require('bootstrap');
+var $ = require('jquery');
+var jBox = require('jBox');
 var util = require('util');
 var events = require('events');
 
-// TODO convert to jQuery
 function ImageButton(type, isTile) {
   this.type = type;
 
@@ -9,13 +11,27 @@ function ImageButton(type, isTile) {
     this.emit('click', event);
   }.bind(this);
 
+  this.element = $('<div></div>', {
+    css: {
+      display: "inline-block",
+      "min-width": "32px",
+      "min-height": "32px"
+    }
+  });
+  this.element.tooltip({
+    title: ('"'+this.type.id+'"')
+  });
+
   // Note: Chrome seems to re-request the image every time the tab changes when using
   // <input type="image"> so we must use an img tag instead to avoid this. This makes
   // enabling/disabiling the button more compilcated, however, as we must manually
   // style the button and disable/enable listeners.
-  this.element = new Element('img', { src: type.image.src }); // copy the image
-  this.element.addClass('imgBtn');
-  this.element.addClass('object');
+  this.image = $('<img />', { src: type.image.src }); // copy the Image we have cached in 'type'
+  this.image.addClass('imgBtn');
+  this.image.addClass('object');
+
+  this.element.append(this.image);
+
   this.setEnabled(true);
 }
 util.inherits(ImageButton, events.EventEmitter);
@@ -23,27 +39,22 @@ module.exports = ImageButton;
 
 ImageButton.prototype.setEnabled = function(enabled) {
   if (enabled) {
-    this.element.removeClass('disabled');
-    this.element.addEvent('click', this._clickedFunc);
-    this.tooltip = new mBox.Tooltip({
-      content: ('"'+this.type.id+'"'),
-      theme: 'Black',
-      attach: this.element
-    });
+    this.image.removeClass('disabled');
+    this.image.on('click', this._clickedFunc);
   } else {
-    this.element.addClass('disabled');
-    this.element.removeEvent('click', this._clickedFunc);
-    this.tooltip.destroy();
-    this.element.removeEvents('mouseenter');
+    this.image.addClass('disabled');
+    this.image.off('click', this._clickedFunc);
+    this.element.tooltip('hide');
+    this.image.off('mouseenter');
   }
 };
 
-ImageButton.prototype.destroy = function() {
-  this.element.removeEvents();
-  this.element.destroy();
-  this.tooltip.destroy();
+ImageButton.prototype.setSelected = function(isSelected) {
+  this.image.toggleClass('selectedBtn', isSelected);
 };
 
-ImageButton.prototype.toElement = function() {
-  return this.element;
+ImageButton.prototype.destroy = function() {
+  this.element.empty();
+  this.element.remove();
+  this.element.tooltip('destroy');
 };

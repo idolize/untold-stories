@@ -18,6 +18,8 @@
     "tests"
   ],
   "dependencies": {
-    "easeljs": "*"
+    "easeljs": "*",
+    "PreloadJS": "*",
+    "bootstrap": "~3.2.0"
   }
 }

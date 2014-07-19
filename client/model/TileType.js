@@ -21,4 +21,13 @@ function TileType(id, isPassable, image) {
   this.isPassable = isPassable;
 }
 
+TileType.prototype.toJSON = function() {
+  return { id: this.id, isPassable: this.isPassable };
+};
+
+TileType.fromJSON = function(jsonObj, game) {
+  if (game) return game.getTileTypeInstance(jsonObj.id);
+  return new TileType(jsonObj.id, jsonObj.isPassable);
+};
+
 module.exports = TileType;

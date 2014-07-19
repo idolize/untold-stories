@@ -22,4 +22,13 @@ function ObjectType(id, isPassable, image) {
   this.isPassable = isPassable;
 }
 
+ObjectType.prototype.toJSON = function() {
+  return { id: this.id, isPassable: this.isPassable };
+};
+
+ObjectType.fromJSON = function(jsonObj, game) {
+  if (game) return game.getObjectTypeInstance(jsonObj.id);
+  return new ObjectType(jsonObj.id, jsonObj.isPassable);
+};
+
 module.exports = ObjectType;

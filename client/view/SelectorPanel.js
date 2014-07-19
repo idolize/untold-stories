@@ -60,7 +60,7 @@ function createAndAddButtons(tileTypes, objectTypes) {
       that.setSelectedBtn(this);
       that.emit('tileBtnClicked', this);
     });
-    imgBtn.element.inject('tileSelect');
+    imgBtn.element[0].inject('tileSelect');
     this.tileBtns.push(imgBtn);
   }
   for (var i = 0; i < objectTypes.length; i++) {
@@ -70,7 +70,7 @@ function createAndAddButtons(tileTypes, objectTypes) {
       that.setSelectedBtn(this);
       that.emit('objBtnClicked', this);
     });
-    imgBtn.element.inject('objectSelect');
+    imgBtn.element[0].inject('objectSelect');
     this.objBtns.push(imgBtn);
   }
 }
@@ -85,14 +85,14 @@ SelectorPanel.prototype.setEnabled = function(enabled) {
 };
 
 SelectorPanel.prototype.setSelectedBtn = function(imgBtn) {
-  imgBtn.element.addClass('selectedBtn');
-  if (this.prevSelectedBtn && this.prevSelectedBtn != imgBtn) this.prevSelectedBtn.element.removeClass('selectedBtn');
+  imgBtn.setSelected(true);
+  if (this.prevSelectedBtn && this.prevSelectedBtn != imgBtn) this.prevSelectedBtn.setSelected(false);
   this.prevSelectedBtn = imgBtn;
   this.emit('selectionChanged', imgBtn);
 };
 
 SelectorPanel.prototype.clearSelectedBtn = function() {
-  if (this.prevSelectedBtn) this.prevSelectedBtn.element.removeClass('selectedBtn');
+  if (this.prevSelectedBtn) this.prevSelectedBtn.setSelected(false);
   this.prevSelectedBtn = null;
 };
 

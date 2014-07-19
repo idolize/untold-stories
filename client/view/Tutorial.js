@@ -64,6 +64,5 @@ function getStepsForPlayer() {
 }
 
 Tutorial.prototype.start = function() {
-  console.log('this', this);
   this.intro.start();
 };

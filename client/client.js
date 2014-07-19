@@ -1,7 +1,7 @@
 var $ = require('jquery');
 var jBox = require('jBox');
+var UntoldStories = require('./controller/UntoldStories');
 var ActionMode = require('./model/ActionModeEnum');
-var UntoldStories = require('./model/UntoldStories');
 var TextboxPrompt = require('./view/TextboxPrompt');
 var ToolbarPanel = require('./view/ToolbarPanel');
 var SelectorPanel = require('./view/SelectorPanel');
@@ -76,7 +76,7 @@ function loaded() {
   $('#play').prop('disabled', false);
   
   // create the app
-  var app = new UntoldStories(canvas[0]);
+  var app = new UntoldStories(canvas);
 
 
 
@@ -98,12 +98,47 @@ function loaded() {
       if (isCreator) selector.setEnabled(active);
     }
 
-    function showTabNotification(show){
+    function showTabNotification(show) {
       if(show){
         document.title = "It's your turn! :: Untold Stories";
       } else{
         document.title = "Untold Stories";
       }
+    }
+
+    function dragOverFunc(e) {
+      e.preventDefault(); 
+      return false; 
+    }
+
+    function dropFunc(e) {
+      var event = e.originalEvent;
+      var obj;
+      try {
+        obj = JSON.parse(event.dataTransfer.getData('text/plain'));
+      } catch (err) {
+        return;
+      }
+      var draggable = $(obj.id);
+      var newX = event.clientX + obj.offset.x;
+      var newY = event.clientY + obj.offset.y;
+      var command = obj.isAction ?
+        new app.game.commands.MoveAction(newX, newY) :
+        new app.game.commands.MoveTextbox(obj.id, newX, newY);
+      app.game.executeCommand(command);
+
+      e.preventDefault();
+      return false;
+    }
+
+    function addDragListeners(canvas) {
+      canvas.on('dragover', dragOverFunc);
+      canvas.on('drop', dropFunc);
+    }
+
+    function removeDragListeners(canvas) {
+      canvas.off('dragover', dragOverFunc);
+      canvas.off('drop', dropFunc);
     }
 
     // setup callbacks for our custom events
@@ -170,23 +205,6 @@ function loaded() {
       changeDisplayStatus(false);
 
       // handle all requests to create textboxes and actions
-      var constructTextbox = function(text, isAction) {
-        var element = $('<p />', {
-          'class': 'textbox' + (isAction? ' action' : ''),
-          css: { display: 'none' },
-          text: text
-        });
-        element.appendTo('#textcontainer');
-        return element[0];
-      };
-      game.on('constructTextboxFromOtherClient', function(textbox) {
-        var element = constructTextbox(textbox.text, false);
-        game.addTextbox(element, textbox.text, textbox.x, textbox.y, !isCreator, true);
-      });
-      game.on('constructActionFromOtherClient', function(textbox) {
-        var element = constructTextbox(textbox.text, true);
-        game.placeAction(element, textbox.text, textbox.x, textbox.y, true);
-      });
       var textboxPrompt = new TextboxPrompt(canvas);
       app.on('textboxCreateRequest', function(pos) {
         if (!isCreator && game.playerTextbox != null) {
@@ -195,8 +213,7 @@ function loaded() {
           showNotice('info', 'The player can only have one textbox per turn');
         } else {
           textboxPrompt.openPrompt(pos, false, function(text) {
-            var textNode = constructTextbox(text, false);
-            game.addTextbox(textNode, text, pos.x, pos.y, isCreator);
+            game.executeCommand('AddTextbox', text, pos.x, pos.y, isCreator);
           });
         }
       });
@@ -207,8 +224,7 @@ function loaded() {
           showNotice('info', 'The player can only have one action per turn');
         } else {
           textboxPrompt.openPrompt(pos, true, function(text) {
-            var textNode = constructTextbox(text, true);
-            game.placeAction(textNode, text, pos.x, pos.y);
+            game.executeCommand('PlaceAction', text, pos.x, pos.y);
           });
         }
       });
@@ -319,6 +335,8 @@ function loaded() {
         id: 'notify'
       });
       notifyBtn.appendTo('#bottom');
+
+      addDragListeners(canvas);
 
       var tutorial = new Tutorial(isCreator);
 

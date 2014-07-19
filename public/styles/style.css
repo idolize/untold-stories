@@ -92,6 +92,7 @@ div.wrapper {
 	/* Needed to center the canvas */
 	width: 482px;
 	margin: 20px auto 10px auto;
+	position: relative;
 }
 
 .wrapper .canvaswrap.active {
@@ -156,6 +157,7 @@ canvas#gamecanvas {
 }
 
 .textbox {
+	position: absolute;
 	padding: 2px;
 	margin: 0;
 	color: #000;

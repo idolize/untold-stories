@@ -58,7 +58,7 @@ Style Guidelines
 --------------------
 
 ### OOP
-Try to avoid using the global namespace as much as possible. Instead, use the CommonJS `require` syntax to encapsulate your objects like you would in a language like Java or C++.
+Try to avoid using the global namespace as much as possible. Instead, use the CommonJS `require` syntax to [encapsulate your objects like you would in a language like Java or C++](http://smorgasbork.com/component/content/article/38-titanium-mobile/132-titanium-mobile-commonjs-fundamentals).
 
 This module technique is used by default on the server, and [Browserify](https://github.com/substack/node-browserify#browserify) is used to make it work on the client.
 
