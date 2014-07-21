@@ -233,11 +233,7 @@ function loaded() {
       // show the toolbar
       toolbar = new ToolbarPanel(isCreator);
       toolbar.on('deleteClicked', function() {
-        if (isCreator) {
-          app.setActionMode(ActionMode.DELETE);
-        } else {
-          showNotice('info', 'This feature has not been implemented yet'); //TODO
-        }
+        app.setActionMode(ActionMode.DELETE);
       });
       toolbar.on('moveClicked', function() {
         canvas.parent().addClass('moving');
@@ -259,7 +255,7 @@ function loaded() {
         });
         // clear button clicked and confirmed
         toolbar.on('clearClicked', function() {
-          game.clearScreen();
+          game.executeCommand('ClearScreen');
         });
       } else {
         // insert action button clicked

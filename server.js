@@ -20,7 +20,7 @@ app.set('view options', {
 });
 app.set('port', isProduction ? prodPort : devPort);
 
-var socketOpts = { transports: ['polling'] };
+var socketOpts = {}; //transports: ['polling']
 if (!isProduction) {
   app.use(errorhandler({
     dumpExceptions: true, 

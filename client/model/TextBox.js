@@ -42,8 +42,8 @@ TextBox.prototype.setPos = function(x, y) {
   this.pos.x = x;
   this.pos.y = y;
   this.domNode.css({
-    left: x + "px",
-    top: y + "px"
+    left: x + 'px',
+    top: y + 'px'
   });
 };
 
@@ -54,7 +54,7 @@ TextBox.prototype.setDraggable = function(isDraggable) {
 };
 
 TextBox.prototype.destroy = function() {
-  this.domNode.off('dragstart');
+  this.domNode.off();
   this.domNode.remove();
 };
 

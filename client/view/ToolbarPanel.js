@@ -41,15 +41,14 @@ module.exports = ToolbarPanel;
 function createAndAddButtons(isCreator) {
   // create the buttons
   var deleteBtnName = 'delete';
-  this.toolbarBtns[deleteBtnName] = new ToolbarButton(deleteBtnName, 'Delete '+(isCreator ? 'an object or textbox (textbox deletion not implemented yet)' : 'textbox or action'));
+  this.toolbarBtns[deleteBtnName] = new ToolbarButton(deleteBtnName, 'Delete '+(isCreator ? 'an object or textbox' : 'textbox or action'));
   this.toolbarBtns[deleteBtnName].on('click', function() {
-    if (isCreator) this.setSelectedBtn(this.toolbarBtns[deleteBtnName]);  // TODO select this for the player too once it gets implemented
-
+    this.setSelectedBtn(this.toolbarBtns[deleteBtnName]); 
     this.emit(deleteBtnName+'Clicked');
   }.bind(this));
 
   var moveBtnName = 'move';
-  this.toolbarBtns[moveBtnName] = new ToolbarButton(moveBtnName, 'Move '+(isCreator ? 'an object or textbox' : 'textbox or action'));
+  this.toolbarBtns[moveBtnName] = new ToolbarButton(moveBtnName, 'Move '+(isCreator ? 'hero, object, or textbox' : 'hero, textbox, or action'));
   this.toolbarBtns[moveBtnName].on('click', function() {
     this.setSelectedBtn(this.toolbarBtns[moveBtnName]);
     this.emit(moveBtnName+'Clicked');

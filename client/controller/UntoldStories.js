@@ -133,6 +133,16 @@ function triggerDelete(pos) {
   }
 }
 
+function triggerDeleteTextbox(e) {
+  // click event
+  var textbox = e.data;
+  if (e.data.isAction) {
+    this.game.executeCommand('RemoveAction');
+  } else {
+    this.game.executeCommand('RemoveTextbox', textbox.id, this.game.isCreator);
+  }
+}
+
 function triggerMoveBegin(pos) {
   // handle hero move
   var hero = this.game.hero;
@@ -197,6 +207,34 @@ UntoldStories.prototype.setTextboxesAsDraggable = function(isDraggable) {
 };
 
 /**
+ * TODO: Move this to the client.js file instead?
+ * Makes the textboxes removable to the user.
+ * @param {Boolean} isRemovable If the textboxes should be removable or not.
+ */
+UntoldStories.prototype.setTextboxesAsRemovable = function(isRemovable) {
+  if (!isRemovable) {
+    for (var textboxId in this.game.creatorTextboxes) {
+      var textbox = this.game.creatorTextboxes[textboxId];
+      console.log('textbox', textbox);
+      textbox.domNode.off('click');
+    }
+    if (this.game.actionBox) this.game.actionBox.domNode.off('click');
+    if (this.game.playerTextbox) this.game.playerTextbox.domNode.off('click');
+    return;
+  }
+
+  if (this.game.isCreator) {
+    for (var textboxId in this.game.creatorTextboxes) {
+      var textbox = this.game.creatorTextboxes[textboxId];
+      textbox.domNode.on('click', null, textbox, triggerDeleteTextbox.bind(this));
+    }
+  } else {
+    if (this.game.actionBox) this.game.actionBox.domNode.on('click', null, this.game.actionBox, triggerDeleteTextbox.bind(this));
+    if (this.game.playerTextbox) this.game.playerTextbox.domNode.on('click', null, this.game.playerTextbox, triggerDeleteTextbox.bind(this));
+  }
+};
+
+/**
  * Sets the current tool or action for the interactions with the application.
  * @param  {ActionMode}      mode               Enum value for which action mode to use.
  * @param  {ObjectType|TileType} [objectOrTileType] The object or tile type to use if using the UntoldStories.ActionMode.PLACE mode.
@@ -204,6 +242,7 @@ UntoldStories.prototype.setTextboxesAsDraggable = function(isDraggable) {
 UntoldStories.prototype.setActionMode = function(mode, objectOrTileType) {
   this.mouseHandler.removeAllListeners();
   this.setTextboxesAsDraggable(false);
+  this.setTextboxesAsRemovable(false);
   switch (mode) {
     case ActionMode.PLACE:
       this.selectedObjOrTile = objectOrTileType;
@@ -219,6 +258,7 @@ UntoldStories.prototype.setActionMode = function(mode, objectOrTileType) {
       this.mouseHandler.on('clickCanvas', triggerAction.bind(this));
       break;
     case ActionMode.DELETE:
+      this.setTextboxesAsRemovable(true);
       this.mouseHandler.on('clickCanvas', triggerDelete.bind(this));
       break;
     case ActionMode.MOVE:
@@ -237,6 +277,7 @@ UntoldStories.prototype.setActionMode = function(mode, objectOrTileType) {
  */
 function onTurnStarted(changes) {
   if (this.actionMode === ActionMode.MOVE) this.setTextboxesAsDraggable(true);
+  else if (this.actionMode === ActionMode.DELETE) this.setTextboxesAsRemovable(true);
   this.mouseHandler.startListening();
   this.emit('turnStarted');
 }
@@ -256,6 +297,7 @@ function onOtherPlayerDisconnected() {
 UntoldStories.prototype.endTurn = function() {
   this.mouseHandler.stopListening();
   this.setTextboxesAsDraggable(false);
+  this.setTextboxesAsRemovable(false);
   var turnChanges = this.game.endTurn();
   this.socket.emit('turnEnded', turnChanges);
   this.emit('turnEnded');
@@ -269,6 +311,8 @@ UntoldStories.prototype.destroy = function() {
   this.mouseHandler.stopListening();
   // remove all event listeners registered to this app
   this.removeAllListeners();
+  this.setTextboxesAsDraggable(false);
+  this.setTextboxesAsRemovable(false);
   // disconnect the socket
   this.socket.removeAllListeners();
   this.socket.disconnect();
